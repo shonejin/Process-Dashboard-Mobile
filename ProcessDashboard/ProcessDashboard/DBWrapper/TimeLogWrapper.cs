@@ -9,7 +9,7 @@ using ProcessDashboard.Model;
 
 namespace ProcessDashboard.DBWrapper
 {
-    class TimeLogWrapper
+    public class TimeLogWrapper
     {
         SQLiteConnection db;
 

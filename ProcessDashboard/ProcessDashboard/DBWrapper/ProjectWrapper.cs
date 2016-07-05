@@ -44,17 +44,28 @@ namespace ProcessDashboard.DBWrapper
             }
         }
 
+        public bool insertOrUpdateRecord(ProjectModel projectModel)
+        {
+            try
+            {
+                db.InsertOrReplace(projectModel);
+                return true;
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.Message);
+                return false;
+            }
+        }
+
         public bool insertMultipleRecords(List<ProjectModel> entries)
         {
-            db.RunInTransaction(() =>
-            {
                 // database calls inside the transaction
                 foreach (ProjectModel pm in entries)
                 {
-                    db.Insert(pm);
+                    db.InsertOrReplace(pm);
                 }
 
-            });
             return true;
         }
         public List<ProjectModel> GetAllRecords()

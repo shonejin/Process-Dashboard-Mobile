@@ -8,6 +8,9 @@ namespace ProcessDashboard.DTO
     {
         public string id { get; set; }
         public string name { get; set; }
-        public string creationDate { get; set; }
+        public DateTime creationDate { get; set; }
+        public bool isActive { get; set; }
+
+        
     }
 }

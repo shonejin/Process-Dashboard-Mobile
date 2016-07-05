@@ -1,13 +1,15 @@
-﻿namespace ProcessDashboard.DTO
+﻿using System;
+
+namespace ProcessDashboard.DTO
 {
     public class TimeLogEntry
     {
-        public string id { get; set; }
+        public int id { get; set; }
         public Task task { get; set; }
-        public string startDate { get; set; }
+        public DateTime startDate { get; set; }
         public double loggedTime { get; set; }
         public double interruptTime { get; set; }
-        public string endDate { get; set; }
+        public DateTime endDate { get; set; }
 
     }
 }

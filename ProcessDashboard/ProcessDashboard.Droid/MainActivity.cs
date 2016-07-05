@@ -2,6 +2,10 @@
 using Android.Widget;
 using Android.OS;
 using ProcessDashboard.Model;
+using ProcessDashboard.Service;
+using ProcessDashboard.Service_Access_Layer;
+using ProcessDashboard.SyncLogic;
+
 namespace ProcessDashboard.Droid
 {
 	[Activity (Label = "ProcessDashboard.Droid", MainLauncher = true, Icon = "@drawable/icon")]
@@ -19,7 +23,11 @@ namespace ProcessDashboard.Droid
 			// and attach an event to it
 			Button button = FindViewById<Button> (Resource.Id.myButton);
 
-		    ProjectModel p = new ProjectModel {IsActive = true};
+            var apiService = new ApiTypes(null);
+            var service = new PDashServices(apiService);
+            Controller c = new Controller(service);
+           // c.testProject();
+            c.testTasks();
 
 		}
 	}

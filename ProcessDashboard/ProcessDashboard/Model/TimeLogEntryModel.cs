@@ -4,7 +4,7 @@ using SQLiteNetExtensions.Attributes;
 
 namespace ProcessDashboard.Model
 {
-    class TimeLogEntryModel
+    public class TimeLogEntryModel
     {
         [PrimaryKey, Column("row_id")]
         public int RowId { get; set; }
@@ -17,6 +17,10 @@ namespace ProcessDashboard.Model
 
         [Column("start_date")]
         public DateTime StartDate { get; set; }
+
+        [Column("end_date")]
+        public DateTime EndDate { get; set; }
+
 
         [Column("elapsed_time")]
         public double ElapsedTime { get; set; }

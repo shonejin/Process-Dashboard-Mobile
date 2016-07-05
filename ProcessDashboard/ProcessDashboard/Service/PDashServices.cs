@@ -25,51 +25,19 @@ namespace ProcessDashboard.Service_Access_Layer
             _dbm = DBManager.getInstance();
         }
 
-        private void test(ListOfProjectsRoot projects)
-        {
-
-            List<Project> projectsList = projects.projects;
-            try
-            {
-
-                System.Diagnostics.Debug.WriteLine("Length is " + projectsList.Count);
-
-                foreach (var proj in projectsList.Select(x => x.name))
-                {
-                    System.Diagnostics.Debug.WriteLine(proj);
-                    //  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
-                }
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
-            }
-
-
-
-        }
-        
         public async Task<List<Project>> GetProjectsListLocal(Priority priority, string dataset)
         {
             System.Diagnostics.Debug.WriteLine("ProjectModel Service : " + " Going to get data from DB");
+
             List<Project> output = null;
 
             List<ProjectModel> values = _dbm.pw.GetAllRecords();
 
             if (values == null || values.Count == 0)
             {
-                System.Diagnostics.Debug.WriteLine("ProjectModel Service : " + " Nothing in DB");
-                // DB does not have any values. Get the values from the server.
-                output = await GetProjectsListRemote(priority, dataset);
-
-                // Map from project to project model
-                values = Mapper.GetInstance().toProjectModelList(output);
-                // Store in DB
-                _dbm.pw.insertMultipleRecords(values);
-
-            }
-            else
-            {
+                System.Diagnostics.Debug.WriteLine("ProjectModel Service : " + "Nothing in the DB");
+                return null;
+            } else {
                 // Map from project model to project and return values.
                 output = Mapper.GetInstance().toProjectList(values);
             }
@@ -83,7 +51,7 @@ namespace ProcessDashboard.Service_Access_Layer
         {
             System.Diagnostics.Debug.WriteLine("ProjectModel Service : " + " Going for remote task");
 
-            ListOfProjectsRoot task = null;
+            ListOfProjectsRoot projects = null;
             Task<ListOfProjectsRoot> getTaskDtoTask;
             System.Diagnostics.Debug.WriteLine("ProjectModel Service : " + " Setting priority");
             switch (priority)
@@ -102,15 +70,19 @@ namespace ProcessDashboard.Service_Access_Layer
                     break;
             }
 
-            task = await getTaskDtoTask;
+            projects = await getTaskDtoTask;
             System.Diagnostics.Debug.WriteLine("ProjectModel Service : " + "Got the content I guess");
 
-            // Convert to model and store in DB
+            if (!projects.stat.Equals("ok") || projects.projects==null)
+            {
+                return null;
+            }
 
-            List<ProjectModel> output = Mapper.GetInstance().toProjectModelList(task.projects);
+            // Convert to model and store in DB
+            List<ProjectModel> output = Mapper.GetInstance().toProjectModelList(projects.projects);
             _dbm.pw.insertMultipleRecords(output);
 
-            test(task);
+            //test(projects);
 
             /*
             if (CrossConnectivity.Current.IsConnected)
@@ -122,7 +94,7 @@ namespace ProcessDashboard.Service_Access_Layer
                     .ExecuteAsync(async () => await getTaskDtoTask);
             }
             */
-            return task.projects;
+            return projects.projects;
         }
 
         /*
@@ -138,15 +110,7 @@ namespace ProcessDashboard.Service_Access_Layer
 
             if (values == null || values.Count == 0)
             {
-                System.Diagnostics.Debug.WriteLine("TaskModel Service : " + " Nothing in DB");
-                // DB does not have any values. Get the values from the server.
-                output = await GetTasksListRemote(priority, dataset,projectID);
-
-                // Map from project to project model
-                values = Mapper.GetInstance().toTaskModelList(output);
-                // Store in DB
-                _dbm.tw.insertMultipleRecords(values);
-
+                return null;
             }
             else
             {
@@ -183,13 +147,8 @@ namespace ProcessDashboard.Service_Access_Layer
             }
 
             task = await getTaskDtoTask;
-            System.Diagnostics.Debug.WriteLine("Task Service : " + "Got the content I guess");
-
-            // Convert to model and store in DB
-
-            List<TaskModel> output = Mapper.GetInstance().toTaskModelList(task.projectTasks);
-            _dbm.tw.insertMultipleRecords(output);
-
+            System.Diagnostics.Debug.WriteLine("Task Service : " + "Got the content. STATUS :"+task.stat);
+            System.Diagnostics.Debug.WriteLine("Task Service : " + "Is null : " + (task.projectTasks==null));
             /*
             if (CrossConnectivity.Current.IsConnected)
             {

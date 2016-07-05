@@ -33,5 +33,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Service\Interface\IPDashApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\Interface\IPDashServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\PDashServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SyncLogic\Controller.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Exception\" />
   </ItemGroup>
 </Project>

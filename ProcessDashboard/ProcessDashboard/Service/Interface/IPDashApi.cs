@@ -18,7 +18,7 @@ namespace ProcessDashboard.Service.Interface
 
         // Get list of tasks
         // https://pdes.tuma-solutions.com/api/v1/datasets/mock/projects/iokdum2d/tasks/
-        [Get("/datasets/{dataset}/projects/{projectID}/tasks")]
+        [Get("/datasets/{dataset}/projects/{projectID}/tasks/")]
         Task<TaskListRoot> GetTasksList(string dataset, string projectID);
 
         // Get details about a task
