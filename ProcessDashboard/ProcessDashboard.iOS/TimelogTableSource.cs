@@ -1,0 +1,207 @@
+﻿using System;
+using UIKit;
+using System.Collections.Generic;
+using Foundation;
+using System.IO;
+using System.Linq;
+using CoreGraphics;
+using System.Drawing;
+
+
+namespace ProcessDashboard.iOS
+{
+	public class TimelogTableSource : UITableViewSource
+	{
+		protected string cellIdentifier = "TableCell";
+
+		Dictionary<string, List<TimelogTableItem>> indexedTableItems;
+		string[] keys;
+		TimeLogPageViewController owner;
+
+		public TimelogTableSource(List<TimelogTableItem> items, TimeLogPageViewController owner)
+		{
+			this.owner = owner;
+
+			indexedTableItems = new Dictionary<string, List<TimelogTableItem>>();
+			foreach (var t in items)
+			{
+				if (indexedTableItems.ContainsKey(t.SubHeading))
+				{
+					indexedTableItems[t.SubHeading].Add(t);
+				}
+				else {
+					indexedTableItems.Add(t.SubHeading, new List<TimelogTableItem>() { t });
+				}
+			}
+			keys = indexedTableItems.Keys.ToArray();
+		}
+
+
+		/// <summary>
+		/// Called by the TableView to determine how many sections(groups) there are.
+		/// </summary>
+		public override nint NumberOfSections(UITableView tableView)
+		{
+			return keys.Length;
+		}
+
+		/// <summary>
+		/// Called by the TableView to determine how many cells to create for that particular section.
+		/// </summary>
+		public override nint RowsInSection(UITableView tableview, nint section)
+		{
+			return indexedTableItems[keys[section]].Count;
+		}
+
+
+		/// <summary>
+		/// The string to show in the section header
+		/// </summary>
+		public override string TitleForHeader(UITableView tableView, nint section)
+		{
+			return keys[section];
+		}
+
+		//public override nfloat GetHeightForHeader(UITableView tableView, nint section)
+		//{
+		//	return 30.0f;
+		//}
+
+		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
+		{
+
+			// Display view
+			owner.PerformSegue("detailSegue", indexPath);
+
+			tableView.DeselectRow(indexPath, true);
+		}
+
+		/// <summary>
+		/// Called by the TableView to get the actual UITableViewCell to render for the particular section and row
+		/// </summary>
+		public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
+		{
+
+
+			CustomTimeLogCell cell = tableView.DequeueReusableCell(cellIdentifier) as CustomTimeLogCell;
+			TimelogTableItem item = indexedTableItems[keys[indexPath.Section]][indexPath.Row];
+
+			// if there are no cells to reuse, create a new one
+			if (cell == null)
+			{
+				cell = new CustomTimeLogCell ((NSString)cellIdentifier);
+			}
+
+				cell.UpdateCell(item.Heading
+								, item.StartTime
+								, item.Delta);
+			
+
+			return cell;
+		}
+
+		public TimelogTableItem GetItem(NSIndexPath indexPath)
+		{
+			return indexedTableItems[keys[indexPath.Section]][indexPath.Row];
+		}
+
+		#region -= editing methods =-
+
+		public override void CommitEditingStyle(UITableView tableView, UITableViewCellEditingStyle editingStyle, NSIndexPath indexPath)
+		{
+			switch (editingStyle)
+			{
+				case UITableViewCellEditingStyle.Delete:
+					// remove the item from the underlying data source
+					//TimelogTableItem item = indexedTableItems[keys[indexPath.Section]][indexPath.Row];/
+					indexedTableItems[keys[indexPath.Section]].RemoveAt(indexPath.Row);
+					// delete the row from the table
+					tableView.DeleteRows(new NSIndexPath[] { indexPath }, UITableViewRowAnimation.Fade);
+					break;
+
+				//case UITableViewCellEditingStyle.Insert:
+				//	//---- create a new item and add it to our underlying data
+				//	tableItems.Insert(indexPath.Row, new TableItem("(inserted)"));
+				//	//---- insert a new row in the table
+				//	tableView.InsertRows(new NSIndexPath[] { indexPath }, UITableViewRowAnimation.Fade);
+				//	break;
+
+				case UITableViewCellEditingStyle.None:
+					Console.WriteLine("CommitEditingStyle:None called");
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Called by the table view to determine whether or not the row is editable
+		/// </summary>
+		public override bool CanEditRow(UITableView tableView, NSIndexPath indexPath)
+		{
+			return true; // return false if you wish to disable editing for a specific indexPath or for all rows
+		}
+
+		/// <summary>
+		/// Called by the table view to determine whether or not the row is moveable
+		/// </summary>
+		public override bool CanMoveRow(UITableView tableView, NSIndexPath indexPath)
+		{
+			return false;
+		}
+
+		/// <summary>
+		/// Custom text for delete button
+		/// </summary>
+		public override string TitleForDeleteConfirmation(UITableView tableView, NSIndexPath indexPath)
+		{
+			//return "Trash (" + indexedTableItems[keys[indexPath.Section]][indexPath.Row].SubHeading + ")";
+			return "Delete";
+		}
+
+		/// <summary>
+		/// Called by the table view to determine whether the editing control should be an insert
+		/// or a delete.
+		/// </summary>
+		public override UITableViewCellEditingStyle EditingStyleForRow(UITableView tableView, NSIndexPath indexPath)
+		{
+			
+			return UITableViewCellEditingStyle.Delete;
+		}
+
+		/// <summary>
+		/// called by the table view when a row is moved.
+		/// </summary>
+		public override void MoveRow(UITableView tableView, NSIndexPath sourceIndexPath, NSIndexPath destinationIndexPath)
+		{
+			//---- get a reference to the item
+			var item = indexedTableItems[keys[sourceIndexPath.Section]][sourceIndexPath.Row];
+			var deleteAt = sourceIndexPath.Row;
+			var insertAt = destinationIndexPath.Row;
+
+			//---- if we're inserting it before, the one to delete will have a higher index 
+			if (destinationIndexPath.Row < sourceIndexPath.Row)
+			{
+				//---- add one to where we delete, because we're increasing the index by inserting
+				deleteAt += 1;
+			}
+			else {
+				//---- add one to where we insert, because we haven't deleted the original yet
+				insertAt += 1;
+			}
+
+			//---- copy the item to the new location
+			indexedTableItems[keys[destinationIndexPath.Section]].Insert(insertAt, item);
+
+			//---- remove from the old
+			indexedTableItems[keys[sourceIndexPath.Section]].RemoveAt(deleteAt);
+		}
+
+
+		#endregion
+
+
+	}
+}
+
+	//}
+//}
+

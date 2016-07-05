@@ -3,9 +3,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Java.Util;
 using SQLite;
 using ProcessDashboard.Model;
+using System.Collections;
 
 // DB Wrapper for Timelog
 // Wrapping up the services
@@ -100,36 +100,36 @@ namespace ProcessDashboard.DBWrapper
 
                 if (ht.ContainsKey("TaskName"))
                 {
-                    item.TaskName = ht.Get("TaskName").ToString();
+                    item.TaskName = ht["TaskName"].ToString();
                 }
                 if (ht.ContainsKey("ProjectId"))
                 {
-                    item.ProjectId = ht.Get("ProjectId").ToString();
+                    item.ProjectId = ht["ProjectId"].ToString();
                 }
                 if (ht.ContainsKey("EstimatedTime"))
                 {
-                    item.EstimatedTime = double.Parse(ht.Get("EstimatedTime").ToString());
+                    item.EstimatedTime = double.Parse(ht["EstimatedTime"].ToString());
                 }
                 if (ht.ContainsKey("ActualTime"))
                 {
-                    item.ActualTime = double.Parse(ht.Get("ActualTime").ToString());
+                    item.ActualTime = double.Parse(ht["ActualTime"].ToString());
                 }
                 if (ht.ContainsKey("TaskNote"))
                 {
-                    item.TaskNote = (ht.Get("TaskNote").ToString());
+                    item.TaskNote = (ht["TaskNote"].ToString());
                 }
                 if (ht.ContainsKey("ProjectOrdinal"))
                 {
-                    item.ProjectOrdinal = int.Parse(ht.Get("ProjectOrdinal").ToString());
+                    item.ProjectOrdinal = int.Parse(ht["ProjectOrdinal"].ToString());
                 }
                 if (ht.ContainsKey("RecentOrdinal"))
                 {
-                    item.ProjectOrdinal = int.Parse(ht.Get("RecentOrdinal").ToString());
+                    item.ProjectOrdinal = int.Parse(ht["RecentOrdinal"].ToString());
                 }
                 if (ht.ContainsKey("CompletionDate"))
                 {
                     //TODO: Add a new entry to EditToTaskCompletionDate
-                    item.CompletionDate = DateTime.Parse(ht.Get("CompletionDate").ToString());
+                    item.CompletionDate = DateTime.Parse(ht["CompletionDate"].ToString());
                 }
                 db.Update(item);
                 return true;
