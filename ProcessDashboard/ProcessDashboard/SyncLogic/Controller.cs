@@ -40,12 +40,14 @@ namespace ProcessDashboard.SyncLogic
 
         public async Task<List<Project>>  GetProjects(string dataset)
         {
-            var localprojects = await _pDashServices
-                                            .GetProjectsListLocal(Priority.UserInitiated, dataset)
-                                            .ConfigureAwait(false);
+            //var localprojects = await _pDashServices.GetProjectsListLocal(Priority.UserInitiated, dataset).ConfigureAwait(false);
 
-            var remoteProjects = _pDashServices.GetProjectsListRemote(Priority.Background, dataset)
+            var remoteProjects =  await _pDashServices.GetProjectsListRemote(Priority.UserInitiated, dataset)
                 .ConfigureAwait(false);
+
+            return remoteProjects;
+
+            /*
             // TODO: Bind the values returned by remoteProjects or use a mechanism that executes after remoteProjects is obtained.
 
             List<Project> entries;
@@ -70,16 +72,19 @@ namespace ProcessDashboard.SyncLogic
 
             // Do any UI Operations
             return entries;
+            */
         }
 
         public async Task<List<DTO.Task>> GetTasks(string dataset,string projectID)
         {
-            var localTasks = await _pDashServices
-                                            .GetTasksListLocal(Priority.UserInitiated, dataset,projectID)
-                                            .ConfigureAwait(false);
+            //var localTasks = await _pDashServices
+              //                              .GetTasksListLocal(Priority.UserInitiated, dataset,projectID)
+                //                            .ConfigureAwait(false);
 
-            var remoteTasks = _pDashServices.GetTasksListRemote(Priority.Background, dataset,projectID)
+            var remoteTasks = await _pDashServices.GetTasksListRemote(Priority.Background, dataset, projectID)
                 .ConfigureAwait(false);
+            return remoteTasks;
+            /*
             // TODO: Bind the values returned by remoteProjects or use a mechanism that executes after remoteProjects is obtained.
 
             List<DTO.Task> entries;
@@ -108,6 +113,7 @@ namespace ProcessDashboard.SyncLogic
 
             // Do any UI Operations
             return entries;
+            */
         }
 
 
