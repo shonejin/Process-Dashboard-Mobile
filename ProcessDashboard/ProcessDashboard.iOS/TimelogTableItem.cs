@@ -13,6 +13,10 @@ namespace ProcessDashboard.iOS
 
 		public string Delta { get; set; }
 
+		public string Int { get; set; }
+
+		public string Comment { get; set; }
+
 		public UITableViewCellStyle CellStyle
 		{
 			get { return cellStyle; }
