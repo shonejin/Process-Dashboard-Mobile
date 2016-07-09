@@ -109,9 +109,6 @@
     <Reference Include="ModernHttpClient">
       <HintPath>..\..\packages\modernhttpclient.2.4.2\lib\Xamarin.iOS10\ModernHttpClient.dll</HintPath>
     </Reference>
-    <Reference Include="TimesSquare.iOS">
-      <HintPath>..\..\Components\timessquare-1.0.5\lib\ios-unified\TimesSquare.iOS.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Contents.json">
@@ -174,12 +171,15 @@
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
     <InterfaceDefinition Include="ProjectsStoryboard.storyboard" />
+    <InterfaceDefinition Include="Main.storyboard" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
     <None Include="packages.config" />
+    <None Include="SharpMobileCode.ModalPicker\.DS_Store" />
+    <None Include="SharpMobileCode.ModalPicker\SharpMobileCode.ModalPicker.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
@@ -189,18 +189,10 @@
     <Compile Include="LoginPageViewController.cs" />
     <Compile Include="LoginPageViewController.designer.cs" />
     <Compile Include="HomePageViewController.cs" />
-    <Compile Include="TimeLogPageViewController.cs" />
-    <Compile Include="TimelogTableSource.cs" />
-    <Compile Include="TimelogDetailViewController.cs" />
     <Compile Include="CustomTimeLogCell.cs" />
-    <Compile Include="TimelogTableItem.cs" />
     <Compile Include="TaskTimeLogViewController.cs" />
-    <Compile Include="TimeLogPageViewController.designer.cs" />
     <Compile Include="TaskTableSource.cs" />
-    <Compile Include="CalendarViewController_.cs" />
-    <Compile Include="TSQTACalendarRowCell.cs" />
     <Compile Include="CalendarViewController_.designer.cs" />
-    <Compile Include="CalendarViewController.cs" />
     <Compile Include="HomePageViewController.designer.cs" />
     <Compile Include="ProjectsTableSource.cs" />
     <Compile Include="ProjectsTableViewController.cs" />
@@ -219,13 +211,20 @@
     <Compile Include="TasksTableViewController.designer.cs" />
     <Compile Include="TasksViewController.cs" />
     <Compile Include="TaskTimeLogViewController.designer.cs" />
-    <Compile Include="TimelogDetailViewController.designer.cs" />
-    <Compile Include="TimelogTableItemGroup.cs" />
-    <Compile Include="CustomPickerModel.cs" />
-    <Compile Include="ModalPickerAnimatedDismissed.cs" />
-    <Compile Include="ModalPickerAnimatedTransitioning.cs" />
-    <Compile Include="ModalPickerTransitionDelegate.cs" />
-    <Compile Include="ModalPickerViewController.cs" />
+    <Compile Include="TimeLogs\TimelogTableItem.cs" />
+    <Compile Include="SharpMobileCode.ModalPicker\CustomPickerModel.cs" />
+    <Compile Include="SharpMobileCode.ModalPicker\ModalPickerAnimatedDismissed.cs" />
+    <Compile Include="SharpMobileCode.ModalPicker\ModalPickerAnimatedTransitioning.cs" />
+    <Compile Include="SharpMobileCode.ModalPicker\ModalPickerTransitionDelegate.cs" />
+    <Compile Include="SharpMobileCode.ModalPicker\ModalPickerViewController.cs" />
+    <Compile Include="SharpMobileCode.ModalPicker\Properties\AssemblyInfo.cs" />
+    <Compile Include="TimeLogs\TimelogDetailViewController.cs" />
+    <Compile Include="TimeLogs\TimelogDetailViewController.designer.cs" />
+    <Compile Include="TimeLogs\TimeLogPageViewController.cs" />
+    <Compile Include="TimeLogs\TimeLogPageViewController.designer.cs" />
+    <Compile Include="TimeLogs\TimelogTableItemGroup.cs" />
+    <Compile Include="TimeLogs\TimelogTableSource.cs" />
+    <Compile Include="TaskTimeLogTableSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Checkbox0.png" />
@@ -234,14 +233,7 @@
     <BundleResource Include="stop.png" />
   </ItemGroup>
   <ItemGroup>
-    <XamarinComponentReference Include="timessquare">
-      <Version>1.0.5</Version>
-      <Visible>False</Visible>
-    </XamarinComponentReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\New Folder\" />
-    <Folder Include="Resources\New Folder1\" />
+    <Folder Include="TimeLogs\" />
   </ItemGroup>
   <Import Project="..\ProcessDashboard\ProcessDashboard.projitems" Label="Shared" Condition="Exists('..\ProcessDashboard\ProcessDashboard.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

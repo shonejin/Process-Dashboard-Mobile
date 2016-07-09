@@ -12,6 +12,7 @@ namespace ProcessDashboard.iOS
 		TimelogTableItem currentTask { get; set; }
 		CustomTimeLogCell currentCell { get; set; }
 		public TimeLogPageViewController Delegate { get; set; } // will be used to Save, Delete later
+		public TaskTimeLogViewController DelegateforTasktimelog { get; set; } // will be used to Save, Delete later
 		UILabel TaskNameLabel, StartTimeLabel, DeltaLabel, IntLabel, CommentLabel;
 		UIButton StartTimeText, DeltaText, IntText;
 		UIButton CommentText;
@@ -117,7 +118,7 @@ namespace ProcessDashboard.iOS
 
 			DeltaText = new UIButton(UIButtonType.RoundedRect);
 
-			DeltaText.Frame = new CoreGraphics.CGRect(10, 290, 400, 20);
+			DeltaText.Frame = new CoreGraphics.CGRect(10, 290, 300, 20);
 
 			DeltaText.SetTitle(currentTask.Delta, UIControlState.Normal);
 
@@ -226,6 +227,11 @@ namespace ProcessDashboard.iOS
 			currentTask = task;
 		}
 
+		public void SetTaskforTaskTimelog(TaskTimeLogViewController d, TimelogTableItem task)
+		{
+			DelegateforTasktimelog = d;
+			currentTask = task;
+		}
 
 		public void DeltaButtonClicked(object sender, UIButtonEventArgs e)
 		{

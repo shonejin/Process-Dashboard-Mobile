@@ -20,6 +20,10 @@ namespace ProcessDashboard.iOS
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIView LoginPageUIView { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UITextField PasswordTextView { get; set; }
 
         [Outlet]
@@ -39,6 +43,11 @@ namespace ProcessDashboard.iOS
             if (LoginButton != null) {
                 LoginButton.Dispose ();
                 LoginButton = null;
+            }
+
+            if (LoginPageUIView != null) {
+                LoginPageUIView.Dispose ();
+                LoginPageUIView = null;
             }
 
             if (PasswordTextView != null) {

@@ -7,7 +7,10 @@ namespace ProcessDashboard.iOS
 {
     public partial class TaskTimeLogViewController : UIViewController
     {
-        public TaskTimeLogViewController (IntPtr handle) : base (handle)
+		UILabel ProjectNameLabel, TaskNameLabel;
+		string[] tableItems;
+
+		public TaskTimeLogViewController (IntPtr handle) : base (handle)
         {
         }
 
@@ -15,7 +18,7 @@ namespace ProcessDashboard.iOS
 		{
 			base.ViewDidLoad();
 
-			var ProjectNameLabel = new UILabel(new CGRect(30, 100, 300, 40))
+			ProjectNameLabel = new UILabel(new CGRect(30, 100, 300, 40))
 			{
 				Text = "/ Project / Mobile App I1",
 				Font = UIFont.SystemFontOfSize(16),
@@ -26,7 +29,7 @@ namespace ProcessDashboard.iOS
 				LineBreakMode = UILineBreakMode.WordWrap,
 			};
 
-			var TaskNameLabel = new UILabel(new CGRect(30, 180, 300, 60))
+			TaskNameLabel = new UILabel(new CGRect(30, 180, 300, 60))
 			{
 				Text = "/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Team Walkthrough",
 				Font = UIFont.SystemFontOfSize(13),
@@ -38,7 +41,7 @@ namespace ProcessDashboard.iOS
 			};
 
 
-			string[] tableItems = new string[] { "2016-06-02 11:00 AM",
+			tableItems = new string[] { "2016-06-02 11:00 AM",
 				"2016-06-02 2:10 PM",
 				"2016-06-02 3:30 PM",
 				"2016-06-03 11:00 AM",
@@ -48,10 +51,9 @@ namespace ProcessDashboard.iOS
 				"2016-06-07 11:00 PM" };
 
 			TaskTimeLogTable = new UITableView(new CGRect(0, 250, View.Bounds.Width, View.Bounds.Height));
-			TaskTimeLogTable.Source = new ProjectsTableSource(tableItems, this);
+			TaskTimeLogTable.Source = new TaskTimeLogTableSource(tableItems, this);
 
 			Add(TaskTimeLogTable);
-
 
 			this.Add(ProjectNameLabel);
 			this.Add(TaskNameLabel);
@@ -63,12 +65,25 @@ namespace ProcessDashboard.iOS
 		{
 			base.PrepareForSegue(segue, sender);
 
-			// set the View Controller that’s powering the screen we’re
-			// transitioning to
-			if (segue.Identifier == "home2taskDetailsSegue")
+			if (segue.Identifier == "eachTimeLogSegue")
 			{
-				var detailContoller = segue.DestinationViewController as TaskDetailsViewController;
-				var indexPath = (NSIndexPath)sender;
+				var navctlr = segue.DestinationViewController as TimelogDetailViewController;
+				if (navctlr != null)
+				{
+					var source = TaskTimeLogTable.Source as TaskTimeLogTableSource;
+					var rowPath = TaskTimeLogTable.IndexPathForSelectedRow;
+					var item = tableItems[rowPath.Row];
+					TimelogTableItem t= new TimelogTableItem();
+					String[] strs = item.Split(' ');
+
+					t.Heading = TaskNameLabel.Text;
+					t.SubHeading = strs[0];
+					t.StartTime = strs[1] + " " + strs[2];
+					t.Delta = "00:00";
+					t.Int = "00:00";
+					t.Comment = "test!";
+					navctlr.SetTaskforTaskTimelog(this, t); // to be defined on the TaskDetailViewController
+				}
 			}
 
 		}
