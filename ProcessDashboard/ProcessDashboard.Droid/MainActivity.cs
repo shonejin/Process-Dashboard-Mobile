@@ -26,8 +26,8 @@ namespace ProcessDashboard.Droid
             var apiService = new ApiTypes(null);
             var service = new PDashServices(apiService);
             Controller c = new Controller(service);
-           // c.testProject();
-            c.testTasks();
+            c.testProject();
+           // c.testTasks();
 
 		}
 	}

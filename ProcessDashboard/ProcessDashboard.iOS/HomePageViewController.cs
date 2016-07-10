@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using SharpMobileCode.ModalPicker;
 
 
+
 namespace ProcessDashboard.iOS
 {
     public partial class HomePageViewController : UIViewController
@@ -36,6 +37,7 @@ namespace ProcessDashboard.iOS
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
+
 
 			ProjectNameLabel = new UILabel(new CGRect(10, 80, View.Bounds.Width-20, 40))
 			{
