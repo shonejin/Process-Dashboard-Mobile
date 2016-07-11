@@ -119,6 +119,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fragments\GlobalTimeLog.cs" />
+    <Compile Include="Fragments\GlobalTimeLogDetail.cs" />
+    <Compile Include="Fragments\Home.cs" />
+    <Compile Include="Fragments\Interfaces\ListOfProjectsInterface.cs" />
+    <Compile Include="Fragments\ListOfProjects.cs" />
+    <Compile Include="Fragments\ListProjectTasks.cs" />
+    <Compile Include="Fragments\Login.cs" />
+    <Compile Include="Fragments\Settings.cs" />
+    <Compile Include="Fragments\TaskDetails.cs" />
+    <Compile Include="Fragments\TaskTimeLogDetail.cs" />
+    <Compile Include="Fragments\TestFragment.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -129,8 +140,23 @@
     <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Resources\AboutResources.txt" />
-    <None Include="Properties\AndroidManifest.xml" />
+    <None Include="Properties\AndroidManifest.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Assets\AboutAssets.txt" />
+    <AndroidResource Include="Resources\layout\GlobalTimeLog.axml" />
+    <AndroidResource Include="Resources\layout\GlobalTimeLogDetail.axml" />
+    <AndroidResource Include="Resources\layout\Home.axml" />
+    <AndroidResource Include="Resources\layout\listGroup.axml" />
+    <AndroidResource Include="Resources\layout\ListOfProjects.axml" />
+    <AndroidResource Include="Resources\layout\ListProjectTasks.axml" />
+    <AndroidResource Include="Resources\layout\Login.axml" />
+    <AndroidResource Include="Resources\layout\Settings.axml" />
+    <AndroidResource Include="Resources\layout\TaskDetail.axml" />
+    <AndroidResource Include="Resources\layout\TaskTimeLogDetail.axml" />
+    <AndroidResource Include="Resources\layout\projectlistitem.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\Main.axml" />
@@ -178,6 +204,15 @@
       <Visible>False</Visible>
       <Version>23.1.1.1</Version>
     </XamarinComponentReference>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-hdpi\Pause.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-hdpi\Play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\NewFolder1\" />
   </ItemGroup>
   <Import Project="..\ProcessDashboard\ProcessDashboard.projitems" Label="Shared" Condition="Exists('..\ProcessDashboard\ProcessDashboard.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />

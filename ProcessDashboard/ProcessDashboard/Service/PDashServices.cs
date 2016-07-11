@@ -11,6 +11,7 @@ using ProcessDashboard.DBWrapper;
 using ProcessDashboard.DTO;
 using ProcessDashboard.Model;
 using ProcessDashboard.Service.Interface;
+using Refit;
 
 namespace ProcessDashboard.Service_Access_Layer
 {
@@ -51,8 +52,8 @@ namespace ProcessDashboard.Service_Access_Layer
         {
             System.Diagnostics.Debug.WriteLine("ProjectModel Service : " + " Going for remote task");
 
-            ListOfProjectsRoot projects = null;
-            Task<ListOfProjectsRoot> getTaskDtoTask;
+            
+            Task<ProjectsListRoot> getTaskDtoTask;
             System.Diagnostics.Debug.WriteLine("ProjectModel Service : " + " Setting priority");
             switch (priority)
             {
@@ -70,17 +71,24 @@ namespace ProcessDashboard.Service_Access_Layer
                     break;
             }
 
-            projects = await getTaskDtoTask;
+            ProjectsListRoot projects = await getTaskDtoTask;
+
+            //var gitHubApi = RestService.For<IPDashApi>("https://pdes.tuma-solutions.com/api/v1/");
+            //ProjectsListRoot projects = await gitHubApi.GetProjectsList("mock");
+
             System.Diagnostics.Debug.WriteLine("ProjectModel Service : " + "Got the content I guess");
+            System.Diagnostics.Debug.WriteLine("ProjectModel Service : " + projects.stat);
+            System.Diagnostics.Debug.WriteLine("ProjectModel Service : " + (projects.projects.Count));
 
             if (!projects.stat.Equals("ok") || projects.projects==null)
             {
+                System.Diagnostics.Debug.WriteLine("ProjectModel Service : " + "Null here");
                 return null;
             }
 
             // Convert to model and store in DB
-            List<ProjectModel> output = Mapper.GetInstance().toProjectModelList(projects.projects);
-            _dbm.pw.insertMultipleRecords(output);
+            //List<ProjectModel> output = Mapper.GetInstance().toProjectModelList(projects.projects);
+            //_dbm.pw.insertMultipleRecords(output);
 
             //test(projects);
 
@@ -328,7 +336,7 @@ namespace ProcessDashboard.Service_Access_Layer
             {
                 System.Diagnostics.Debug.WriteLine("TaskModel Service : " + " Nothing in DB");
                 // DB does not have any values. Get the values from the server.
-                output = await GetTimeLogsRemote(priority, dataset);
+            //    output = await GetTimeLogsRemote(priority, dataset);
 
                 // Map from project to project model
                 values = Mapper.GetInstance().toTimeLogEntryModelList(output);
@@ -349,8 +357,7 @@ namespace ProcessDashboard.Service_Access_Layer
 
         }
 
-      
-        public async Task<List<TimeLogEntry>> GetTimeLogsRemote(Priority priority, string dataset)
+        public async Task<List<TimeLogEntry>> GetTimeLogsRemote(Priority priority, string dataset, int maxResults, string startDateFrom, string startDateTo, string taskId, string projectId)
         {
             System.Diagnostics.Debug.WriteLine("Task Service : " + " Going for remote task");
 
@@ -360,16 +367,16 @@ namespace ProcessDashboard.Service_Access_Layer
             switch (priority)
             {
                 case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetTimeLogs(dataset);
+                    getTaskDtoTask = _apiService.Background.GetTimeLogs(dataset,maxResults,  startDateFrom,  startDateTo,  taskId,  projectId);
                     break;
                 case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLogs(dataset);
+                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId);
                     break;
                 case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetTimeLogs(dataset);
+                    getTaskDtoTask = _apiService.Speculative.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId);
                     break;
                 default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLogs(dataset);
+                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId);
                     break;
             }
 
@@ -378,8 +385,8 @@ namespace ProcessDashboard.Service_Access_Layer
 
             // Convert to model and store in DB
 
-            List<TimeLogEntryModel> output = Mapper.GetInstance().toTimeLogEntryModelList(task.timeLogEntries);
-            _dbm.tlw.insertMultipleRecords(output);
+            //List<TimeLogEntryModel> output = Mapper.GetInstance().toTimeLogEntryModelList(task.timeLogEntries);
+            //_dbm.tlw.insertMultipleRecords(output);
 
             /*
             if (CrossConnectivity.Current.IsConnected)
@@ -393,6 +400,8 @@ namespace ProcessDashboard.Service_Access_Layer
             */
             return task.timeLogEntries;
         }
+
+
     }
 
 
