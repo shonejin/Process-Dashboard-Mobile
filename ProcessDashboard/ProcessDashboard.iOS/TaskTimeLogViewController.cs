@@ -2,6 +2,11 @@ using Foundation;
 using System;
 using UIKit;
 using CoreGraphics;
+using ProcessDashboard.Service;
+using ProcessDashboard.Service_Access_Layer;
+using ProcessDashboard.SyncLogic;
+using ProcessDashboard.DTO;
+using System.Collections.Generic;
 
 namespace ProcessDashboard.iOS
 {
@@ -10,9 +15,58 @@ namespace ProcessDashboard.iOS
 		UILabel ProjectNameLabel, TaskNameLabel;
 		string[] tableItems;
 
+		// This ID is used to fetch the time logs. It is set by the previous view controller
+		public string taskId;
+
 		public TaskTimeLogViewController (IntPtr handle) : base (handle)
         {
         }
+
+		public override void ViewWillAppear(bool animated)
+		{
+			base.ViewWillAppear(animated);
+			refreshData();
+		}
+
+		private void refreshData()
+		{
+			getTimeLogsOfTask();
+
+			TaskTimeLogTable.Source = new TaskTimeLogTableSource(tableItems, this);
+			TaskTimeLogTable.ReloadData();
+		}
+
+		public async void getTimeLogsOfTask()
+		{
+			var apiService = new ApiTypes(null);
+			var service = new PDashServices(apiService);
+			Controller c = new Controller(service);
+
+			throw new NotImplementedException();
+			/*
+			List<TimeLogEntry> = 
+
+			try
+			{
+				System.Diagnostics.Debug.WriteLine("** GET TASKS **");
+				System.Diagnostics.Debug.WriteLine("Length is " + tasksList.Count);
+
+				//test = new String[tasksList.Count];
+				//int i = 0;
+				//System.Diagnostics.Debug.WriteLine("haha:" + tableItems[0].GetType());
+
+				foreach (var task in tasksList.Select(x => x.fullName))
+				{
+					System.Diagnostics.Debug.WriteLine(task);
+				}
+			}
+			catch (Exception e)
+			{
+				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+			}
+			*/
+		}
+
 
 		public override void ViewDidLoad()
 		{

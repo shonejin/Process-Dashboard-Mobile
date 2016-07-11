@@ -13,7 +13,7 @@ namespace ProcessDashboard.iOS
 		}
 		List<Task> tableItems;
 		protected string cellIdentifier = "taskCell";
-		public string selectedTaskId;
+		public Task selectedTask;
 		UIViewController owner;
 
 		public TasksTableSource(List<Task> items, UIViewController owner)
@@ -36,7 +36,7 @@ namespace ProcessDashboard.iOS
 		/// </summary>
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 		{
-			selectedTaskId = tableItems[indexPath.Row].id;
+			selectedTask = tableItems[indexPath.Row];
 			tableView.DeselectRow(indexPath, true);
 			owner.PerformSegue("task2TaskDetail", owner);
 			/*

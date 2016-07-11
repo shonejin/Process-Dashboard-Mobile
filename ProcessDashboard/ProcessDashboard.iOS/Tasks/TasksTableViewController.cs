@@ -37,7 +37,7 @@ namespace ProcessDashboard.iOS
 			if (segue.Identifier.Equals("task2TaskDetail"))
 			{
 				TaskDetailsViewController controller = (TaskDetailsViewController)segue.DestinationViewController;
-				controller.taskId = ((TasksTableSource)tasksTableView.Source).selectedTaskId;
+				controller.task = ((TasksTableSource)tasksTableView.Source).selectedTask;
 			}
 		}
 
