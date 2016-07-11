@@ -25,15 +25,14 @@ namespace ProcessDashboard.iOS
         public ProjectsTableViewController (IntPtr handle) : base (handle)
         {
         }
-		public override void ViewDidLoad()
+		public override void ViewWillAppear(bool animated)
 		{
 			base.ViewDidLoad();
 			getDataOfProject();
 
-			tableItems = new string[] { "Mobile Process Dashboard", "Enterprise Server", "Linux Kernel", "Windows X1 Professional", "Siri for macOS" };
+			// tableItems = new string[] { "Mobile Process Dashboard", "Enterprise Server", "Linux Kernel", "Windows X1 Professional", "Siri for macOS" };
 			projectsTableView.Source = new ProjectsTableSource(tableItems, this);
 			projectsTableView.ReloadData();
-
 		}
 
 		public async void getDataOfProject()
@@ -55,14 +54,13 @@ namespace ProcessDashboard.iOS
 					System.Diagnostics.Debug.WriteLine(proj);
 					tableItems[i++] = proj;
 				}
+				projectsTableView.ReloadData();
+				System.Diagnostics.Debug.WriteLine("Projects Tab: data reloaded");
 			}
 			catch (Exception e)
 			{
 				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
 			}
-
-
 		}
-	
     }
 }
