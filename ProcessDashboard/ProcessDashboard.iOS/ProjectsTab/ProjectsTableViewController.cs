@@ -20,18 +20,33 @@ namespace ProcessDashboard.iOS
 {
     public partial class ProjectsTableViewController : UITableViewController
     {
-		string[] tableItems;
+		List<Project> projectsCache;
 
         public ProjectsTableViewController (IntPtr handle) : base (handle)
         {
         }
+
 		public override void ViewWillAppear(bool animated)
 		{
-			base.ViewDidLoad();
+			base.ViewWillAppear(animated);
+			refreshData();
+		}
+
+		public override void PrepareForSegue(UIKit.UIStoryboardSegue segue, Foundation.NSObject sender)
+		{
+			base.PrepareForSegue(segue, sender);
+			if (segue.Identifier.Equals("project2Tasks"))
+			{
+				TasksTableViewController controller = (TasksTableViewController)segue.DestinationViewController;
+				controller.projectId = ((ProjectsTableSource)projectsTableView.Source).selectedProjectId;
+			}
+		}
+
+		public void refreshData()
+		{
 			getDataOfProject();
 
-			// tableItems = new string[] { "Mobile Process Dashboard", "Enterprise Server", "Linux Kernel", "Windows X1 Professional", "Siri for macOS" };
-			projectsTableView.Source = new ProjectsTableSource(tableItems, this);
+			projectsTableView.Source = new ProjectsTableSource(projectsCache, this);
 			projectsTableView.ReloadData();
 		}
 
@@ -39,20 +54,24 @@ namespace ProcessDashboard.iOS
 		{
 			var apiService = new ApiTypes(null);
 			var service = new PDashServices(apiService);
+
+			// TODO: make controller a global singelton for better performance
 			Controller c = new Controller(service);
+
+			// TODO: should this line be wrapped in try-catch?
 			List<Project> projectsList = await c.GetProjects("mock");
+
+			// TODO: add exception handling logic
+			projectsCache = projectsList;
 
 			try
 			{
 				System.Diagnostics.Debug.WriteLine("** GET PROJECTS **");
 				System.Diagnostics.Debug.WriteLine("Length is " + projectsList.Count);
 
-				tableItems = new string[projectsList.Count];
-				int i = 0;
 				foreach (var proj in projectsList.Select(x => x.name))
 				{
 					System.Diagnostics.Debug.WriteLine(proj);
-					tableItems[i++] = proj;
 				}
 				projectsTableView.ReloadData();
 				System.Diagnostics.Debug.WriteLine("Projects Tab: data reloaded");

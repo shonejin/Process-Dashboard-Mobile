@@ -1,16 +1,20 @@
 ﻿using System;
 using Foundation;
 using UIKit;
+using ProcessDashboard.Model;
+using ProcessDashboard.DTO;
+using System.Collections.Generic;
 
 namespace ProcessDashboard.iOS
 {
 	public class ProjectsTableSource : UITableViewSource
 	{
-		protected string[] tableItems;
+		List<Project> tableItems;
+		public string selectedProjectId;
 		protected string cellIdentifier = "projectCell";
 		UIViewController owner;
 
-		public ProjectsTableSource(string[] items, UIViewController owner)
+		public ProjectsTableSource(List<Project> items, UIViewController owner)
 		{
 			tableItems = items;
 			this.owner = owner;
@@ -21,7 +25,7 @@ namespace ProcessDashboard.iOS
 		/// </summary>
 		public override nint RowsInSection(UITableView tableview, nint section)
 		{
-			return tableItems.Length;
+			return tableItems.Count;
 		}
 
 		/// <summary>
@@ -29,8 +33,11 @@ namespace ProcessDashboard.iOS
 		/// </summary>
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 		{
+			selectedProjectId = tableItems[indexPath.Row].id;
+			tableView.DeselectRow(indexPath, true);
+			owner.PerformSegue("project2Tasks", owner);
 			/*
-			UIAlertController okAlertController = UIAlertController.Create("Row Selected", tableItems[indexPath.Row], UIAlertControllerStyle.Alert);
+			UIAlertController okAlertController = UIAlertController.Create("Row Selected", tableItems[indexPath.Row].name + " id: " + tableItems[indexPath.Row].id, UIAlertControllerStyle.Alert);
 			okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
 			owner.PresentViewController(okAlertController, true, null);
 
@@ -49,8 +56,7 @@ namespace ProcessDashboard.iOS
 			if (cell == null)
 				cell = new UITableViewCell(UITableViewCellStyle.Default, cellIdentifier);
 
-			cell.TextLabel.Text = tableItems[indexPath.Row];
-
+			cell.TextLabel.Text = tableItems[indexPath.Row].name;
 			return cell;
 		}
 	}

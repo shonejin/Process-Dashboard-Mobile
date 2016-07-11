@@ -25,7 +25,7 @@ namespace ProcessDashboard.iOS
 				"Log out Current Account",};
 
 			SettingTable = new UITableView(new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height));
-			SettingTable.Source = new ProjectsTableSource(tableItems, this);
+			SettingTable.Source = null;//new ProjectsTableSource(tableItems, this);
 
 			Add(SettingTable);
 

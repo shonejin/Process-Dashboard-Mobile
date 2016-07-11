@@ -67,9 +67,7 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
-                                <connections>
-                                    <segue destination="51" kind="show" identifier="project2TasksSegue" id="251"/>
-                                </connections>
+                                <connections/>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -80,6 +78,7 @@
                     <navigationItem key="navigationItem" title="Projects" id="122"/>
                     <connections>
                         <outlet property="projectsTableView" destination="43" id="name-outlet-43"/>
+                        <segue id="1557" destination="51" kind="show" identifier="project2Tasks"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="48" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -111,9 +110,7 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
-                                <connections>
-                                    <segue destination="291" kind="show" id="498"/>
-                                </connections>
+                                <connections/>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -123,6 +120,7 @@
                     </tableView>
                     <connections>
                         <outlet property="tasksTableView" destination="52" id="name-outlet-52"/>
+                        <segue id="1599" destination="291" kind="show" identifier="task2TaskDetail"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="57" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -619,7 +617,6 @@
         <image name="stop.png" width="32" height="32"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="498"/>
         <segue reference="994"/>
     </inferredMetricsTieBreakers>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

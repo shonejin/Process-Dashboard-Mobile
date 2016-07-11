@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Foundation;
+using ProcessDashboard.DTO;
 using UIKit;
 
 namespace ProcessDashboard.iOS
@@ -9,11 +11,12 @@ namespace ProcessDashboard.iOS
 		public TasksTableSource()
 		{
 		}
-		protected string[] tableItems;
+		List<Task> tableItems;
 		protected string cellIdentifier = "taskCell";
+		public string selectedTaskId;
 		UIViewController owner;
 
-		public TasksTableSource(string[] items, UIViewController owner)
+		public TasksTableSource(List<Task> items, UIViewController owner)
 		{
 			tableItems = items;
 			this.owner = owner;
@@ -24,7 +27,8 @@ namespace ProcessDashboard.iOS
 		/// </summary>
 		public override nint RowsInSection(UITableView tableview, nint section)
 		{
-			return tableItems.Length;
+			// TODO: handling NULL
+			return tableItems == null ? 0 : tableItems.Count;
 		}
 
 		/// <summary>
@@ -32,6 +36,9 @@ namespace ProcessDashboard.iOS
 		/// </summary>
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 		{
+			selectedTaskId = tableItems[indexPath.Row].id;
+			tableView.DeselectRow(indexPath, true);
+			owner.PerformSegue("task2TaskDetail", owner);
 			/*
 			UIAlertController okAlertController = UIAlertController.Create("Row Selected", tableItems[indexPath.Row], UIAlertControllerStyle.Alert);
 			okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
@@ -52,7 +59,7 @@ namespace ProcessDashboard.iOS
 			if (cell == null)
 				cell = new UITableViewCell(UITableViewCellStyle.Default, cellIdentifier);
 
-			cell.TextLabel.Text = tableItems[indexPath.Row];
+			cell.TextLabel.Text = tableItems[indexPath.Row].fullName;
 
 			return cell;
 		}

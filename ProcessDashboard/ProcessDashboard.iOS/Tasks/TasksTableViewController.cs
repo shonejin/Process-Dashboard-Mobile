@@ -8,42 +8,56 @@ using ProcessDashboard.SyncLogic;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using ProcessDashboard.Service.Interface;
 using Fusillade;
 using ProcessDashboard.APIRoot;
 using ProcessDashboard.DBWrapper;
 using ProcessDashboard.DTO;
-using Task = System.Threading.Tasks.Task;
 
 namespace ProcessDashboard.iOS
 {
     public partial class TasksTableViewController : UITableViewController
     {
-		string[] tableItems;
-		string test;
+		public string projectId;
+		List<Task> tasksCache;
 
         public TasksTableViewController (IntPtr handle) : base (handle)
         {
         }
-		public override void ViewDidLoad()
+
+		public override void ViewWillAppear(bool animated)
 		{
-			base.ViewDidLoad();
-			getDataOfTask();
-			Console.WriteLine("hehe:" + test);
-
-			tableItems = new string[] {test, "T1 / C2 / D3 / E4 / Code"};
-			tasksTableView.Source = new TasksTableSource(tableItems, this);
-			tasksTableView.ReloadData();
-
+			base.ViewWillAppear(animated);
+			refreshData();
 		}
+
+		public override void PrepareForSegue(UIKit.UIStoryboardSegue segue, Foundation.NSObject sender)
+		{
+			base.PrepareForSegue(segue, sender);
+			if (segue.Identifier.Equals("task2TaskDetail"))
+			{
+				TaskDetailsViewController controller = (TaskDetailsViewController)segue.DestinationViewController;
+				controller.taskId = ((TasksTableSource)tasksTableView.Source).selectedTaskId;
+			}
+		}
+
+		public void refreshData()
+		{
+			getDataOfTask();
+
+			tasksTableView.Source = new TasksTableSource(tasksCache, this);
+			tasksTableView.ReloadData();
+		}
+
+
 
 		public async void getDataOfTask()
 		{
 			var apiService = new ApiTypes(null);
 			var service = new PDashServices(apiService);
 			Controller c = new Controller(service);
-			List<DTO.Task> tasksList = await c.GetTasks("mock", "iokdum2d");
+			List<Task> tasksList = await c.GetTasks("mock", projectId);
+			tasksCache = tasksList;
 
 			try
 			{
@@ -57,9 +71,6 @@ namespace ProcessDashboard.iOS
 				foreach (var task in tasksList.Select(x => x.fullName))
 				{
 					System.Diagnostics.Debug.WriteLine(task);
-					test = task;
-					System.Diagnostics.Debug.WriteLine("hei:" + test);
-
 				}
 			}
 			catch (Exception e)
