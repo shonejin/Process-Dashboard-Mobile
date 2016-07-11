@@ -44,12 +44,15 @@ namespace ProcessDashboard.iOS
 
 			base.ViewDidLoad();
 			TdActualLb.Text = task.actualTime.ToString();
-			tdProjectNameLb.Text = task.project.name;
-			TdTaskNameLb.Text = task.fullName;
-			TdCompleteLb.Text = task.completionDate.ToString();
+			TdTaskNameLb.Text = task.fullName ?? "";
+			TdCompleteLb.Text = task.completionDate.ToString("MM/dd/yyyy");
 			TdPlannedLb.Text = task.estimatedTime.ToString();
 			TdActualLb.Text = task.actualTime.ToString();
-			TdNotesTf.Text = task.taskNote;
+
+			// TODO: project name always return null
+
+			tdProjectNameLb.Text = task.project != null ? task.project.name : "";
+			TdNotesTf.Text = task.taskNote ?? "";
 		}
     }
 }

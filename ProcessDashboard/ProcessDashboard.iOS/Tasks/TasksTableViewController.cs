@@ -41,9 +41,9 @@ namespace ProcessDashboard.iOS
 			}
 		}
 
-		public void refreshData()
+		public async void refreshData()
 		{
-			getDataOfTask();
+			await getDataOfTask();
 
 			tasksTableView.Source = new TasksTableSource(tasksCache, this);
 			tasksTableView.ReloadData();
@@ -51,13 +51,14 @@ namespace ProcessDashboard.iOS
 
 
 
-		public async void getDataOfTask()
+		public async System.Threading.Tasks.Task<int> getDataOfTask()
 		{
 			var apiService = new ApiTypes(null);
 			var service = new PDashServices(apiService);
 			Controller c = new Controller(service);
 			List<Task> tasksList = await c.GetTasks("mock", projectId);
 			tasksCache = tasksList;
+
 
 			try
 			{
@@ -78,6 +79,7 @@ namespace ProcessDashboard.iOS
 				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
 			}
 
+			return 0;
 		}
     }
 }
