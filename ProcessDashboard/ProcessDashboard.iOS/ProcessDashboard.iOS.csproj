@@ -170,7 +170,6 @@
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
-    <InterfaceDefinition Include="ProjectsStoryboard.storyboard" />
     <InterfaceDefinition Include="Main.storyboard" />
   </ItemGroup>
   <ItemGroup>
@@ -187,30 +186,26 @@
     <Compile Include="SQLite.cs" />
     <Compile Include="SQLiteAsync.cs" />
     <Compile Include="LoginPageViewController.cs" />
-    <Compile Include="LoginPageViewController.designer.cs" />
+    <Compile Include="LoginPageViewController.designer.cs">
+      <DependentUpon>LoginPageViewController.cs</DependentUpon>
+    </Compile>
     <Compile Include="HomePageViewController.cs" />
     <Compile Include="CustomTimeLogCell.cs" />
     <Compile Include="TaskTimeLogViewController.cs" />
-    <Compile Include="TaskTableSource.cs" />
-    <Compile Include="CalendarViewController_.designer.cs" />
-    <Compile Include="HomePageViewController.designer.cs" />
-    <Compile Include="ProjectsTableSource.cs" />
-    <Compile Include="ProjectsTableViewController.cs" />
-    <Compile Include="ProjectsTableViewController.designer.cs" />
-    <Compile Include="ProjectsTabNavigationController.cs" />
+    <Compile Include="HomePageViewController.designer.cs">
+      <DependentUpon>HomePageViewController.cs</DependentUpon>
+    </Compile>
     <Compile Include="RootTabBarController.cs" />
-    <Compile Include="RootTabBarController.designer.cs" />
-    <Compile Include="RootTabViewController_.cs" />
-    <Compile Include="RootTabViewController_.designer.cs" />
+    <Compile Include="RootTabBarController.designer.cs">
+      <DependentUpon>RootTabBarController.cs</DependentUpon>
+    </Compile>
     <Compile Include="SettingsViewController.cs" />
-    <Compile Include="SettingsViewController.designer.cs" />
-    <Compile Include="TaskDetailsViewController.cs" />
-    <Compile Include="TaskDetailsViewController.designer.cs" />
-    <Compile Include="TasksTableSource.cs" />
-    <Compile Include="TasksTableViewController.cs" />
-    <Compile Include="TasksTableViewController.designer.cs" />
-    <Compile Include="TasksViewController.cs" />
-    <Compile Include="TaskTimeLogViewController.designer.cs" />
+    <Compile Include="SettingsViewController.designer.cs">
+      <DependentUpon>.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TaskTimeLogViewController.designer.cs">
+      <DependentUpon>TaskTimeLogViewController.cs</DependentUpon>
+    </Compile>
     <Compile Include="TimeLogs\TimelogTableItem.cs" />
     <Compile Include="SharpMobileCode.ModalPicker\CustomPickerModel.cs" />
     <Compile Include="SharpMobileCode.ModalPicker\ModalPickerAnimatedDismissed.cs" />
@@ -219,12 +214,32 @@
     <Compile Include="SharpMobileCode.ModalPicker\ModalPickerViewController.cs" />
     <Compile Include="SharpMobileCode.ModalPicker\Properties\AssemblyInfo.cs" />
     <Compile Include="TimeLogs\TimelogDetailViewController.cs" />
-    <Compile Include="TimeLogs\TimelogDetailViewController.designer.cs" />
+    <Compile Include="TimeLogs\TimelogDetailViewController.designer.cs">
+      <DependentUpon>TimeLogs\TimelogDetailViewController.cs</DependentUpon>
+    </Compile>
     <Compile Include="TimeLogs\TimeLogPageViewController.cs" />
-    <Compile Include="TimeLogs\TimeLogPageViewController.designer.cs" />
+    <Compile Include="TimeLogs\TimeLogPageViewController.designer.cs">
+      <DependentUpon>TimeLogs\TimeLogPageViewController.cs</DependentUpon>
+    </Compile>
     <Compile Include="TimeLogs\TimelogTableItemGroup.cs" />
     <Compile Include="TimeLogs\TimelogTableSource.cs" />
     <Compile Include="TaskTimeLogTableSource.cs" />
+    <Compile Include="TaskTableSource.cs" />
+    <Compile Include="ProjectsTab\ProjectsTableSource.cs" />
+    <Compile Include="ProjectsTab\ProjectsTableViewController.cs" />
+    <Compile Include="ProjectsTab\ProjectsTableViewController.designer.cs">
+      <DependentUpon>ProjectsTableViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectsTab\ProjectsTabNavigationController.cs" />
+    <Compile Include="Tasks\TaskDetailsViewController.cs" />
+    <Compile Include="Tasks\TaskDetailsViewController.designer.cs">
+      <DependentUpon>TaskDetailsViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Tasks\TasksTableSource.cs" />
+    <Compile Include="Tasks\TasksTableViewController.cs" />
+    <Compile Include="Tasks\TasksTableViewController.designer.cs">
+      <DependentUpon>TasksTableViewController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Checkbox0.png" />
@@ -234,6 +249,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="TimeLogs\" />
+    <Folder Include="ProjectsTab\" />
+    <Folder Include="Tasks\" />
   </ItemGroup>
   <Import Project="..\ProcessDashboard\ProcessDashboard.projitems" Label="Shared" Condition="Exists('..\ProcessDashboard\ProcessDashboard.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

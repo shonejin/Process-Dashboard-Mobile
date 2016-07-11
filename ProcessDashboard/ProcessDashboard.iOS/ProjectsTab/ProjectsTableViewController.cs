@@ -30,7 +30,7 @@ namespace ProcessDashboard.iOS
 			base.ViewDidLoad();
 			getDataOfProject();
 
-			//tableItems = new string[] { "Mobile Process Dashboard", "Enterprise Server", "Linux Kernel", "Windows X1 Professional", "Siri for macOS" };
+			tableItems = new string[] { "Mobile Process Dashboard", "Enterprise Server", "Linux Kernel", "Windows X1 Professional", "Siri for macOS" };
 			projectsTableView.Source = new ProjectsTableSource(tableItems, this);
 			projectsTableView.ReloadData();
 
