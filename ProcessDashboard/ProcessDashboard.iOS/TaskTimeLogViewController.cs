@@ -42,29 +42,25 @@ namespace ProcessDashboard.iOS
 			var service = new PDashServices(apiService);
 			Controller c = new Controller(service);
 
-			throw new NotImplementedException();
-			/*
-			List<TimeLogEntry> = 
+			List<TimeLogEntry> timeLogEntries = await c.GetTimeLog("mock", 0, null, null,taskId, null);
 
 			try
 			{
-				System.Diagnostics.Debug.WriteLine("** GET TASKS **");
-				System.Diagnostics.Debug.WriteLine("Length is " + tasksList.Count);
+				System.Diagnostics.Debug.WriteLine("** LIST OF Timelog **");
+				System.Diagnostics.Debug.WriteLine("Length is " + timeLogEntries.Count);
 
-				//test = new String[tasksList.Count];
-				//int i = 0;
-				//System.Diagnostics.Debug.WriteLine("haha:" + tableItems[0].GetType());
-
-				foreach (var task in tasksList.Select(x => x.fullName))
+				foreach (var proj in timeLogEntries)
 				{
-					System.Diagnostics.Debug.WriteLine(task);
+					System.Diagnostics.Debug.WriteLine("Task Name : " + proj.task.fullName);
+					System.Diagnostics.Debug.WriteLine("Start Date : " + proj.startDate);
+					System.Diagnostics.Debug.WriteLine("End Date : " + proj.endDate);
+					//  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
 				}
 			}
 			catch (Exception e)
 			{
 				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
 			}
-			*/
 		}
 
 

@@ -42,15 +42,15 @@ namespace ProcessDashboard.iOS
 			}
 		}
 
-		public void refreshData()
+		public async void refreshData()
 		{
-			getDataOfProject();
-
+			await getDataOfProject();
+			//Console.WriteLine("HAHAH Length is " + projectsCache.Count);
 			projectsTableView.Source = new ProjectsTableSource(projectsCache, this);
 			projectsTableView.ReloadData();
 		}
 
-		public async void getDataOfProject()
+		public async System.Threading.Tasks.Task<int> getDataOfProject()
 		{
 			var apiService = new ApiTypes(null);
 			var service = new PDashServices(apiService);
@@ -64,10 +64,12 @@ namespace ProcessDashboard.iOS
 			// TODO: add exception handling logic
 			projectsCache = projectsList;
 
+			Console.WriteLine("HAHAH Length is " + projectsCache.Count);
+
 			try
 			{
 				System.Diagnostics.Debug.WriteLine("** GET PROJECTS **");
-				System.Diagnostics.Debug.WriteLine("Length is " + projectsList.Count);
+				System.Diagnostics.Debug.WriteLine("Length is " + projectsCache.Count);
 
 				foreach (var proj in projectsList.Select(x => x.name))
 				{
@@ -80,6 +82,7 @@ namespace ProcessDashboard.iOS
 			{
 				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
 			}
+			return 0;
 		}
     }
 }

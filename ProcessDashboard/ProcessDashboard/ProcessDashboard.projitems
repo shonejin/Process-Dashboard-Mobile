@@ -9,7 +9,7 @@
     <Import_RootNamespace>ProcessDashboard</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)APIRoot\ListOfProjectsRoot.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)APIRoot\ProjectsListRoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\RecentTasksRoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\TaskListRoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\TaskRoot.cs" />
@@ -28,7 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\TaskModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\TimeLogEntryModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MyClass.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Service\ApiBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Service\ApiTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\Interface\IApiTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\Interface\IPDashApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\Interface\IPDashServices.cs" />

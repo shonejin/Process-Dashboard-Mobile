@@ -16,8 +16,8 @@ namespace ProcessDashboard.iOS
         public double actualTime { get; set; }
         public string taskNote { get; set; }
 
-
 		*/
+
 		public TaskDetailsViewController (IntPtr handle) : base (handle)
         {
         }

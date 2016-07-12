@@ -3,9 +3,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Collections;
 using SQLite;
 using ProcessDashboard.Model;
-using System.Collections;
 
 // DB Wrapper for Timelog
 // Wrapping up the services

@@ -14,8 +14,8 @@ namespace ProcessDashboard.Service.Interface
         // Get list of projects
         // https://pdes.tuma-solutions.com/api/v1/datasets/mock/projects/
         [Get("/datasets/{dataset}/projects/")]
-        Task<ListOfProjectsRoot> GetProjectsList(string dataset);
-
+        Task<ProjectsListRoot> GetProjectsList(string dataset);
+        
         // Get list of tasks
         // https://pdes.tuma-solutions.com/api/v1/datasets/mock/projects/iokdum2d/tasks/
         [Get("/datasets/{dataset}/projects/{projectID}/tasks/")]
@@ -34,7 +34,7 @@ namespace ProcessDashboard.Service.Interface
         //Get list of timelogs
         // https://pdes.tuma-solutions.com/api/v1/datasets/mock/time-log/
         [Get("/datasets/{dataset}/time-log/")]
-        Task<TimeLogsRoot> GetTimeLogs(string dataset);
+        Task<TimeLogsRoot> GetTimeLogs(string dataset,int maxResults, string startDateFrom, string startDateTo, string taskId, string projectId);
         
     }
 }

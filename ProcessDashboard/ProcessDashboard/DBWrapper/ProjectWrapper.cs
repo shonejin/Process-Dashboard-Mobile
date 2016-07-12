@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
 using ProcessDashboard.Model;
 using SQLite;
 
@@ -105,7 +105,7 @@ namespace ProcessDashboard.DBWrapper
 
                 if (ht.ContainsKey("Name"))
                 {
-					item.Name = ht["Name"].ToString();
+                    item.Name = ht["Name"].ToString();
                 }
                 if (ht.ContainsKey("CreationDate"))
                 {

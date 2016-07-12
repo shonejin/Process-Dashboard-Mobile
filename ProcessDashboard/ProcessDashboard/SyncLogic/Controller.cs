@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using ProcessDashboard.Service_Access_Layer;
@@ -14,7 +15,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace ProcessDashboard.SyncLogic
 {
-    class Controller
+    public class Controller
     {
         private readonly IPDashServices _pDashServices;
         private readonly DBManager _dbm;
@@ -25,8 +26,6 @@ namespace ProcessDashboard.SyncLogic
             _dbm = DBManager.getInstance();
 
         }
-
-
         /*
             if (CrossConnectivity.Current.IsConnected)
             {
@@ -38,14 +37,17 @@ namespace ProcessDashboard.SyncLogic
             }
          */
 
-        public async Task<List<Project>>  GetProjects(string dataset)
+        public async Task<List<Project>> GetProjects(string dataset)
         {
-            var localprojects = await _pDashServices
-                                            .GetProjectsListLocal(Priority.UserInitiated, dataset)
-                                            .ConfigureAwait(false);
+            //var localprojects = await _pDashServices.GetProjectsListLocal(Priority.UserInitiated, dataset).ConfigureAwait(false);
+            System.Diagnostics.Debug.WriteLine("We are in the project list task");
 
-            var remoteProjects = _pDashServices.GetProjectsListRemote(Priority.Background, dataset)
+            var remoteProjects = await _pDashServices.GetProjectsListRemote(Priority.UserInitiated, dataset)
                 .ConfigureAwait(false);
+
+            return remoteProjects;
+
+            /*
             // TODO: Bind the values returned by remoteProjects or use a mechanism that executes after remoteProjects is obtained.
 
             List<Project> entries;
@@ -70,16 +72,19 @@ namespace ProcessDashboard.SyncLogic
 
             // Do any UI Operations
             return entries;
+            */
         }
 
-        public async Task<List<DTO.Task>> GetTasks(string dataset,string projectID)
+        public async Task<List<DTO.Task>> GetTasks(string dataset, string projectID)
         {
-            var localTasks = await _pDashServices
-                                            .GetTasksListLocal(Priority.UserInitiated, dataset,projectID)
-                                            .ConfigureAwait(false);
+            //var localTasks = await _pDashServices
+            //                              .GetTasksListLocal(Priority.UserInitiated, dataset,projectID)
+            //                            .ConfigureAwait(false);
 
-            var remoteTasks = _pDashServices.GetTasksListRemote(Priority.Background, dataset,projectID)
+            var remoteTasks = await _pDashServices.GetTasksListRemote(Priority.Background, dataset, projectID)
                 .ConfigureAwait(false);
+            return remoteTasks;
+            /*
             // TODO: Bind the values returned by remoteProjects or use a mechanism that executes after remoteProjects is obtained.
 
             List<DTO.Task> entries;
@@ -108,12 +113,21 @@ namespace ProcessDashboard.SyncLogic
 
             // Do any UI Operations
             return entries;
+            */
         }
 
+        public async Task<List<TimeLogEntry>> GetTimeLog(string dataset,int maxResults, string startDateFrom, string startDateTo, string taskId, string projectId)
+        {
+
+            var remoteTasks = await _pDashServices.GetTimeLogsRemote(Priority.UserInitiated, dataset,maxResults,startDateFrom,startDateTo,taskId,projectId)
+                .ConfigureAwait(false);
+            return remoteTasks;
+
+        }
 
         public async void testProject()
         {
-
+            
             List<Project> projectsList = await GetProjects("mock");
             try
             {
@@ -130,7 +144,6 @@ namespace ProcessDashboard.SyncLogic
             {
                 System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
             }
-
 
         }
 
@@ -158,6 +171,49 @@ namespace ProcessDashboard.SyncLogic
 
         }
 
+        public async void testTimeLog()
+        {
+            List<TimeLogEntry> timeLogEntries = await GetTimeLog("mock",0,null,null,null,null);
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("** LIST OF Timelog **");
+                System.Diagnostics.Debug.WriteLine("Length is " + timeLogEntries.Count);
 
+                foreach (var proj in timeLogEntries)
+                {
+                    System.Diagnostics.Debug.WriteLine("Task Name : " + proj.task.fullName);
+                    System.Diagnostics.Debug.WriteLine("Start Date : "+proj.startDate);
+                    System.Diagnostics.Debug.WriteLine("End Date : " + proj.endDate);
+                    //  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
+                }
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+            }
+
+        }
+
+        public async void testTimeLogWithID(string taskID)
+        {
+            List<TimeLogEntry> timeLogEntries = await GetTimeLog("mock", 0, null, null, taskID,null);
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("** LIST OF Timelog **");
+                System.Diagnostics.Debug.WriteLine("Length is " + timeLogEntries.Count);
+
+                foreach (var proj in timeLogEntries)
+                {
+                    System.Diagnostics.Debug.WriteLine("Task Name : " + proj.task.fullName);
+                    System.Diagnostics.Debug.WriteLine("Start Date : " + proj.startDate);
+                    System.Diagnostics.Debug.WriteLine("End Date : " + proj.endDate);
+                    //  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
+                }
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+            }
+        }
     }
 }

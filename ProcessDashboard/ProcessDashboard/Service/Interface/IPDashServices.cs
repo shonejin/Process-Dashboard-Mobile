@@ -8,7 +8,7 @@ using ProcessDashboard.DTO;
 
 namespace ProcessDashboard.Service.Interface
 {
-    interface IPDashServices
+    public interface IPDashServices
     {
         // These tasks gets the values from the Database
         Task<List<Project>> GetProjectsListLocal(Priority priority, string dataset);
@@ -22,7 +22,7 @@ namespace ProcessDashboard.Service.Interface
         Task<List<DTO.Task>> GetTasksListRemote(Priority priority, string dataset, string projectID);
         Task<DTO.Task> GetTaskDetailsRemote(Priority priority, string dataset, string projecttaskID);
         Task<List<DTO.Task>> GetRecentTasksRemote(Priority priority, string dataset);
-        Task<List<TimeLogEntry>> GetTimeLogsRemote(Priority priority, string dataset);
+        Task<List<TimeLogEntry>> GetTimeLogsRemote(Priority priority, string dataset, int maxResults, string startDateFrom, string startDateTo, string taskId, string projectId);
 
     }
 }
