@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Java.Util;
+using System.Collections;
 using ProcessDashboard.Model;
 using SQLite;
 
@@ -105,15 +105,15 @@ namespace ProcessDashboard.DBWrapper
 
                 if (ht.ContainsKey("Name"))
                 {
-                    item.Name = ht.Get("Name").ToString();
+                    item.Name = ht["Name"].ToString();
                 }
                 if (ht.ContainsKey("CreationDate"))
                 {
-                    item.CreationDate = DateTime.Parse(ht.Get("CreationDate").ToString());
+                    item.CreationDate = DateTime.Parse(ht["CreationDate"].ToString());
                 }
                 if (ht.ContainsKey("IsActive"))
                 {
-                    item.IsActive = bool.Parse(ht.Get("IsActive").ToString());
+                    item.IsActive = bool.Parse(ht["IsActive"].ToString());
                 }
                 db.Update(item);
                 return true;

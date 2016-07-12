@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Java.Util;
+using System.Collections;
 using SQLite;
 using ProcessDashboard.Model;
 
@@ -97,37 +97,37 @@ namespace ProcessDashboard.DBWrapper
 
                 if (ht.ContainsKey("TimeLogId"))
                 {
-                    item.TimeLogId = ht.Get("TimeLogId").ToString();
+                    item.TimeLogId = ht["TimeLogId"].ToString();
                 }
                 if (ht.ContainsKey("TaskId"))
                 {
-                    item.TaskId = ht.Get("TaskId").ToString();
+                    item.TaskId = ht["TaskId"].ToString();
                 }
                 if (ht.ContainsKey("StartDate"))
                 {
-                    item.StartDate = DateTime.Parse(ht.Get("StartDate").ToString());
+                    item.StartDate = DateTime.Parse(ht["StartDate"].ToString());
                 }
                 if (ht.ContainsKey("ElapsedTime"))
                 {
                     //Change has happened to an elapsed time
                     //TODO: Add elapsed thingy
-                    item.ElapsedTime = double.Parse(ht.Get("ElapsedTime").ToString());
+                    item.ElapsedTime = double.Parse(ht["ElapsedTime"].ToString());
                 }
                 if (ht.ContainsKey("InterruptTime"))
                 {
-                    item.InterruptTime = double.Parse(ht.Get("InterruptTime").ToString());
+                    item.InterruptTime = double.Parse(ht["InterruptTime"].ToString());
                 }
                 if (ht.ContainsKey("Comment"))
                 {
-                    item.Comment = (ht.Get("Comment").ToString());
+                    item.Comment = (ht["Comment"].ToString());
                 }
                 if (ht.ContainsKey("IsOpen"))
                 {
-                    item.IsOpen = bool.Parse(ht.Get("IsOpen").ToString());
+                    item.IsOpen = bool.Parse(ht["IsOpen"].ToString());
                 }
                 if (ht.ContainsKey("ChangeFlag"))
                 {
-                    item.ChangeFlag = (ht.Get("ChangeFlag").ToString()[0]);
+                    item.ChangeFlag = (ht["ChangeFlag"].ToString()[0]);
                 }
                 item.EditTimestamp = DateTime.Now;
                 db.Update(item);
