@@ -36,6 +36,7 @@ namespace ProcessDashboard.iOS
 		/// </summary>
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 		{
+			
 			selectedTask = tableItems[indexPath.Row];
 			tableView.DeselectRow(indexPath, true);
 			owner.PerformSegue("task2TaskDetail", owner);

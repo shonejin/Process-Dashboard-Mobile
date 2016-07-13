@@ -25,10 +25,12 @@ namespace ProcessDashboard.iOS
 		public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)
 		{
 			base.PrepareForSegue(segue, sender);
-			if (segue.Identifier.Equals("taskDetails2TimeLogs"))
+			if (segue.Identifier == "TaskTimeLogsSegue")
 			{
-				TaskTimeLogViewController controller = (TaskTimeLogViewController)segue.DestinationViewController;
+				var controller = segue.DestinationViewController as TaskTimeLogViewController;
 				controller.taskId = task.id;
+				controller.task = task;
+				Console.WriteLine("in the task detail.");
 			}
 		}
 

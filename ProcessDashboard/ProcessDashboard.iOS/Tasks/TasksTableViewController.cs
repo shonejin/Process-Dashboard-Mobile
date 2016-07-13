@@ -19,6 +19,7 @@ namespace ProcessDashboard.iOS
     public partial class TasksTableViewController : UITableViewController
     {
 		public string projectId;
+		public string projectName;
 		List<Task> tasksCache;
 
         public TasksTableViewController (IntPtr handle) : base (handle)
@@ -38,6 +39,7 @@ namespace ProcessDashboard.iOS
 			{
 				TaskDetailsViewController controller = (TaskDetailsViewController)segue.DestinationViewController;
 				controller.task = ((TasksTableSource)tasksTableView.Source).selectedTask;
+				//controller.project = ((TasksTableSource)tasksTableView.Source).project;
 			}
 		}
 
@@ -65,14 +67,11 @@ namespace ProcessDashboard.iOS
 				System.Diagnostics.Debug.WriteLine("** GET TASKS **");
 				System.Diagnostics.Debug.WriteLine("Length is " + tasksList.Count);
 
-				//test = new String[tasksList.Count];
-				//int i = 0;
-				//System.Diagnostics.Debug.WriteLine("haha:" + tableItems[0].GetType());
-			
 				foreach (var task in tasksList.Select(x => x.fullName))
 				{
 					System.Diagnostics.Debug.WriteLine(task);
 				}
+
 			}
 			catch (Exception e)
 			{

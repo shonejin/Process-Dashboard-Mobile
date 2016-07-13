@@ -156,9 +156,9 @@ namespace ProcessDashboard.SyncLogic
                 System.Diagnostics.Debug.WriteLine("** LIST OF TASKS **");
                 System.Diagnostics.Debug.WriteLine("Length is " + projectsList.Count);
 
-                foreach (var proj in projectsList.Select(x => x.fullName))
+				foreach (var proj in projectsList.Select(x => x.project))
                 {
-                    System.Diagnostics.Debug.WriteLine(proj);
+                    System.Diagnostics.Debug.WriteLine(" Project Name:"+ proj);
                     //  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
                 }
             }
@@ -166,8 +166,6 @@ namespace ProcessDashboard.SyncLogic
             {
                 System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
             }
-
-
 
         }
 

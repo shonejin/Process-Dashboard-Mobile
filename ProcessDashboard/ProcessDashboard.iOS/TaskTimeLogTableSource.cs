@@ -1,16 +1,21 @@
 ﻿using System;
 using Foundation;
 using UIKit;
+using ProcessDashboard.Service;
+using ProcessDashboard.Service_Access_Layer;
+using ProcessDashboard.SyncLogic;
+using ProcessDashboard.DTO;
+using System.Collections.Generic;
 
 namespace ProcessDashboard.iOS
 {
 	public class TaskTimeLogTableSource : UITableViewSource
 	{
-		protected string[] tableItems;
+		protected List<TimeLogEntry> tableItems;
 		protected string cellIdentifier = "projectCell";
 		UIViewController owner;
 
-		public TaskTimeLogTableSource(string[] items, UIViewController owner)
+		public TaskTimeLogTableSource(List<TimeLogEntry> items, UIViewController owner)
 		{
 			tableItems = items;
 			this.owner = owner;
@@ -21,7 +26,7 @@ namespace ProcessDashboard.iOS
 		/// </summary>
 		public override nint RowsInSection(UITableView tableview, nint section)
 		{
-			return tableItems.Length;
+			return tableItems == null ? 0 : tableItems.Count;
 		}
 
 		/// <summary>
@@ -44,9 +49,10 @@ namespace ProcessDashboard.iOS
 			UITableViewCell cell = tableView.DequeueReusableCell(cellIdentifier);
 			// if there are no cells to reuse, create a new one
 			if (cell == null)
-				cell = new UITableViewCell(UITableViewCellStyle.Default, cellIdentifier);
+				cell = new UITableViewCell(UITableViewCellStyle.Value1, cellIdentifier);
 
-			cell.TextLabel.Text = tableItems[indexPath.Row];
+			cell.TextLabel.Text = tableItems[indexPath.Row].startDate.ToLocalTime().ToString();
+			cell.DetailTextLabel.Text = tableItems[indexPath.Row].loggedTime.ToString();
 			cell.TextLabel.Font = UIFont.SystemFontOfSize(12);
 			cell.TextLabel.Lines = 1;
 			cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;

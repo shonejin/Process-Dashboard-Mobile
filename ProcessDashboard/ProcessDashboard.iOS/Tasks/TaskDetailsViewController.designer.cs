@@ -58,10 +58,6 @@ namespace ProcessDashboard.iOS
         [GeneratedCode ("iOS Designer", "1.0")]
         partial void UIButton334_TouchUpInside (UIKit.UIButton sender);
 
-        [Action ("TdTimelogBtn_TouchUpInside:")]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        partial void TdTimelogBtn_TouchUpInside (UIKit.UIButton sender);
-
         void ReleaseDesignerOutlets ()
         {
             if (TdActualLb != null) {

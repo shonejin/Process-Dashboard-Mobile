@@ -197,36 +197,6 @@ namespace ProcessDashboard.iOS
 			await PresentViewControllerAsync(modalPicker, true);
 		}
 
-		//async void CustomPickerButtonTapped(object sender, EventArgs e)
-		//{
-		//	//Create custom data source
-		//	var customDatesList = new List<string>();
-		//	foreach (var date in _customDates)
-		//	{
-		//		customDatesList.Add(date.ToString("MMMM dd, HH mm"));
-		//	}
-
-		//	//Create the modal picker and style it as you see fit
-		//	var modalPicker = new ModalPickerViewController(ModalPickerType.Custom, " ", this)
-		//	{
-		//		HeaderBackgroundColor = UIColor.Blue,
-		//		HeaderTextColor = UIColor.White,
-		//		TransitioningDelegate = new ModalPickerTransitionDelegate(),
-		//		ModalPresentationStyle = UIModalPresentationStyle.Custom
-		//	};
-
-		//	//Create the model for the Picker View
-		//	modalPicker.PickerView.Model = new CustomPickerModel(customDatesList);
-
-		//	//On an item is selected, update our label with the selected item.
-		//	modalPicker.OnModalPickerDismissed += (s, ea) =>
-		//	{
-		//		var index = modalPicker.PickerView.SelectedRowInComponent(0);
-		//		//PickedLabel.Text = customDatesList[(int)index];
-		//	};
-
-		//	await PresentViewControllerAsync(modalPicker, true);
-		//}
 
 		public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)
 		{

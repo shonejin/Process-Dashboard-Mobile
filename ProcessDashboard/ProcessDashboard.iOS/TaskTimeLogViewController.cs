@@ -13,10 +13,11 @@ namespace ProcessDashboard.iOS
     public partial class TaskTimeLogViewController : UIViewController
     {
 		UILabel ProjectNameLabel, TaskNameLabel;
-		string[] tableItems;
+		List<TimeLogEntry> timeLogCache;
 
 		// This ID is used to fetch the time logs. It is set by the previous view controller
 		public string taskId;
+		public Task task;
 
 		public TaskTimeLogViewController (IntPtr handle) : base (handle)
         {
@@ -28,21 +29,23 @@ namespace ProcessDashboard.iOS
 			refreshData();
 		}
 
-		private void refreshData()
+		private async void refreshData()
 		{
-			getTimeLogsOfTask();
+			await getTimeLogsOfTask();
 
-			TaskTimeLogTable.Source = new TaskTimeLogTableSource(tableItems, this);
+			TaskTimeLogTable.Source = new TaskTimeLogTableSource(timeLogCache, this);
 			TaskTimeLogTable.ReloadData();
 		}
 
-		public async void getTimeLogsOfTask()
+		public async System.Threading.Tasks.Task<int> getTimeLogsOfTask()
 		{
 			var apiService = new ApiTypes(null);
 			var service = new PDashServices(apiService);
 			Controller c = new Controller(service);
 
 			List<TimeLogEntry> timeLogEntries = await c.GetTimeLog("mock", 0, null, null,taskId, null);
+
+			timeLogCache = timeLogEntries;
 
 			try
 			{
@@ -61,6 +64,7 @@ namespace ProcessDashboard.iOS
 			{
 				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
 			}
+			return 0;
 		}
 
 
@@ -70,7 +74,7 @@ namespace ProcessDashboard.iOS
 
 			ProjectNameLabel = new UILabel(new CGRect(30, 100, 300, 40))
 			{
-				Text = "/ Project / Mobile App I1",
+				Text = task.project != null ? task.project.name : "",
 				Font = UIFont.SystemFontOfSize(16),
 				TextColor = UIColor.Black,
 				TextAlignment = UITextAlignment.Center,
@@ -81,7 +85,7 @@ namespace ProcessDashboard.iOS
 
 			TaskNameLabel = new UILabel(new CGRect(30, 180, 300, 60))
 			{
-				Text = "/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Team Walkthrough",
+				Text = task.fullName.ToString(),
 				Font = UIFont.SystemFontOfSize(13),
 				TextColor = UIColor.Black,
 				TextAlignment = UITextAlignment.Center,
@@ -91,20 +95,19 @@ namespace ProcessDashboard.iOS
 			};
 
 
-			tableItems = new string[] { "2016-06-02 11:00 AM",
-				"2016-06-02 2:10 PM",
-				"2016-06-02 3:30 PM",
-				"2016-06-03 11:00 AM",
-				"2016-06-04 1:00 AM",
-				"2016-06-05 12:00 PM",
-				"2016-06-06 4:00 PM",
-				"2016-06-07 11:00 PM" };
+			//timeLogCache = new string[] { "2016-06-02 11:00 AM",
+			//	"2016-06-02 2:10 PM",
+			//	"2016-06-02 3:30 PM",
+			//	"2016-06-03 11:00 AM",
+			//	"2016-06-04 1:00 AM",
+			//	"2016-06-05 12:00 PM",
+			//	"2016-06-06 4:00 PM",
+			//	"2016-06-07 11:00 PM" };
 
 			TaskTimeLogTable = new UITableView(new CGRect(0, 250, View.Bounds.Width, View.Bounds.Height));
-			TaskTimeLogTable.Source = new TaskTimeLogTableSource(tableItems, this);
+			//TaskTimeLogTable.Source = new TaskTimeLogTableSource(tableItems, this);
 
 			Add(TaskTimeLogTable);
-
 			this.Add(ProjectNameLabel);
 			this.Add(TaskNameLabel);
 
@@ -122,16 +125,20 @@ namespace ProcessDashboard.iOS
 				{
 					var source = TaskTimeLogTable.Source as TaskTimeLogTableSource;
 					var rowPath = TaskTimeLogTable.IndexPathForSelectedRow;
-					var item = tableItems[rowPath.Row];
+					var startTime = timeLogCache[rowPath.Row].startDate.ToLocalTime().ToString();
+					var intrrupt = timeLogCache[rowPath.Row].interruptTime.ToString();
+					var delta = timeLogCache[rowPath.Row].loggedTime.ToString();
+					var comment = timeLogCache[rowPath.Row].task.taskNote;
 					TimelogTableItem t= new TimelogTableItem();
-					String[] strs = item.Split(' ');
+					//String[] strs = startTime.Split(' ');
 
 					t.Heading = TaskNameLabel.Text;
-					t.SubHeading = strs[0];
-					t.StartTime = strs[1] + " " + strs[2];
-					t.Delta = "00:00";
-					t.Int = "00:00";
-					t.Comment = "test!";
+					//t.SubHeading = strs[0];
+					t.StartTime = startTime;
+					t.Delta = delta;
+					t.Int = intrrupt;
+					t.Comment = comment;
+
 					navctlr.SetTaskforTaskTimelog(this, t); // to be defined on the TaskDetailViewController
 				}
 			}
