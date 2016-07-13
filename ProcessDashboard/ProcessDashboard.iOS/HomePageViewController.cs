@@ -11,7 +11,7 @@ namespace ProcessDashboard.iOS
 {
     public partial class HomePageViewController : UIViewController
     {
-
+		UIScrollView scrollView;
 		UIButton startButton, stopButton;
 		private DateTime[] _customDates;
 		UILabel ProjectNameLabel, CurrentTaskLabel, CurrentTaskNameLabel;
@@ -38,6 +38,11 @@ namespace ProcessDashboard.iOS
 		{
 			base.ViewDidLoad();
 
+			scrollView = new UIScrollView(
+			new CGRect(0, 0, View.Frame.Width, View.Frame.Height));
+						View.AddSubview(scrollView);
+
+			scrollView.ContentSize = View.Frame.Size;
 
 			ProjectNameLabel = new UILabel(new CGRect(10, 80, View.Bounds.Width-20, 40))
 			{
@@ -50,6 +55,7 @@ namespace ProcessDashboard.iOS
 				LineBreakMode = UILineBreakMode.WordWrap,
 			};
 
+			ProjectNameLabel.AutoresizingMask = UIViewAutoresizing.All;
 			// 
 			 CurrentTaskLabel = new UILabel(new CGRect(10, 130, 100, 20))
 			{
@@ -60,7 +66,7 @@ namespace ProcessDashboard.iOS
 				//BackgroundColor = UIColor.LightGray,
 			};
 
-
+			CurrentTaskLabel.AutoresizingMask = UIViewAutoresizing.All;
 
 			CurrentTaskNameLabel = new UILabel(new CGRect(10, 160, View.Bounds.Width - 20, 60))
 			{
@@ -72,6 +78,8 @@ namespace ProcessDashboard.iOS
 				Lines = 0,
 				LineBreakMode = UILineBreakMode.WordWrap,
 			};
+
+			CurrentTaskNameLabel.AutoresizingMask = UIViewAutoresizing.All;
 
 			stopButton = UIButton.FromType(UIButtonType.RoundedRect);
 			stopButton.SetImage(UIImage.FromFile("stop.png"), UIControlState.Normal);
@@ -124,6 +132,8 @@ namespace ProcessDashboard.iOS
 
 			};
 
+			RecentTasksLabel.AutoresizingMask = UIViewAutoresizing.All;
+
 			string[] tableItems = new string[] { "/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Draft",
 				"/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Draft",
 				"/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Team Walkthrough",
@@ -136,16 +146,17 @@ namespace ProcessDashboard.iOS
 			RecentTaskTable = new UITableView(new CGRect(0, 310, View.Bounds.Width, View.Bounds.Height - 310 ));
 			RecentTaskTable.Source = new TaskTableSource(tableItems,this);
 
-			View.Add(RecentTaskTable);
-		
-			View.AddSubview(startButton);
-			View.AddSubview(stopButton);
-			View.AddSubview(checkButton);
-			View.Add(ProjectNameLabel);
-			this.Add(CurrentTaskLabel);
-			this.Add(RecentTaskTable);
-			this.Add(RecentTasksLabel);
-			this.Add(CurrentTaskNameLabel);
+			RecentTaskTable.AutoresizingMask = UIViewAutoresizing.All;
+
+			scrollView.AddSubview(RecentTaskTable);
+			scrollView.AddSubview(startButton);
+			scrollView.AddSubview(stopButton);
+			scrollView.AddSubview(checkButton);
+			scrollView.AddSubview(ProjectNameLabel);
+			scrollView.AddSubview(CurrentTaskLabel);
+			scrollView.AddSubview(RecentTaskTable);
+			scrollView.AddSubview(RecentTasksLabel);
+			scrollView.AddSubview(CurrentTaskNameLabel);
 
 		}
 

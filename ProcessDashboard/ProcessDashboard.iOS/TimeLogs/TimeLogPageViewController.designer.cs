@@ -16,19 +16,10 @@ namespace ProcessDashboard.iOS
     {
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel StaticLabel { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UITableView TimelogsTable { get; set; }
 
         void ReleaseDesignerOutlets ()
         {
-            if (StaticLabel != null) {
-                StaticLabel.Dispose ();
-                StaticLabel = null;
-            }
-
             if (TimelogsTable != null) {
                 TimelogsTable.Dispose ();
                 TimelogsTable = null;

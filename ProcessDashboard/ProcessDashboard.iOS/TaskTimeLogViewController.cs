@@ -94,18 +94,7 @@ namespace ProcessDashboard.iOS
 				LineBreakMode = UILineBreakMode.WordWrap,
 			};
 
-
-			//timeLogCache = new string[] { "2016-06-02 11:00 AM",
-			//	"2016-06-02 2:10 PM",
-			//	"2016-06-02 3:30 PM",
-			//	"2016-06-03 11:00 AM",
-			//	"2016-06-04 1:00 AM",
-			//	"2016-06-05 12:00 PM",
-			//	"2016-06-06 4:00 PM",
-			//	"2016-06-07 11:00 PM" };
-
 			TaskTimeLogTable = new UITableView(new CGRect(0, 250, View.Bounds.Width, View.Bounds.Height));
-			//TaskTimeLogTable.Source = new TaskTimeLogTableSource(tableItems, this);
 
 			Add(TaskTimeLogTable);
 			this.Add(ProjectNameLabel);
@@ -125,19 +114,6 @@ namespace ProcessDashboard.iOS
 				{
 					var source = TaskTimeLogTable.Source as TaskTimeLogTableSource;
 					var rowPath = TaskTimeLogTable.IndexPathForSelectedRow;
-					//var startTime = timeLogCache[rowPath.Row].startDate.ToLocalTime().ToString();
-					//var intrrupt = timeLogCache[rowPath.Row].interruptTime.ToString();
-					//var delta = timeLogCache[rowPath.Row].loggedTime.ToString();
-					//var comment = timeLogCache[rowPath.Row].task.taskNote;
-					//TimeLogEntry t= new TimeLogEntry();
-					////String[] strs = startTime.Split(' ');
-
-					//t.task.fullName = TaskNameLabel.Text;
-					////t.SubHeading = strs[0];
-					//t.startStartTime = startTime;
-					//t.Delta = delta;
-					//t.Int = intrrupt;
-					//t.Comment = comment;
 
 					navctlr.SetTaskforTaskTimelog(this, timeLogCache[rowPath.Row]); // to be defined on the TaskDetailViewController
 				}

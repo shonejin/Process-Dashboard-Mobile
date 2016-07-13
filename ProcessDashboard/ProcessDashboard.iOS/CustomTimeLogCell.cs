@@ -24,7 +24,7 @@ namespace ProcessDashboard.iOS
 				Font = UIFont.SystemFontOfSize(12),
 				  //  = UIFont.FromName("AmericanTypewriter", 12f),
 				//TextColor = UIColor.FromRGB(127, 51, 0),
-				TextAlignment = UITextAlignment.Center,
+				TextAlignment = UITextAlignment.Left,
 				BackgroundColor = UIColor.Clear,
 				LineBreakMode = UILineBreakMode.HeadTruncation
 			};
@@ -63,7 +63,7 @@ namespace ProcessDashboard.iOS
 			base.LayoutSubviews();
 
 			headingLabel.Frame = new CGRect(15, 10, ContentView.Bounds.Width - 180, 25);
-			subheadingLabel.Frame = new CGRect(220, 14, 80, 20);
+			subheadingLabel.Frame = new CGRect(ContentView.Bounds.Width - 140, 14, 80, 20);
 			thirdheadingLabel.Frame = new CGRect(ContentView.Bounds.Width - 55, 7, 40, 33);
 		}
 	}

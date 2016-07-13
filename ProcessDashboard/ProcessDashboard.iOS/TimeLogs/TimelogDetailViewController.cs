@@ -68,9 +68,10 @@ namespace ProcessDashboard.iOS
 				// Display the alert
 				this.PresentViewController(actionSheetAlert, true, null);
 				//delete the task time log
-
+	
 
 			});
+
 
 			NavigationItem.RightBarButtonItem = delete;
 
@@ -85,6 +86,7 @@ namespace ProcessDashboard.iOS
 				LineBreakMode = UILineBreakMode.WordWrap,
 			};
 
+			TaskNameLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 			// 
 			StartTimeLabel = new UILabel(new CGRect(30, 180, 300, 20))
 			{
@@ -95,9 +97,11 @@ namespace ProcessDashboard.iOS
 				BackgroundColor = UIColor.FromRGB(220, 220, 220),
 			};
 
+			StartTimeLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
+
 			StartTimeText = new UIButton(UIButtonType.RoundedRect);
 
-			StartTimeText.SetTitle(currentTask.startDate.ToLocalTime().ToString(), UIControlState.Normal);
+			StartTimeText.SetTitle(currentTask.startDate.ToShortDateString()  + " " + currentTask.startDate.ToShortTimeString(), UIControlState.Normal);
 
 			StartTimeText.Frame = new CGRect(30, 220, 300, 20);
 
@@ -108,6 +112,8 @@ namespace ProcessDashboard.iOS
 
 				DatePickerButtonTapped(sender, e);
 			};
+
+			StartTimeText.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
 			// 
 			DeltaLabel = new UILabel(new CGRect(30, 250, 300, 20))
@@ -120,6 +126,7 @@ namespace ProcessDashboard.iOS
 
 			};
 
+			DeltaLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
 			DeltaText = new UIButton(UIButtonType.RoundedRect);
 
@@ -142,7 +149,7 @@ namespace ProcessDashboard.iOS
 				alert.Show();
 			};
 
-			// 
+			DeltaText.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
 			IntLabel = new UILabel(new CGRect(30, 320, 300, 20))
 			{
@@ -153,9 +160,9 @@ namespace ProcessDashboard.iOS
 				BackgroundColor = UIColor.FromRGB(220, 220, 220),
 			};
 
+			IntLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
 			IntText = new UIButton(UIButtonType.RoundedRect);
-
 			IntText.Frame = new CGRect(30, 360, 300, 20);
 			IntText.SetTitle(currentTask.interruptTime.ToString(), UIControlState.Normal);
 			IntText.TitleLabel.SizeToFit();
@@ -173,6 +180,9 @@ namespace ProcessDashboard.iOS
 				alert.Show();
 			};
 
+			IntText.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
+
+
 			//
 			CommentLabel = new UILabel(new CGRect(30, 390, 300, 20))
 			{
@@ -183,8 +193,9 @@ namespace ProcessDashboard.iOS
 				BackgroundColor = UIColor.FromRGB(220, 220, 220),
 
 			};
+			CommentLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
-
+			//
 			CommentText = new UIButton(UIButtonType.RoundedRect);
 			CommentText.SetTitle(currentTask.task.taskNote, UIControlState.Normal);
 			CommentText.Frame = new CGRect(30, 420, 300, 100);
@@ -202,6 +213,8 @@ namespace ProcessDashboard.iOS
 				alert.Clicked += CommentButtonClicked;
 				alert.Show();
 			};
+
+			CommentText.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
 			View.AddSubview(TaskNameLabel);
 			View.AddSubview(StartTimeLabel);

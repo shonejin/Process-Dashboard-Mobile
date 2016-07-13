@@ -51,7 +51,7 @@ namespace ProcessDashboard.iOS
 			if (cell == null)
 				cell = new UITableViewCell(UITableViewCellStyle.Value1, cellIdentifier);
 
-			cell.TextLabel.Text = tableItems[indexPath.Row].startDate.ToLocalTime().ToString();
+			cell.TextLabel.Text = tableItems[indexPath.Row].startDate.ToShortDateString() + " " + tableItems[indexPath.Row].startDate.ToShortTimeString();
 			cell.DetailTextLabel.Text = tableItems[indexPath.Row].loggedTime.ToString();
 			cell.TextLabel.Font = UIFont.SystemFontOfSize(12);
 			cell.TextLabel.Lines = 1;

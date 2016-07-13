@@ -16,11 +16,11 @@ namespace ProcessDashboard.iOS
     {
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UIButton LoginButton { get; set; }
+        UIKit.UILabel AppNameLabel { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UIView LoginPageUIView { get; set; }
+        UIKit.UIButton LoginButton { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
@@ -40,14 +40,14 @@ namespace ProcessDashboard.iOS
 
         void ReleaseDesignerOutlets ()
         {
+            if (AppNameLabel != null) {
+                AppNameLabel.Dispose ();
+                AppNameLabel = null;
+            }
+
             if (LoginButton != null) {
                 LoginButton.Dispose ();
                 LoginButton = null;
-            }
-
-            if (LoginPageUIView != null) {
-                LoginPageUIView.Dispose ();
-                LoginPageUIView = null;
             }
 
             if (PasswordTextView != null) {

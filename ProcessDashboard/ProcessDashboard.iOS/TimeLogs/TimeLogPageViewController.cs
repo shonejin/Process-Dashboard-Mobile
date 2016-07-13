@@ -8,7 +8,6 @@ using ProcessDashboard.Service;
 using ProcessDashboard.Service_Access_Layer;
 using ProcessDashboard.SyncLogic;
 using ProcessDashboard.DTO;
-using System.Collections.Generic;
 
 namespace ProcessDashboard.iOS
 {
@@ -47,10 +46,10 @@ namespace ProcessDashboard.iOS
 
 			NavigationItem.RightBarButtonItem = delete;
 
-			TimelogsTable.AutoresizingMask = UIViewAutoresizing.All;
+			TimelogsTable.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 			Add(TimelogsTable);
 
-			StaticLabel = new UILabel(new CGRect(0, 60, View.Bounds.Width, 40))
+			UILabel StaticLabel = new UILabel(new CGRect(0, 60, View.Bounds.Width, 40))
 			{
 				Text = " Task name\t\t\t\t\t\t Start time \t Delta ",
 				Font = UIFont.SystemFontOfSize(12),
@@ -60,6 +59,9 @@ namespace ProcessDashboard.iOS
 				Lines = 0,
 				LineBreakMode = UILineBreakMode.WordWrap,
 			};
+
+			StaticLabel.AutoresizingMask = UIViewAutoresizing.All;
+
 			this.Add(StaticLabel);
 
 		}
@@ -136,9 +138,9 @@ namespace ProcessDashboard.iOS
 
 				foreach (var proj in timeLogEntries)
 				{
-					//System.Diagnostics.Debug.WriteLine("Task Name : " + proj.task.fullName);
-					//System.Diagnostics.Debug.WriteLine("Start Date : " + proj.startDate);
-					//System.Diagnostics.Debug.WriteLine("End Date : " + proj.endDate);
+					System.Diagnostics.Debug.WriteLine("Task Name : " + proj.task.fullName);
+					System.Diagnostics.Debug.WriteLine("Start Date : " + proj.startDate);
+					System.Diagnostics.Debug.WriteLine("End Date : " + proj.endDate);
 					//  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
 				}
 			}
