@@ -4,12 +4,17 @@ using UIKit;
 using CoreGraphics;
 using System.Drawing;
 using SharpMobileCode.ModalPicker;
+using ProcessDashboard.Service;
+using ProcessDashboard.Service_Access_Layer;
+using ProcessDashboard.SyncLogic;
+using ProcessDashboard.DTO;
+
 
 namespace ProcessDashboard.iOS
 {
 	public partial class TimelogDetailViewController : UIViewController
 	{
-		TimelogTableItem currentTask { get; set; }
+		TimeLogEntry currentTask { get; set; }
 		CustomTimeLogCell currentCell { get; set; }
 		public TimeLogPageViewController Delegate { get; set; } // will be used to Save, Delete later
 		public TaskTimeLogViewController DelegateforTasktimelog { get; set; } // will be used to Save, Delete later
@@ -71,7 +76,7 @@ namespace ProcessDashboard.iOS
 
 			TaskNameLabel = new UILabel(new CGRect(30, 100, 300, 60))
 			{
-				Text = currentTask.Heading,
+				Text = currentTask.task.fullName,
 				Font = UIFont.SystemFontOfSize(14),
 				TextColor = UIColor.Black,
 				TextAlignment = UITextAlignment.Center,
@@ -92,7 +97,7 @@ namespace ProcessDashboard.iOS
 
 			StartTimeText = new UIButton(UIButtonType.RoundedRect);
 
-			StartTimeText.SetTitle(currentTask.SubHeading + " " + currentTask.StartTime, UIControlState.Normal);
+			StartTimeText.SetTitle(currentTask.startDate.ToLocalTime().ToString(), UIControlState.Normal);
 
 			StartTimeText.Frame = new CGRect(30, 220, 300, 20);
 
@@ -120,7 +125,7 @@ namespace ProcessDashboard.iOS
 
 			DeltaText.Frame = new CoreGraphics.CGRect(10, 290, 300, 20);
 
-			DeltaText.SetTitle(currentTask.Delta, UIControlState.Normal);
+			DeltaText.SetTitle(currentTask.loggedTime.ToString(), UIControlState.Normal);
 
 			DeltaText.TitleLabel.SizeToFit();
 
@@ -152,7 +157,7 @@ namespace ProcessDashboard.iOS
 			IntText = new UIButton(UIButtonType.RoundedRect);
 
 			IntText.Frame = new CGRect(30, 360, 300, 20);
-			IntText.SetTitle(currentTask.Int, UIControlState.Normal);
+			IntText.SetTitle(currentTask.interruptTime.ToString(), UIControlState.Normal);
 			IntText.TitleLabel.SizeToFit();
 
 			IntText.TouchUpInside += (sender, e) =>
@@ -181,7 +186,7 @@ namespace ProcessDashboard.iOS
 
 
 			CommentText = new UIButton(UIButtonType.RoundedRect);
-			CommentText.SetTitle(currentTask.Comment, UIControlState.Normal);
+			CommentText.SetTitle(currentTask.task.taskNote, UIControlState.Normal);
 			CommentText.Frame = new CGRect(30, 420, 300, 100);
 			CommentText.TitleLabel.SizeToFit();
 
@@ -214,20 +219,20 @@ namespace ProcessDashboard.iOS
 		{
 			base.ViewWillAppear(animated);
 
-			TaskNameLabel.Text = currentTask.Heading;
-			StartTimeText.TitleLabel.Text = currentTask.SubHeading + " " + currentTask.StartTime;
-			DeltaText.TitleLabel.Text = currentTask.Delta;
+			TaskNameLabel.Text = currentTask.task.fullName;
+			StartTimeText.TitleLabel.Text = currentTask.startDate.ToLongTimeString();
+			DeltaText.TitleLabel.Text = currentTask.loggedTime.ToString();
 
 		}
 
 		// this will be called before the view is displayed
-		public void SetTask(TimeLogPageViewController d, TimelogTableItem task)
+		public void SetTask(TimeLogPageViewController d, TimeLogEntry task)
 		{
 			Delegate = d;
 			currentTask = task;
 		}
 
-		public void SetTaskforTaskTimelog(TaskTimeLogViewController d, TimelogTableItem task)
+		public void SetTaskforTaskTimelog(TaskTimeLogViewController d, TimeLogEntry task)
 		{
 			DelegateforTasktimelog = d;
 			currentTask = task;
@@ -243,14 +248,16 @@ namespace ProcessDashboard.iOS
 				Console.Out.WriteLine("haha: "+ DeltaText.TitleLabel.Text);
 				DeltaText.TitleLabel.Text = parent_alert.GetTextField(0).Text;
 				//SaveDeltaTimeChanged(parent_alert.GetTextField(0).Text);
-				TimelogTableItem newTask = new TimelogTableItem();
-				newTask.Heading = currentTask.Heading;
-				newTask.SubHeading = currentTask.SubHeading;
-				newTask.StartTime = currentTask.StartTime;
-				newTask.Delta = parent_alert.GetTextField(0).Text;
-				newTask.Int = currentTask.Int;
-				newTask.Comment = currentTask.Comment;
-				Delegate.SaveTask(currentTask, newTask);
+				TimeLogEntry newTask = new TimeLogEntry();
+				// TODO: fix the type
+				//newTask.Heading = currentTask.Heading;
+				//newTask.SubHeading = currentTask.SubHeading;
+				//newTask.StartTime = currentTask.StartTime;
+				//newTask.Delta = parent_alert.GetTextField(0).Text;
+				//newTask.Int = currentTask.Int;
+				//newTask.Comment = currentTask.Comment;
+
+				//Delegate.SaveTask(currentTask, newTask);
 
 				Console.Out.WriteLine(parent_alert.GetTextField(0).Text);
 
@@ -265,14 +272,16 @@ namespace ProcessDashboard.iOS
 			if (e.ButtonIndex == 1)
 			{
 				IntText.TitleLabel.Text = parent_alert.GetTextField(0).Text;
-				TimelogTableItem newTask = new TimelogTableItem();
-				newTask.Heading = currentTask.Heading;
-				newTask.SubHeading = currentTask.SubHeading;
-				newTask.StartTime = currentTask.StartTime;
-				newTask.Delta = currentTask.Delta;
-				newTask.Int = parent_alert.GetTextField(0).Text;
-				newTask.Comment = currentTask.Comment;
-				Delegate.SaveTask(currentTask, newTask);
+				// TODO: fix the type
+				//TimelogTableItem newTask = new TimelogTableItem();
+				//newTask.Heading = currentTask.Heading;
+				//newTask.SubHeading = currentTask.SubHeading;
+				//newTask.StartTime = currentTask.StartTime;
+				//newTask.Delta = currentTask.Delta;
+				//newTask.Int = parent_alert.GetTextField(0).Text;
+				//newTask.Comment = currentTask.Comment;
+
+				//Delegate.SaveTask(currentTask, newTask);
 
 
 			}
@@ -287,14 +296,16 @@ namespace ProcessDashboard.iOS
 			if (e.ButtonIndex == 1)
 			{
 				CommentText.TitleLabel.Text = parent_alert.GetTextField(0).Text;
-				TimelogTableItem newTask = new TimelogTableItem();
-				newTask.Heading = currentTask.Heading;
-				newTask.SubHeading = currentTask.SubHeading;
-				newTask.StartTime = currentTask.StartTime;
-				newTask.Delta = currentTask.Delta;
-				newTask.Int = currentTask.Int;
-				newTask.Comment = parent_alert.GetTextField(0).Text;
-				Delegate.SaveTask(currentTask, newTask);
+
+				// TODO: fix the type
+				//TimelogTableItem newTask = new TimelogTableItem();
+				//newTask.Heading = currentTask.Heading;
+				//newTask.SubHeading = currentTask.SubHeading;
+				//newTask.StartTime = currentTask.StartTime;
+				//newTask.Delta = currentTask.Delta;
+				//newTask.Int = currentTask.Int;
+				//newTask.Comment = parent_alert.GetTextField(0).Text;
+				//Delegate.SaveTask(currentTask, newTask);
 
 			}
 
@@ -320,7 +331,7 @@ namespace ProcessDashboard.iOS
 			{
 				var dateFormatter = new NSDateFormatter()
 				{
-					DateFormat = "yyyy-MM-dd hh:mm a"
+					DateFormat = "MM/dd/yyyy hh:mm a"
 				};
 
 				StartTimeText.TitleLabel.Text = dateFormatter.ToString(modalPicker.DatePicker.Date);
@@ -335,16 +346,17 @@ namespace ProcessDashboard.iOS
 
 		public void SaveStartTimeChanged(String time)
 		{
+			// TODO: fix the type
+			//TimelogTableItem newTask = new TimelogTableItem();
+			//String[] strs = time.Split(' ');
+			//newTask.Heading = currentTask.Heading;
+			//newTask.SubHeading = strs[0];
+			//newTask.StartTime = strs[1] + " " + strs[2];
+			//newTask.Delta = DeltaText.TitleLabel.Text;
+			//newTask.Int = currentTask.Int;
+			//newTask.Comment = currentTask.Comment;
 
-			TimelogTableItem newTask = new TimelogTableItem();
-			String[] strs = time.Split(' ');
-			newTask.Heading = currentTask.Heading;
-			newTask.SubHeading = strs[0];
-			newTask.StartTime = strs[1] + " " + strs[2];
-			newTask.Delta = DeltaText.TitleLabel.Text;
-			newTask.Int = currentTask.Int;
-			newTask.Comment = currentTask.Comment;
-			Delegate.SaveTask(currentTask, newTask);
+			//Delegate.SaveTask(currentTask, newTask);
 		}
 
 	}

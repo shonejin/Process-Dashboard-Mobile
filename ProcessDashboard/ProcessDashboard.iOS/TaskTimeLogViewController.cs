@@ -125,21 +125,21 @@ namespace ProcessDashboard.iOS
 				{
 					var source = TaskTimeLogTable.Source as TaskTimeLogTableSource;
 					var rowPath = TaskTimeLogTable.IndexPathForSelectedRow;
-					var startTime = timeLogCache[rowPath.Row].startDate.ToLocalTime().ToString();
-					var intrrupt = timeLogCache[rowPath.Row].interruptTime.ToString();
-					var delta = timeLogCache[rowPath.Row].loggedTime.ToString();
-					var comment = timeLogCache[rowPath.Row].task.taskNote;
-					TimelogTableItem t= new TimelogTableItem();
-					//String[] strs = startTime.Split(' ');
+					//var startTime = timeLogCache[rowPath.Row].startDate.ToLocalTime().ToString();
+					//var intrrupt = timeLogCache[rowPath.Row].interruptTime.ToString();
+					//var delta = timeLogCache[rowPath.Row].loggedTime.ToString();
+					//var comment = timeLogCache[rowPath.Row].task.taskNote;
+					//TimeLogEntry t= new TimeLogEntry();
+					////String[] strs = startTime.Split(' ');
 
-					t.Heading = TaskNameLabel.Text;
-					//t.SubHeading = strs[0];
-					t.StartTime = startTime;
-					t.Delta = delta;
-					t.Int = intrrupt;
-					t.Comment = comment;
+					//t.task.fullName = TaskNameLabel.Text;
+					////t.SubHeading = strs[0];
+					//t.startStartTime = startTime;
+					//t.Delta = delta;
+					//t.Int = intrrupt;
+					//t.Comment = comment;
 
-					navctlr.SetTaskforTaskTimelog(this, t); // to be defined on the TaskDetailViewController
+					navctlr.SetTaskforTaskTimelog(this, timeLogCache[rowPath.Row]); // to be defined on the TaskDetailViewController
 				}
 			}
 

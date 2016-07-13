@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using Foundation;
 using UIKit;
 using CoreGraphics;
+using ProcessDashboard.Service;
+using ProcessDashboard.Service_Access_Layer;
+using ProcessDashboard.SyncLogic;
+using ProcessDashboard.DTO;
+using System.Collections.Generic;
 
 namespace ProcessDashboard.iOS
 {
@@ -11,19 +16,12 @@ namespace ProcessDashboard.iOS
     {
 		UIBarButtonItem delete, done;
 		NSIndexPath currentPath;
-		List<TimelogTableItem> veges;
+		//List<TimelogTableItem> veges;
+		List<TimeLogEntry> globalTimeLogCache;
 
         public TimeLogPageViewController (IntPtr handle) : base (handle)
         {
         }
-
-		public override void DidReceiveMemoryWarning()
-		{
-			// Releases the view if it doesn't have a superview.
-			base.DidReceiveMemoryWarning();
-
-			// Release any cached data, images, etc that aren't in use.
-		}
 
 		public override void ViewDidLoad()
 		{
@@ -48,10 +46,8 @@ namespace ProcessDashboard.iOS
 			});
 
 			NavigationItem.RightBarButtonItem = delete;
-			//NavigationItem.LeftBarButtonItem = edit;
 
-			//TimelogsTable.AutoresizingMask = UIViewAutoresizing.All;
-			CreateTableItems();
+			TimelogsTable.AutoresizingMask = UIViewAutoresizing.All;
 			Add(TimelogsTable);
 
 			StaticLabel = new UILabel(new CGRect(0, 60, View.Bounds.Width, 40))
@@ -68,43 +64,6 @@ namespace ProcessDashboard.iOS
 
 		}
 
-		protected void CreateTableItems()
-		{
-			veges = new List<TimelogTableItem>();
-
-		    var vege1 = new string[] { "2016-06-01","/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Personal Review","11:00 AM", "3:01"};
-			veges.Add(new TimelogTableItem(vege1[1]) { SubHeading = vege1[0], StartTime = vege1[2], Delta = vege1[3], Int = "00:00", Comment = "Test" });
-
-			var vege2 = new string[] { "2016-06-01", "/ Project / Mobile App I1 / High Level Design Document / View Logic/ UI experiment / Team Review","3:00 PM", "1:20" };
-			veges.Add(new TimelogTableItem(vege2[1]) { SubHeading = vege2[0], StartTime = vege2[2], Delta = vege2[3], Int = "00:00", Comment = "Test" });
-
-			var vege3 = new string[] { "2016-06-01", "/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Refine Document","7:00 PM", "2:31" };
-			veges.Add(new TimelogTableItem(vege3[1]) { SubHeading = vege3[0],StartTime = vege3[2], Delta = vege3[3], Int = "00:00", Comment = "Test" });
-
-			var vege4 = new string[] { "2016-06-02", " / Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Personal Review","11:20 AM", "2:32" };
-			veges.Add(new TimelogTableItem(vege4[1]) { SubHeading = vege4[0],StartTime = vege4[2], Delta = vege4[3], Int = "00:00", Comment = "Test" });
-
-			var vege5 = new string[] { "2016-06-02", "/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Team Review","3:00 PM", "1:00" };
-			veges.Add(new TimelogTableItem(vege5[1]) { SubHeading = vege5[0],StartTime = vege5[2], Delta = vege5[3], Int = "00:00", Comment = "Test" });
-
-			var vege6 = new string[] { "2016-06-03", "/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Refine Document","3:24 PM", "1:21" };
-			veges.Add(new TimelogTableItem(vege6[1]) { SubHeading = vege6[0],StartTime = vege6[2], Delta = vege6[3], Int = "00:00", Comment = "Test" });
-
-			var vege7 = new string[] { "2016-06-04", "/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Refine Document", "1:30 PM", "0:28" };
-			veges.Add(new TimelogTableItem(vege6[1]) { SubHeading = vege7[0], StartTime = vege7[2], Delta = vege7[3], Int = "00:00", Comment = "Test" });
-
-			var vege8 = new string[] { "2016-06-04", "/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Refine Document", "11:10 PM", "0:31" };
-			veges.Add(new TimelogTableItem(vege6[1]) { SubHeading = vege8[0], StartTime = vege8[2], Delta = vege8[3], Int = "00:00", Comment = "Test" });
-
-			var vege9 = new string[] { "2016-06-05", "/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Refine Document", "12:11 PM", "0:21" };
-			veges.Add(new TimelogTableItem(vege6[1]) { SubHeading = vege9[0], StartTime = vege9[2], Delta = vege9[3], Int = "00:00", Comment = "Test" });
-
-			var vege10 = new string[] { "2016-06-06", "/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Refine Document", "5:11 PM", "0:49" };
-			veges.Add(new TimelogTableItem(vege6[1]) { SubHeading = vege10[0], StartTime = vege10[2], Delta = vege10[3], Int = "00:00", Comment = "Test" });
-
-			TimelogsTable.Source = new TimelogTableSource(veges, this);
-
-		}
 
 
 		public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)
@@ -132,40 +91,63 @@ namespace ProcessDashboard.iOS
 		public override void ViewWillAppear(bool animated)
 		{
 			base.ViewWillAppear(animated);
-			TimelogsTable.Source = new TimelogTableSource(veges, this);
-			//TimelogsTable.ReloadData();
+			refreshData();
 		}
 
-		public override void ViewDidAppear(bool animated)
+
+		public void SaveTask(TimeLogEntry oldLog, TimeLogEntry newLog)
 		{
-			base.ViewDidAppear(animated);
+			var oldTask = globalTimeLogCache.Find(temp => temp.task.fullName.Equals(oldLog.task.fullName));
+			globalTimeLogCache.Remove(oldTask);
+			globalTimeLogCache.Add(newLog);
 		}
 
-		public override void ViewWillDisappear(bool animated)
-		{
-			base.ViewWillDisappear(animated);
-		}
-
-		public override void ViewDidDisappear(bool animated)
-		{
-			base.ViewDidDisappear(animated);
-		}
-
-		public void SaveTask(TimelogTableItem oldLog, TimelogTableItem newLog)
-		{
-			var oldTask = veges.Find(temp => temp.Heading.Equals(oldLog.Heading));
-			veges.Remove(oldTask);
-			veges.Add(newLog);
-		}
-
-		public void DeleteTask(TimelogTableItem log)
+		public void DeleteTask(TimeLogEntry log)
 		{
 
-			var oldTask = veges.Find(t => t.Heading.Equals(log.Heading));
-			veges.Remove(oldTask);
+			var oldTask = globalTimeLogCache.Find(t => t.task.fullName.Equals(log.task.fullName));
+			globalTimeLogCache.Remove(oldTask);
 			NavigationController.PopViewController(true);
 		}
 
+		// This ID is used to fetch the time logs. It is set by the previous view controller
+
+		public async void refreshData()
+		{
+			await getGlobalTimeLogs();
+			TimelogsTable.Source = new TimelogTableSource(globalTimeLogCache, this);
+			TimelogsTable.ReloadData();
+		}
+
+		public async System.Threading.Tasks.Task<int> getGlobalTimeLogs()
+		{
+			var apiService = new ApiTypes(null);
+			var service = new PDashServices(apiService);
+			Controller c = new Controller(service);
+
+			List<TimeLogEntry> timeLogEntries = await c.GetTimeLog("mock", 0, null, null, null, null);
+
+			globalTimeLogCache = timeLogEntries;
+
+			try
+			{
+				System.Diagnostics.Debug.WriteLine("** LIST OF Timelog **");
+				System.Diagnostics.Debug.WriteLine("Global Length is " + globalTimeLogCache.Count);
+
+				foreach (var proj in timeLogEntries)
+				{
+					//System.Diagnostics.Debug.WriteLine("Task Name : " + proj.task.fullName);
+					//System.Diagnostics.Debug.WriteLine("Start Date : " + proj.startDate);
+					//System.Diagnostics.Debug.WriteLine("End Date : " + proj.endDate);
+					//  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
+				}
+			}
+			catch (Exception e)
+			{
+				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+			}
+			return 0;
+		}
 
 	}
 

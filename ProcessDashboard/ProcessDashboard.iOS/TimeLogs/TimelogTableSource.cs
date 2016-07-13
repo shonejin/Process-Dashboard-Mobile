@@ -6,6 +6,10 @@ using System.IO;
 using System.Linq;
 using CoreGraphics;
 using System.Drawing;
+using ProcessDashboard.Service;
+using ProcessDashboard.Service_Access_Layer;
+using ProcessDashboard.SyncLogic;
+using ProcessDashboard.DTO;
 
 
 namespace ProcessDashboard.iOS
@@ -14,23 +18,23 @@ namespace ProcessDashboard.iOS
 	{
 		protected string cellIdentifier = "TableCell";
 
-		Dictionary<string, List<TimelogTableItem>> indexedTableItems;
+		Dictionary<string, List<TimeLogEntry>> indexedTableItems;
 		string[] keys;
 		TimeLogPageViewController owner;
 
-		public TimelogTableSource(List<TimelogTableItem> items, TimeLogPageViewController owner)
+		public TimelogTableSource(List<TimeLogEntry> items, TimeLogPageViewController owner)
 		{
 			this.owner = owner;
 
-			indexedTableItems = new Dictionary<string, List<TimelogTableItem>>();
+			indexedTableItems = new Dictionary<string, List<TimeLogEntry>>();
 			foreach (var t in items)
 			{
-				if (indexedTableItems.ContainsKey(t.SubHeading))
+				if (indexedTableItems.ContainsKey(t.startDate.ToShortDateString()))
 				{
-					indexedTableItems[t.SubHeading].Add(t);
+					indexedTableItems[t.startDate.ToShortDateString()].Add(t);
 				}
 				else {
-					indexedTableItems.Add(t.SubHeading, new List<TimelogTableItem>() { t });
+					indexedTableItems.Add(t.startDate.ToShortDateString(), new List<TimeLogEntry>() { t });
 				}
 			}
 			keys = indexedTableItems.Keys.ToArray();
@@ -84,7 +88,7 @@ namespace ProcessDashboard.iOS
 
 
 			CustomTimeLogCell cell = tableView.DequeueReusableCell(cellIdentifier) as CustomTimeLogCell;
-			TimelogTableItem item = indexedTableItems[keys[indexPath.Section]][indexPath.Row];
+			TimeLogEntry item = indexedTableItems[keys[indexPath.Section]][indexPath.Row];
 
 			// if there are no cells to reuse, create a new one
 			if (cell == null)
@@ -92,15 +96,18 @@ namespace ProcessDashboard.iOS
 				cell = new CustomTimeLogCell ((NSString)cellIdentifier);
 			}
 
-				cell.UpdateCell(item.Heading
-								, item.StartTime
-								, item.Delta);
-			
+			//cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
+
+			cell.UpdateCell(item.task.fullName.ToString()
+			                , item.startDate.ToShortTimeString()
+			                , item.loggedTime.ToString());
+
+			Console.WriteLine("taks full name: " + item.task.fullName.ToString());
 
 			return cell;
 		}
 
-		public TimelogTableItem GetItem(NSIndexPath indexPath)
+		public TimeLogEntry GetItem(NSIndexPath indexPath)
 		{
 			return indexedTableItems[keys[indexPath.Section]][indexPath.Row];
 		}
