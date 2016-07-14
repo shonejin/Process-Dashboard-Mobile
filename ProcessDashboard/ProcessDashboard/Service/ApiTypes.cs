@@ -8,14 +8,24 @@ using Refit;
 namespace ProcessDashboard.Service
 {
     /*
-        DO NOT CHANGE
-        This class uses Fusilade to allocate priority to a network request.
-
+     * ** DO NOT CHANGE **
+     * Name: ApiTypes.cs
+     * 
+     * Purpose: This class is a concerete implementation for IApiTypes interface.
+     * 
+     * Description:
+     * 
+     * Fusilade provides three priority types: User Intiated, Background and Sepculative.
+     * This class provides three objects for these which can be used while making API requests.
+     * It also uses ModernHttpClient inorder to use native Http optimizations for Network calls. 
+     *
     */
 
     public class ApiTypes : IApiTypes
     {
+        //TODO: Change this to the APIBaseAddress stored in settings file.
         public const string ApiBaseAddress = "https://pdes.tuma-solutions.com/api/v1/";
+
         public ApiTypes(string apiBaseAddress = null)
         {
             Func<HttpMessageHandler, IPDashApi> createClient = messageHandler =>
@@ -29,6 +39,8 @@ namespace ProcessDashboard.Service
                 return RestService.For<IPDashApi>(client);
             };
 
+            // Use Native Message Handler to make use of ModernHttpClient
+
             _background = new Lazy<IPDashApi>(() => createClient(
                 new RateLimitedHttpMessageHandler(new NativeMessageHandler(), Priority.Background)));
 
@@ -38,24 +50,21 @@ namespace ProcessDashboard.Service
             _speculative = new Lazy<IPDashApi>(() => createClient(
                 new RateLimitedHttpMessageHandler(new NativeMessageHandler(), Priority.Speculative)));
         }
-
+        
+        // For any network requests that has to be done on the background
         private readonly Lazy<IPDashApi> _background;
+
+        // Any network request that is because the user initiated it. This has the highest priority
         private readonly Lazy<IPDashApi> _userInitiated;
+
+        // Speculatively make requests by predicting what the user might need. This has the lowest priority.
+        // There is a 5 mb limit on how much can be speculatively retrieved.
         private readonly Lazy<IPDashApi> _speculative;
 
-        public IPDashApi Background
-        {
-            get { return _background.Value; }
-        }
+        public IPDashApi Background => _background.Value;
 
-        public IPDashApi UserInitiated
-        {
-            get { return _userInitiated.Value; }
-        }
+        public IPDashApi UserInitiated => _userInitiated.Value;
 
-        public IPDashApi Speculative
-        {
-            get { return _speculative.Value; }
-        }
+        public IPDashApi Speculative => _speculative.Value;
     }
 }

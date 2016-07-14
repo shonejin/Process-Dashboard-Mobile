@@ -18,6 +18,7 @@ namespace ProcessDashboard.SyncLogic
     public class Controller
     {
         private readonly IPDashServices _pDashServices;
+
         private readonly DBManager _dbm;
 
         public Controller(IPDashServices pDash)
@@ -156,16 +157,44 @@ namespace ProcessDashboard.SyncLogic
                 System.Diagnostics.Debug.WriteLine("** LIST OF TASKS **");
                 System.Diagnostics.Debug.WriteLine("Length is " + projectsList.Count);
 
-				foreach (var proj in projectsList.Select(x => x.project))
+                foreach (var proj in projectsList.Select(x => x.fullName))
                 {
-                    System.Diagnostics.Debug.WriteLine(" Project Name:"+ proj);
+                    System.Diagnostics.Debug.WriteLine(proj);
                     //  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
                 }
+
             }
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
             }
+
+
+
+        }
+
+        public async void testTaskProject()
+        {
+
+            List<DTO.Task> projectsList = await GetTasks("mock", "iokdum2d");
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("** LIST OF TASKS **");
+                System.Diagnostics.Debug.WriteLine("Length is " + projectsList.Count);
+
+                foreach (var proj in projectsList.Select(x => x.project))
+                {
+                    System.Diagnostics.Debug.WriteLine(proj.name);
+                    
+                }
+
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+            }
+
+
 
         }
 

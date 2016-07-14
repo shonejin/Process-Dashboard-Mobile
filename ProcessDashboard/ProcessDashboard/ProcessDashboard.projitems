@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\TaskListRoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\TaskRoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\TimeLogsRoot.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controller.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DBWrapper\DBRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DBWrapper\ProjectWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DBWrapper\TaskWrapper.cs" />
@@ -27,15 +28,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\ProjectModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\TaskModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\TimeLogEntryModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MyClass.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\ApiTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\Interface\IApiTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\Interface\IPDashApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\Interface\IPDashServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\PDashServices.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SyncLogic\Controller.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Exception\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Readme.md" />
   </ItemGroup>
 </Project>

@@ -1,23 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reactive.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-//using Plugin.Connectivity;
 using Fusillade;
-//using Polly;
-using System.Linq;
 using ProcessDashboard.APIRoot;
 using ProcessDashboard.DBWrapper;
 using ProcessDashboard.DTO;
 using ProcessDashboard.Model;
 using ProcessDashboard.Service.Interface;
-using Refit;
 
+//using Plugin.Connectivity;
+//using Polly;
 namespace ProcessDashboard.Service_Access_Layer
 {
+    /*
+     * 
+     * Name: PDashServices.cs
+     * 
+     * Purpose: This class is a concerete implementation for IPDashServices interface.
+     * 
+     * Description:
+     * This class provides concrete implemntation for getting values either from remote service or from local database.
+     * The remote service will inturn make use of a concrete implementation of IApiTypes interface.
+     * The local service use of the Database Manager for connecting to SQlite Database.
+
+     */
+    
     public class PDashServices : IPDashServices
     {
+        // Api Service for making the request using Fusilade
         private readonly IApiTypes _apiService;
+        // DB Manager to manage Database operations
         private readonly DBManager _dbm;
 
         public PDashServices(IApiTypes apiService)
@@ -25,6 +36,11 @@ namespace ProcessDashboard.Service_Access_Layer
             _apiService = apiService;
             _dbm = DBManager.getInstance();
         }
+
+        /*
+         * List of projects 
+         * 
+         */ 
 
         public async Task<List<Project>> GetProjectsListLocal(Priority priority, string dataset)
         {
@@ -52,8 +68,8 @@ namespace ProcessDashboard.Service_Access_Layer
         {
             System.Diagnostics.Debug.WriteLine("ProjectModel Service : " + " Going for remote task");
 
-            
             Task<ProjectsListRoot> getTaskDtoTask;
+
             System.Diagnostics.Debug.WriteLine("ProjectModel Service : " + " Setting priority");
             switch (priority)
             {
@@ -135,7 +151,7 @@ namespace ProcessDashboard.Service_Access_Layer
         {
             System.Diagnostics.Debug.WriteLine("Task Service : " + " Going for remote task");
 
-            TaskListRoot task = null;
+            TaskListRoot tasks = null;
             Task<TaskListRoot> getTaskDtoTask;
             System.Diagnostics.Debug.WriteLine("Task Service : " + " Setting priority");
             switch (priority)
@@ -154,9 +170,18 @@ namespace ProcessDashboard.Service_Access_Layer
                     break;
             }
 
-            task = await getTaskDtoTask;
-            System.Diagnostics.Debug.WriteLine("Task Service : " + "Got the content. STATUS :"+task.stat);
-            System.Diagnostics.Debug.WriteLine("Task Service : " + "Is null : " + (task.projectTasks==null));
+            tasks = await getTaskDtoTask;
+            System.Diagnostics.Debug.WriteLine("Task Service : " + "Got the content. STATUS :"+tasks.stat);
+            System.Diagnostics.Debug.WriteLine("Task Service : " + "Is null : " + (tasks.projectTasks==null));
+
+            Project p = tasks.forProject;
+            for (int i = 0; i < tasks.projectTasks.Count; i++)
+            {
+                DTO.Task t = tasks.projectTasks[i];
+                t.project = p;
+                tasks.projectTasks[i] = t;
+            }
+
             /*
             if (CrossConnectivity.Current.IsConnected)
             {
@@ -167,7 +192,7 @@ namespace ProcessDashboard.Service_Access_Layer
                     .ExecuteAsync(async () => await getTaskDtoTask);
             }
             */
-            return task.projectTasks;
+            return tasks.projectTasks;
         }
         
         public async Task<DTO.Task> GetTaskDetailsLocal(Priority priority, string dataset, string projecttaskID)

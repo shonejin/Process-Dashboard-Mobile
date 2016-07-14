@@ -12,7 +12,7 @@ namespace ProcessDashboard.iOS
 {
     public partial class TaskTimeLogViewController : UIViewController
     {
-		UILabel ProjectNameLabel, TaskNameLabel;
+		UILabel ProjectNameLabel, TaskNameLabel, TimelogsLabel;
 		List<TimeLogEntry> timeLogCache;
 
 		// This ID is used to fetch the time logs. It is set by the previous view controller
@@ -83,7 +83,7 @@ namespace ProcessDashboard.iOS
 				LineBreakMode = UILineBreakMode.WordWrap,
 			};
 
-			TaskNameLabel = new UILabel(new CGRect(30, 180, 300, 60))
+			TaskNameLabel = new UILabel(new CGRect(30, 160, 300, 60))
 			{
 				Text = task.fullName.ToString(),
 				Font = UIFont.SystemFontOfSize(13),
@@ -94,11 +94,23 @@ namespace ProcessDashboard.iOS
 				LineBreakMode = UILineBreakMode.WordWrap,
 			};
 
-			TaskTimeLogTable = new UITableView(new CGRect(0, 250, View.Bounds.Width, View.Bounds.Height));
+			TimelogsLabel = new UILabel(new CGRect(10, 240, 300, 20))
+			{
+				Text = "Time Logs:",
+				Font = UIFont.SystemFontOfSize(13),
+				TextColor = UIColor.Black,
+				TextAlignment = UITextAlignment.Left,
+				//BackgroundColor = UIColor.FromRGB(220, 220, 220),
+				//Lines = 0,
+				//LineBreakMode = UILineBreakMode.WordWrap,
+			};
+
+			TaskTimeLogTable = new UITableView(new CGRect(0, 270, View.Bounds.Width, View.Bounds.Height));
 
 			Add(TaskTimeLogTable);
 			this.Add(ProjectNameLabel);
 			this.Add(TaskNameLabel);
+			this.Add(TimelogsLabel);
 
 
 		}
