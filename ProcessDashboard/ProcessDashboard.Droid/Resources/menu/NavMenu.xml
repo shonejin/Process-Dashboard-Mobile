@@ -16,7 +16,7 @@
     <item
       android:id="@+id/nav_discussion"
       android:icon="@drawable/ic_devices_black_24dp"
-      android:title="..." />
+      android:title="Settings" />
   </group>
 
   <item android:title="Sub items">

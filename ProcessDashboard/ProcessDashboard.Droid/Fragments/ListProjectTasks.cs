@@ -16,11 +16,11 @@ namespace ProcessDashboard.Droid.Fragments
 {
     public class ListProjectTasks : ListFragment
     {
-        private string projectID;
+        private string _projectId;
 
-        public ListProjectTasks (string projectID)
+        public ListProjectTasks (string projectId)
         {
-            this.projectID = projectID;
+            this._projectId = projectId;
         }
 
         public override void OnCreate(Bundle savedInstanceState)
@@ -33,44 +33,44 @@ namespace ProcessDashboard.Droid.Fragments
         public override void OnActivityCreated(Bundle savedInstanceState)
         {
             base.OnActivityCreated(savedInstanceState);
-            setID(projectID);
+            SetId(_projectId);
             ListView listView = this.ListView;
             listView.ItemClick += (object sender, AdapterView.ItemClickEventArgs e) =>
             {
                 TaskAdapter ta = (TaskAdapter)listView.Adapter;
                 Task p = ta.GetTask(e.Position);
-                string taskID = p.id;
-                ((MainActivity)this.Activity).switchToFragment(MainActivity.fragmentTypes.taskdetails);
-
+                string taskId = p.id;
+                //  ((MainActivity)this.Activity).switchToFragment(MainActivity.fragmentTypes.taskdetails);
+                ((MainActivity)this.Activity).passTaskDetailsInfo(taskId);
                 //Project p = listView.GetItemAtPosition(e.Position);
 
             };
-            test(((MainActivity)this.Activity)._ctrl, projectID);
+            AddData(((MainActivity)this.Activity)._ctrl, _projectId);
 
 
         }
 
-        public void setID(string projectID)
+        public void SetId(string projectId)
         {
-            this.projectID = projectID;
+            this._projectId = projectId;
         }
 
         
         
 
-        private async void test(Controller ctrl,string projectID)
+        private async void AddData(Controller ctrl,string projectId)
         {
-            List<Task> output = await ctrl.GetTasks("mock",projectID);
-            TaskAdapter ListAdapter = new TaskAdapter(Activity, Android.Resource.Layout.SimpleListItem1,output.ToArray(),1);
-            this.ListView.Adapter = ListAdapter;
+            List<Task> output = await ctrl.GetTasks("mock",projectId);
+            TaskAdapter listAdapter = new TaskAdapter(Activity, Android.Resource.Layout.SimpleListItem1,output.ToArray(),1,Activity);
+            ListView.Adapter = listAdapter;
             SetListShown(true);
         }
 
 
-        public void loadDummyData()
+        public void LoadDummyData()
         {
-            string[] values = new[] { "Sample Task", "Component 1 / Component 2 / Code", "... / head truncation" };
-            this.ListAdapter = new Android.Widget.ArrayAdapter<string>(Activity, Android.Resource.Layout.SimpleExpandableListItem1, values);
+            string[] values = { "Sample Task", "Component 1 / Component 2 / Code", "... / head truncation" };
+            this.ListAdapter = new ArrayAdapter<string>(Activity, Android.Resource.Layout.SimpleExpandableListItem1, values);
         }
 
         public override void OnListItemClick(ListView l, View v, int position, long id)
@@ -86,46 +86,53 @@ namespace ProcessDashboard.Droid.Fragments
 
     public class TaskAdapter : ArrayAdapter
     {
-        Task[] _taskList;
+        readonly Task[] _taskList;
 
-        Activity _activity;
+        public Activity Activity1 { get; }
 
-        public TaskAdapter(Context context, int resource, Task[] objects, int flag) : base(context, resource, objects)
+        public TaskAdapter(Context context, int resource, Task[] objects, int flag, Activity activity) : base(context, resource, objects)
         {
             System.Diagnostics.Debug.WriteLine("We are in the right constructor");
-            this._taskList = objects;
+            _taskList = objects;
+            Activity1 = activity;
         }
 
-        public TaskAdapter(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
+        public TaskAdapter(IntPtr javaReference, JniHandleOwnership transfer, Activity activity) : base(javaReference, transfer)
         {
-
+            Activity1 = activity;
         }
 
-        public TaskAdapter(Context context, int resource) : base(context, resource)
+        public TaskAdapter(Context context, int resource, Activity activity) : base(context, resource)
         {
+            Activity1 = activity;
         }
 
-        public TaskAdapter(Context context, int resource, int textViewResourceId)
+        public TaskAdapter(Context context, int resource, int textViewResourceId, Activity activity)
             : base(context, resource, textViewResourceId)
         {
+            Activity1 = activity;
         }
 
-        public TaskAdapter(Context context, int resource, int textViewResourceId, IList objects)
+        public TaskAdapter(Context context, int resource, int textViewResourceId, IList objects, Activity activity)
             : base(context, resource, textViewResourceId, objects)
         {
+            Activity1 = activity;
         }
 
-        public TaskAdapter(Context context, int resource, int textViewResourceId, Object[] objects)
+        public TaskAdapter(Context context, int resource, int textViewResourceId, Object[] objects, Activity activity)
             : base(context, resource, textViewResourceId, objects)
         {
+            Activity1 = activity;
         }
 
-        public TaskAdapter(Context context, int resource, IList objects) : base(context, resource, objects)
+        public TaskAdapter(Context context, int resource, IList objects, Activity activity) : base(context, resource, objects)
         {
+            Activity1 = activity;
         }
 
-        public TaskAdapter(Context context, int resource, Object[] objects) : base(context, resource, objects)
+        public TaskAdapter(Context context, int resource, Object[] objects, Activity activity) : base(context, resource, objects)
         {
+            Activity1 = activity;
         }
 
 

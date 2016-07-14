@@ -81,16 +81,20 @@
             android:layout_below="@id/TdPlannedTextView"
             android:paddingLeft="10dp" />
         <Button
-            android:text="Play"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            
+            android:src="@drawable/Play"
+            android:background="@drawable/play"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:id="@+id/TdPlayBtn"
             android:layout_below="@+id/TdCompleteTextView"
             android:layout_toLeftOf="@+id/TdPauseBtn" />
         <Button
-            android:text="Pause"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            
+            android:src="@drawable/Pause"
+            android:background="@drawable/pause"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:id="@+id/TdPauseBtn"
             android:layout_below="@id/TdCompleteTextView"
             android:layout_alignParentRight="true"

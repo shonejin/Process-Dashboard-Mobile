@@ -1,4 +1,5 @@
-﻿using Android.App;
+﻿using System;
+using Android.App;
 using Android.Widget;
 using Android.OS;
 
@@ -17,7 +18,7 @@ using ProcessDashboard.SyncLogic;
 namespace ProcessDashboard.Droid
 {
 	[Activity (Label = "ProcessDashboard.Droid", MainLauncher = true, Icon = "@drawable/icon")]
-	public class MainActivity : AppCompatActivity,ListOfProjectsInterface
+	public class MainActivity : AppCompatActivity,ListOfProjectsInterface,ListOfTaksInterface
     {
         DrawerLayout drawerLayout;
 
@@ -82,7 +83,7 @@ namespace ProcessDashboard.Droid
 
 
             // if logged in
-            CurrentFragment = testFragment;
+            CurrentFragment = HomeFragment;
             // else 
             //CurrentFragment = ListOfProjectFragment;
 
@@ -119,8 +120,8 @@ namespace ProcessDashboard.Droid
                     break;
                 case (Resource.Id.nav_discussion):
                     // React on 'Friends' selection
-                    ShowFragment(ListOfTasksFragment);
-                    toolbar.Title = "Tasks";
+                    ShowFragment(SettingsFragment);
+                    toolbar.Title = "Settings";
                     break;
                 case (Resource.Id.nav_view):
                     // React on 'Discussion' selection
@@ -142,11 +143,11 @@ namespace ProcessDashboard.Droid
             // The fragment will have the ID of Resource.Id.fragment_container.
             fragmentTx.Replace(Resource.Id.fragmentContainer, fragment);
             // Commit the transaction.
-            fragmentTx.AddToBackStack(null);
-
+            fragmentTx.AddToBackStack("hello"+new Random().Next());
+            
             fragmentTx.Commit();
         }
-
+        /*
         public override void OnBackPressed()
         {
 
@@ -160,7 +161,7 @@ namespace ProcessDashboard.Droid
                 base.OnBackPressed();
             }
         }
-        /*
+        
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
             switch (item.ItemId)
@@ -223,10 +224,17 @@ namespace ProcessDashboard.Droid
 	    public void listOfProjectsCallback(string projectid)
 	    {
             toolbar.Title = "Tasks";
-            ListOfTasksFragment.setID(projectid);
+            ListOfTasksFragment.SetId(projectid);
             switchToFragment(fragmentTypes.listoftasks);
             
 	    }
+
+	    public void passTaskDetailsInfo(string taskId)
+	    {
+	        toolbar.Title = "Task Details";
+            TaskDetailFragment.setId(taskId);
+            switchToFragment(fragmentTypes.taskdetails);
+        }
     }
 }
 

@@ -123,6 +123,7 @@
     <Compile Include="Fragments\GlobalTimeLogDetail.cs" />
     <Compile Include="Fragments\Home.cs" />
     <Compile Include="Fragments\Interfaces\ListOfProjectsInterface.cs" />
+    <Compile Include="Fragments\Interfaces\ListOfTaksInterface.cs" />
     <Compile Include="Fragments\ListOfProjects.cs" />
     <Compile Include="Fragments\ListProjectTasks.cs" />
     <Compile Include="Fragments\Login.cs" />
