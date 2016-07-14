@@ -23,7 +23,8 @@ namespace ProcessDashboard.Droid.Fragments
             Controller _controller = ((MainActivity)this.Activity)._ctrl;
 
            // _controller.testTimeLog();
-            _controller.testTimeLogWithID("i5ixdkxc:15565303");
+            //_controller.testTimeLogWithID("i5ixdkxc:15565303");
+            _controller.testTaskProject();
 
             // Create your fragment here
         }
