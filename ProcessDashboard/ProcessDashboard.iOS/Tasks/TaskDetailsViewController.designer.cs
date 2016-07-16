@@ -16,6 +16,10 @@ namespace ProcessDashboard.iOS
     {
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIBarButtonItem addBtn { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UILabel TdActualLb { get; set; }
 
         [Outlet]
@@ -60,6 +64,11 @@ namespace ProcessDashboard.iOS
 
         void ReleaseDesignerOutlets ()
         {
+            if (addBtn != null) {
+                addBtn.Dispose ();
+                addBtn = null;
+            }
+
             if (TdActualLb != null) {
                 TdActualLb.Dispose ();
                 TdActualLb = null;

@@ -30,7 +30,17 @@ namespace ProcessDashboard.iOS
 				var controller = segue.DestinationViewController as TaskTimeLogViewController;
 				controller.taskId = task.id;
 				controller.task = task;
-				Console.WriteLine("in the task detail.");
+				//Console.WriteLine("in the task detail.");
+			}
+			if (segue.Identifier == "AddTimeLogSegue")
+			{
+				//Console.WriteLine("HAHAHA");
+				var controller = segue.DestinationViewController as TimelogDetailViewController;
+				TimeLogEntry newTimeLog = new TimeLogEntry();
+				newTimeLog.task = task;
+				newTimeLog.startDate = DateTime.Now;
+				controller.CreateTask(this, newTimeLog);
+
 			}
 		}
 
@@ -45,6 +55,7 @@ namespace ProcessDashboard.iOS
 			}
 
 			base.ViewDidLoad();
+
 			TdActualLb.Text = task.actualTime.ToString();
 			TdTaskNameLb.Text = task.fullName ?? "";
 			TdCompleteLb.Text = task.completionDate.ToString("MM/dd/yyyy");
