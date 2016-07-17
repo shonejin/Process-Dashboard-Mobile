@@ -20,10 +20,15 @@ namespace ProcessDashboard.iOS
 		public TaskTimeLogViewController DelegateforTasktimelog { get; set; } // will be used to Save, Delete later
 		public TaskDetailsViewController DelegateforAddingTimelog { get; set;}
 		UILabel TaskNameLabel, StartTimeLabel, DeltaLabel, IntLabel, CommentLabel;
-		UIButton StartTimeText, DeltaText, IntText;
+		UIButton StartTimeText, IntText;
+		UILabel DeltaText;
 		UIButton CommentText;
 		UIBarButtonItem delete;
+		UIBarButtonItem doneButton;
 		private DateTime[] _customDates;
+		UIPickerView samplePicker;
+		string selectedhour, selectedminute;
+		UIToolbar toolbar;
 
 		public TimelogDetailViewController(IntPtr handle) : base(handle)
 		{
@@ -43,9 +48,11 @@ namespace ProcessDashboard.iOS
 			};
 		}
 
+
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
+
 
 			delete = new UIBarButtonItem(UIBarButtonSystemItem.Trash, (s, e) =>
 			{
@@ -118,6 +125,7 @@ namespace ProcessDashboard.iOS
 			// 
 			DeltaLabel = new UILabel(new CGRect(30, 250, 300, 20))
 			{
+
 				Text = "Delta",
 				Font = UIFont.SystemFontOfSize(13),
 				TextColor = UIColor.Black,
@@ -128,26 +136,25 @@ namespace ProcessDashboard.iOS
 
 			DeltaLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
-			DeltaText = new UIButton(UIButtonType.RoundedRect);
+			DeltaText = new UILabel(new CGRect(10, 290, 300, 20));
 
-			DeltaText.Frame = new CoreGraphics.CGRect(10, 290, 300, 20);
+			//int h = 0, m = 0;
+			//h = (int)currentTask.loggedTime / 60;
+			//m = (int)currentTask.loggedTime % 60;
 
-			DeltaText.SetTitle(currentTask.loggedTime.ToString(), UIControlState.Normal);
+			DeltaText.Text = currentTask.loggedTime.ToString();
 
-			DeltaText.TitleLabel.SizeToFit();
+			DeltaText.TextAlignment = UITextAlignment.Center;
 
-			DeltaText.TouchUpInside += (sender, e) =>
+			UITapGestureRecognizer tgrLabel = new UITapGestureRecognizer(() =>
 			{
+				samplePicker.Hidden = false;
+				this.DeltaText.Text = this.selectedhour + " : " + this.selectedminute;
 
-				UIAlertView alert = new UIAlertView();
-				alert.Title = "Delta";
-				alert.AddButton("Cancel");
-				alert.AddButton("Save");
-				alert.Message = "Please enter new delta";
-				alert.AlertViewStyle = UIAlertViewStyle.PlainTextInput;
-				alert.Clicked += DeltaButtonClicked;
-				alert.Show();
-			};
+			});
+
+			DeltaText.AddGestureRecognizer(tgrLabel);
+			DeltaText.UserInteractionEnabled = true;
 
 			DeltaText.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
@@ -216,6 +223,56 @@ namespace ProcessDashboard.iOS
 
 			CommentText.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
+			samplePicker = new UIPickerView(new CoreGraphics.CGRect(10f, this.View.Frame.Height - 250, this.View.Frame.Width - 20, 250f));
+			samplePicker.BackgroundColor = UIColor.FromRGB(220, 220, 220);
+
+			samplePicker.UserInteractionEnabled = true;
+			samplePicker.ShowSelectionIndicator = true;
+
+			samplePicker.Select(0, 0, true);
+
+			string[] hours = new string[24];
+			string[] minutes = new string[60];
+
+			for (int i = 0; i < hours.Length; i++)
+			{
+				if (i < 10)
+				{
+					hours[i] = "0" + i.ToString();
+				}
+				else
+				{
+					hours[i] = i.ToString();
+				}
+
+
+			}
+			for (int i = 0; i < minutes.Length; i++)
+			{
+				if (i < 10)
+				{
+					minutes[i] = "0" + i.ToString();
+				}
+				else {
+					minutes[i] = i.ToString();
+				}
+			}
+
+			StatusPickerViewModel model = new StatusPickerViewModel(hours, minutes);
+
+			model.NumberSelected += (Object sender,EventArgs e) =>
+			{
+				this.selectedhour = model.selectedHour;
+				this.selectedminute = model.selectedMinute;
+				this.DeltaText.Text = this.selectedhour + " : " + this.selectedminute;
+			};
+
+			samplePicker.Model = model;
+			samplePicker.Hidden = true;
+
+			this.View.AddSubview(samplePicker);
+
+
 			View.AddSubview(TaskNameLabel);
 			View.AddSubview(StartTimeLabel);
 			View.AddSubview(StartTimeText);
@@ -234,7 +291,7 @@ namespace ProcessDashboard.iOS
 
 			TaskNameLabel.Text = currentTask.task.fullName;
 			StartTimeText.TitleLabel.Text = currentTask.startDate.ToLongTimeString();
-			DeltaText.TitleLabel.Text = currentTask.loggedTime.ToString();
+			DeltaText.Text = currentTask.loggedTime.ToString();
 
 		}
 
@@ -264,8 +321,8 @@ namespace ProcessDashboard.iOS
 			if (e.ButtonIndex == 1)
 			{
 
-				Console.Out.WriteLine("haha: "+ DeltaText.TitleLabel.Text);
-				DeltaText.TitleLabel.Text = parent_alert.GetTextField(0).Text;
+				Console.Out.WriteLine("haha: "+ DeltaText.Text);
+				DeltaText.Text = parent_alert.GetTextField(0).Text;
 				//SaveDeltaTimeChanged(parent_alert.GetTextField(0).Text);
 				TimeLogEntry newTask = new TimeLogEntry();
 				// TODO: fix the type
@@ -376,6 +433,13 @@ namespace ProcessDashboard.iOS
 			//newTask.Comment = currentTask.Comment;
 
 			//Delegate.SaveTask(currentTask, newTask);
+		}
+
+		public override void ViewDidAppear(bool animated)
+		{
+			base.ViewDidAppear(animated);
+
+			this.View.AddSubview(samplePicker);
 		}
 
 	}

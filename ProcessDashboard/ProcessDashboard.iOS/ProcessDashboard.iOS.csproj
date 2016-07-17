@@ -240,6 +240,7 @@
     <Compile Include="Tasks\TasksTableViewController.designer.cs">
       <DependentUpon>TasksTableViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="TimeLogs\StatusPickerViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Checkbox0.png" />

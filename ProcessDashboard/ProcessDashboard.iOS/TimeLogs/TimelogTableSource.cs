@@ -98,9 +98,15 @@ namespace ProcessDashboard.iOS
 
 			//cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
 
+			int newHour = (int)item.loggedTime/60;
+			int newMin = (int)item.loggedTime % 60;
+			string newH = null, newM = null;
+
+			string newLoggedTime= newHour + ":" + newMin;
+
 			cell.UpdateCell(item.task.fullName.ToString()
 			                , item.startDate.ToShortTimeString()
-			                , item.loggedTime.ToString());
+			                , newLoggedTime);
 
 			Console.WriteLine("taks full name: " + item.task.fullName.ToString());
 
