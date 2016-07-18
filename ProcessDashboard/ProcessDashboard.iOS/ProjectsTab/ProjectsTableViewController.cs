@@ -26,9 +26,16 @@ namespace ProcessDashboard.iOS
         {
         }
 
-		public override void ViewWillAppear(bool animated)
+		public override void ViewDidLoad()
 		{
-			base.ViewWillAppear(animated);
+			base.ViewDidLoad();
+			this.RefreshControl = new UIRefreshControl();
+			this.RefreshControl.ValueChanged += (sender, e) => { refreshData();};
+		}
+
+		public override void ViewDidAppear(bool animated)
+		{
+			base.ViewDidAppear(animated);
 			refreshData();
 		}
 
@@ -45,10 +52,23 @@ namespace ProcessDashboard.iOS
 
 		public async void refreshData()
 		{
+			if (!this.RefreshControl.Refreshing)
+			{
+				this.RefreshControl.BeginRefreshing();
+			}
 			await getDataOfProject();
 			//Console.WriteLine("HAHAH Length is " + projectsCache.Count);
 			projectsTableView.Source = new ProjectsTableSource(projectsCache, this);
+
+			String refreshTime = DateTime.Now.ToString("g");
+			String subTitle = "Last refresh: " + refreshTime;
+			this.RefreshControl.AttributedTitle = new Foundation.NSAttributedString(subTitle);
+
 			projectsTableView.ReloadData();
+			if (this.RefreshControl.Refreshing)
+			{
+				this.RefreshControl.EndRefreshing();
+			}
 		}
 
 		public async System.Threading.Tasks.Task<int> getDataOfProject()

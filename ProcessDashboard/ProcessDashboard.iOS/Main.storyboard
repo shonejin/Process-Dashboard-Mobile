@@ -45,7 +45,7 @@
         <!--Projects-->
         <scene sceneID="41">
             <objects>
-                <tableViewController title="Projects" id="42" customClass="ProjectsTableViewController" sceneMemberID="viewController">
+                <tableViewController title="Projects" id="42" customClass="ProjectsTableViewController" sceneMemberID="viewController" hasRefreshControl="1">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="43">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -79,6 +79,17 @@
                         <outlet property="projectsTableView" destination="43" id="name-outlet-43"/>
                         <segue destination="51" kind="show" identifier="project2Tasks" id="1557"/>
                     </connections>
+                    <refreshControl key="refreshControl" opaque="NO" multipleTouchEnabled="YES" contentMode="center" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="1899">
+                        <autoresizingMask key="autoresizingMask"/>
+                        <attributedString key="attributedTitle">
+                            <fragment content="Text">
+                                <attributes>
+                                    <font key="NSFont" name="HelveticaNeue" family="Helvetica Neue" size="15"/>
+                                    <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
+                                </attributes>
+                            </fragment>
+                        </attributedString>
+                    </refreshControl>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="48" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -87,7 +98,7 @@
         <!--Tasks-->
         <scene sceneID="50">
             <objects>
-                <tableViewController title="Tasks" id="51" customClass="TasksTableViewController" sceneMemberID="viewController">
+                <tableViewController title="Tasks" id="51" customClass="TasksTableViewController" sceneMemberID="viewController" hasRefreshControl="1">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="52">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -120,6 +131,17 @@
                         <outlet property="tasksTableView" destination="52" id="name-outlet-52"/>
                         <segue destination="291" kind="show" identifier="task2TaskDetail" id="1599"/>
                     </connections>
+                    <refreshControl key="refreshControl" opaque="NO" multipleTouchEnabled="YES" contentMode="center" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="1906">
+                        <autoresizingMask key="autoresizingMask"/>
+                        <attributedString key="attributedTitle">
+                            <fragment content="Text">
+                                <attributes>
+                                    <font key="NSFont" name="HelveticaNeue" family="Helvetica Neue" size="15"/>
+                                    <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
+                                </attributes>
+                            </fragment>
+                        </attributedString>
+                    </refreshControl>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="57" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -612,7 +634,6 @@
     </scenes>
     <resources>
         <image name="Checkbox1.png" width="48" height="48"/>
-        <image name="ProjectsTabIcon" width="16" height="16"/>
         <image name="start.png" width="32" height="32"/>
         <image name="stop.png" width="32" height="32"/>
         <image name="Checkbox0.png" width="48" height="48"/>
@@ -621,4 +642,7 @@
         <segue reference="1599"/>
         <segue reference="994"/>
     </inferredMetricsTieBreakers>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedScreenMetrics key="destination" type="retina47"/>
+    </simulatedMetricsContainer>
 </document>
