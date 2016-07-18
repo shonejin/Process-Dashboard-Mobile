@@ -111,7 +111,9 @@ namespace ProcessDashboard.iOS
 
 			StartTimeText.SetTitle(currentTask.startDate.ToShortDateString()  + " " + currentTask.startDate.ToShortTimeString(), UIControlState.Normal);
 
-			StartTimeText.Frame = new CGRect(30, 220, this.View.Frame.Width, 20);
+			StartTimeText.Frame = new CGRect(30, 220, 300, 20);
+
+			StartTimeText.SetTitleColor(UIColor.Blue, UIControlState.Normal);
 
 			StartTimeText.TitleLabel.SizeToFit();
 

@@ -20,15 +20,11 @@ namespace ProcessDashboard.iOS
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel TdActualLb { get; set; }
+        UIKit.UITableView PlanTable { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UIButton TdCheckboxBtn { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel TdCompleteLb { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
@@ -37,10 +33,6 @@ namespace ProcessDashboard.iOS
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UIButton TdPauseBtn { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel TdPlannedLb { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
@@ -54,14 +46,6 @@ namespace ProcessDashboard.iOS
         [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UILabel TdTaskNameLb { get; set; }
 
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UIButton TdTimelogBtn { get; set; }
-
-        [Action ("UIButton334_TouchUpInside:")]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        partial void UIButton334_TouchUpInside (UIKit.UIButton sender);
-
         void ReleaseDesignerOutlets ()
         {
             if (addBtn != null) {
@@ -69,19 +53,14 @@ namespace ProcessDashboard.iOS
                 addBtn = null;
             }
 
-            if (TdActualLb != null) {
-                TdActualLb.Dispose ();
-                TdActualLb = null;
+            if (PlanTable != null) {
+                PlanTable.Dispose ();
+                PlanTable = null;
             }
 
             if (TdCheckboxBtn != null) {
                 TdCheckboxBtn.Dispose ();
                 TdCheckboxBtn = null;
-            }
-
-            if (TdCompleteLb != null) {
-                TdCompleteLb.Dispose ();
-                TdCompleteLb = null;
             }
 
             if (TdNotesTf != null) {
@@ -92,11 +71,6 @@ namespace ProcessDashboard.iOS
             if (TdPauseBtn != null) {
                 TdPauseBtn.Dispose ();
                 TdPauseBtn = null;
-            }
-
-            if (TdPlannedLb != null) {
-                TdPlannedLb.Dispose ();
-                TdPlannedLb = null;
             }
 
             if (TdPlayBtn != null) {
@@ -112,11 +86,6 @@ namespace ProcessDashboard.iOS
             if (TdTaskNameLb != null) {
                 TdTaskNameLb.Dispose ();
                 TdTaskNameLb = null;
-            }
-
-            if (TdTimelogBtn != null) {
-                TdTimelogBtn.Dispose ();
-                TdTimelogBtn = null;
             }
         }
     }

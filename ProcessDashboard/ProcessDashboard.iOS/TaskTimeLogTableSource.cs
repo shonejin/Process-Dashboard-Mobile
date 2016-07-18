@@ -51,9 +51,16 @@ namespace ProcessDashboard.iOS
 			if (cell == null)
 				cell = new UITableViewCell(UITableViewCellStyle.Value1, cellIdentifier);
 
+			int newHour = (int)tableItems[indexPath.Row].loggedTime / 60;
+			int newMin = (int)tableItems[indexPath.Row].loggedTime % 60;
+			//string newH = null, newM = null;
+
+			string newLoggedTime = newHour + ":" + newMin;
+
 			cell.TextLabel.Text = tableItems[indexPath.Row].startDate.ToShortDateString() + " " + tableItems[indexPath.Row].startDate.ToShortTimeString();
-			cell.DetailTextLabel.Text = tableItems[indexPath.Row].loggedTime.ToString();
+			cell.DetailTextLabel.Text = newLoggedTime;
 			cell.TextLabel.Font = UIFont.SystemFontOfSize(12);
+			cell.DetailTextLabel.Font = UIFont.SystemFontOfSize(12);
 			cell.TextLabel.Lines = 1;
 			cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
 			cell.TextLabel.TextColor = UIColor.Black;

@@ -1,6 +1,7 @@
 using Foundation;
 using System;
 using UIKit;
+using CoreGraphics;
 using ProcessDashboard.DTO;
 
 namespace ProcessDashboard.iOS
@@ -56,14 +57,14 @@ namespace ProcessDashboard.iOS
 
 			base.ViewDidLoad();
 
-			TdActualLb.Text = task.actualTime.ToString();
+			string[] tableItems = new string[]{task.estimatedTime.ToString(), task.actualTime.ToString(), task.completionDate.ToString("MM/dd/yyyy") };
+
+			PlanTable.Source = new TaskDetailTableSource(tableItems, this);
+			PlanTable.AutoresizingMask = UIViewAutoresizing.All;
+
+			View.AddSubview(PlanTable);
+
 			TdTaskNameLb.Text = task.fullName ?? "";
-			TdCompleteLb.Text = task.completionDate.ToString("MM/dd/yyyy");
-			TdPlannedLb.Text = task.estimatedTime.ToString();
-			TdActualLb.Text = task.actualTime.ToString();
-
-			// TODO: project name always return null
-
 			tdProjectNameLb.Text = task.project != null ? task.project.name : "";
 			TdNotesTf.Text = task.taskNote ?? "";
 		}
