@@ -28,7 +28,8 @@ namespace ProcessDashboard.iOS
 		private DateTime[] _customDates;
 		UIPickerView DeltaPicker;
 		UIPickerView IntPicker;
-		string selectedhour, selectedminute;
+		string deltaSelectedHour, deltaSelectedMinute;
+		string intSelectedHour, intSelectedMinute;
 		UIToolbar toolbar;
 
 		public TimelogDetailViewController(IntPtr handle) : base(handle)
@@ -171,7 +172,21 @@ namespace ProcessDashboard.iOS
 
 			int newH = (int)currentTask.interruptTime / 60;
 			int newM = (int)currentTask.interruptTime % 60;
-			string newInt = newH + ":" + newM;
+			string tempH = null, tempM = null;
+			if (newH < 10)
+			{
+				tempH = "0" + newH.ToString();
+			}
+			if (newM < 10)
+			{
+				tempM = "0" + newM.ToString();
+			}
+			else {
+				tempH = newH.ToString();
+				tempM = newM.ToString();
+			}
+
+			string newInt = tempH + ":" + tempM;
 
 			IntText.Text = newInt;
 
@@ -180,7 +195,6 @@ namespace ProcessDashboard.iOS
 			IntText.Font = UIFont.SystemFontOfSize(14);
 
 			IntText.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
-
 
 			/////
 			CommentLabel = new UILabel(new CGRect(30, 390, 300, 20))
@@ -224,7 +238,6 @@ namespace ProcessDashboard.iOS
 			DeltaPicker.UserInteractionEnabled = true;
 			DeltaPicker.ShowSelectionIndicator = true;
 
-			DeltaPicker.Select(0, 0, true);
 
 			string[] hours = new string[24];
 			string[] minutes = new string[60];
@@ -254,18 +267,27 @@ namespace ProcessDashboard.iOS
 
 			StatusPickerViewModel deltaModel = new StatusPickerViewModel(hours,minutes);
 
+			int h = (int)currentTask.loggedTime / 60;
+			int m = (int)currentTask.loggedTime % 60;
+
+			this.deltaSelectedHour = h.ToString();
+			this.deltaSelectedMinute = m.ToString();
+
 			deltaModel.NumberSelected += (Object sender,EventArgs e) =>
 			{
-				this.selectedhour = deltaModel.selectedHour;
-				this.selectedminute = deltaModel.selectedMinute;
+				this.deltaSelectedHour = deltaModel.selectedHour;
+				this.deltaSelectedMinute = deltaModel.selectedMinute;
 
 			};
 
 			DeltaPicker.Model = deltaModel;
 
+			DeltaPicker.Select(h, 0, true);
+			DeltaPicker.Select(m, 1, true);
+
 			 //Setup the toolbar
 			toolbar = new UIToolbar();
-			toolbar.BarStyle = UIBarStyle.Black;
+			toolbar.BarStyle = UIBarStyle.BlackTranslucent;
 			toolbar.Translucent = true;
 			toolbar.SizeToFit();
 
@@ -274,7 +296,7 @@ namespace ProcessDashboard.iOS
 			(s, e) =>
 			{
 				
-				this.DeltaText.Text = this.selectedhour + " : " + this.selectedminute;
+				this.DeltaText.Text = this.deltaSelectedHour + ":" + this.deltaSelectedMinute;
 				this.DeltaText.ResignFirstResponder();
 			});
 
@@ -296,16 +318,27 @@ namespace ProcessDashboard.iOS
 
 			StatusPickerViewModel intModel = new StatusPickerViewModel(hours,minutes);
 
+
+			int hh = (int)currentTask.interruptTime / 60;
+			int mm = (int)currentTask.interruptTime % 60;
+
+			this.intSelectedHour = hh.ToString();
+			this.intSelectedMinute = mm.ToString();
+
 			intModel.NumberSelected += (Object sender, EventArgs e) =>
 			{
-				this.selectedhour = intModel.selectedHour;
-				this.selectedminute = intModel.selectedMinute;
+				this.intSelectedHour = intModel.selectedHour;
+				this.intSelectedMinute = intModel.selectedMinute;
 			};
 
 			IntPicker.Model = intModel;
+
+			IntPicker.Select(hh, 0, true);
+			IntPicker.Select(mm, 1, true);
+
 			//Setup the toolbar
 			toolbar = new UIToolbar();
-			toolbar.BarStyle = UIBarStyle.Black;
+			toolbar.BarStyle = UIBarStyle.BlackTranslucent;
 			toolbar.Translucent = true;
 			toolbar.SizeToFit();
 
@@ -313,7 +346,7 @@ namespace ProcessDashboard.iOS
 			doneButton = new UIBarButtonItem("Done", UIBarButtonItemStyle.Done,
 			(s, e) =>
 			{
-				this.IntText.Text = this.selectedhour + " : " + this.selectedminute;
+				this.IntText.Text = this.intSelectedHour + ":" + this.intSelectedMinute;
 				this.IntText.ResignFirstResponder();
 			});
 
@@ -341,10 +374,23 @@ namespace ProcessDashboard.iOS
 
 			TaskNameLabel.Text = currentTask.task.fullName;
 			StartTimeText.TitleLabel.Text = currentTask.startDate.ToLongTimeString();
-		
-			int newHour = (int)currentTask.loggedTime / 60;
+		    int newHour = (int)currentTask.loggedTime / 60;
 			int newMin = (int)currentTask.loggedTime % 60;
-			string newLoggedTime = newHour + ":" + newMin;
+			string newH = null, newM = null;
+			if (newHour < 10)
+			{
+				newH = "0" + newHour.ToString();
+			}
+			if (newMin < 10)
+			{
+				newM = "0" + newMin.ToString();
+			}
+			else {
+				newH = newHour.ToString();
+				newM = newMin.ToString();
+			}
+				
+			string newLoggedTime = newH + ":" + newM;
 
 			DeltaText.Text = newLoggedTime;
 
@@ -465,7 +511,7 @@ namespace ProcessDashboard.iOS
 					DateFormat = "MM/dd/yyyy hh:mm a"
 				};
 
-				StartTimeText.TitleLabel.Text = dateFormatter.ToString(modalPicker.DatePicker.Date);
+				StartTimeText.SetTitle(dateFormatter.ToString(modalPicker.DatePicker.Date), UIControlState.Normal);
 				SaveStartTimeChanged(dateFormatter.ToString(modalPicker.DatePicker.Date));
 
 			};
