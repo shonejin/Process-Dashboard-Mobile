@@ -4,9 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using ProcessDashboard.Service.Interface;
 using Fusillade;
+using ProcessDashboard.APIRoot;
 using ProcessDashboard.DBWrapper;
 using ProcessDashboard.DTO;
-
+using ProcessDashboard.Service;
 namespace ProcessDashboard.SyncLogic
 {
     public class Controller
@@ -186,6 +187,55 @@ namespace ProcessDashboard.SyncLogic
             return remoteTasks;
         }
 
+        public async Task<TimeLogsRoot> AddATimeLog(string dataset, string comment, string startDate, string taskId, string loggedTime)
+        {
+            
+            TimeLogsRoot tro = await _pDashServices.AddTimeLog(Priority.UserInitiated,dataset,comment,startDate,taskId,loggedTime);
+
+            System.Diagnostics.Debug.WriteLine("Add Stat :" + tro.stat);
+            if (tro.stat.Equals("ok"))
+            {
+                System.Diagnostics.Debug.WriteLine("Count :" + tro.timeLogEntries.Count);
+                
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Id :" + tro.err.code);
+                System.Diagnostics.Debug.WriteLine("Id :" + tro.err.msg);
+            }
+            return tro;
+
+        }
+
+        public async Task<TimeLogsRoot> UpdateTimeLog(string dataset, string timeLogId, string comment, string startDate, string taskId, string loggedTime)
+        {
+
+
+            TimeLogsRoot tro = await _pDashServices.UpdateTimeLog(Priority.UserInitiated, timeLogId,dataset, comment, startDate, taskId, loggedTime);
+
+            System.Diagnostics.Debug.WriteLine("Update Stat :" + tro.stat);
+            if (tro.stat.Equals("ok"))
+            {
+                System.Diagnostics.Debug.WriteLine("Count :" + tro.timeLogEntries.Count);
+
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Id :" + tro.err.code);
+                System.Diagnostics.Debug.WriteLine("Id :" + tro.err.msg);
+            }
+            return tro;
+
+        }
+
+        public async Task<DeleteRoot> DeleteTimeLog(string dataset, string timeLogId)
+        {
+            var dro = await _pDashServices.DeleteTimeLog(Priority.UserInitiated, dataset, timeLogId);
+            System.Diagnostics.Debug.WriteLine("Delete status :" + dro.stat);
+            return dro ;
+        }
+
+
         /******* TEST CODE ****/
 
         public async void testProject()
@@ -327,5 +377,38 @@ namespace ProcessDashboard.SyncLogic
 
         }
 
+/*
+        public async void testDelete()
+        {
+
+          
+
+        }
+
+        public async void testAdd()
+        {
+
+          
+
+        }
+        public async void testUpdate(TimeLogEntry tl)
+        {
+
+            TimeLogRootObject tro = await UpdateTimeLog(tl);
+
+            System.Diagnostics.Debug.WriteLine("Update Stat :" + tro.stat);
+            if (tro.stat.Equals("ok"))
+            {
+                System.Diagnostics.Debug.WriteLine("Id :" + tro.timeLogEntry.id);
+                System.Diagnostics.Debug.WriteLine("Id :" + tro.timeLogEntry.startDate);
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Id :" + tro.err.code);
+                System.Diagnostics.Debug.WriteLine("Id :" + tro.err.msg);
+            }
+
+        }
+        */
     }
 }

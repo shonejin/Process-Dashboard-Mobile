@@ -25,7 +25,7 @@ namespace ProcessDashboard.Droid
         public enum fragmentTypes { login, home, settings, listofprojects, listoftasks, taskdetails, tasktimelogdetails, globaltimelog, globaltimelogdetails };
         private Home HomeFragment;
         private Login LoginFragment;
-        private Settings SettingsFragment;
+        private SettingsPage SettingsFragment;
         private GlobalTimeLog GlobalTimeLogFragment;
         private GlobalTimeLogDetail GlobalTimeLogDetailFragment;
         private ListOfProjects ListOfProjectFragment;
@@ -71,7 +71,7 @@ namespace ProcessDashboard.Droid
 
             LoginFragment = new Login();
             HomeFragment = new Home();
-            SettingsFragment = new Settings();
+            SettingsFragment = new SettingsPage();
             GlobalTimeLogFragment = new GlobalTimeLog();
             GlobalTimeLogDetailFragment = new GlobalTimeLogDetail();
             ListOfProjectFragment = new ListOfProjects();
@@ -147,14 +147,13 @@ namespace ProcessDashboard.Droid
             
             fragmentTx.Commit();
         }
-        /*
+        
         public override void OnBackPressed()
         {
 
-            if (SupportFragmentManager.BackStackEntryCount > 0)
+            if (FragmentManager.BackStackEntryCount > 0)
             {
-                SupportFragmentManager.PopBackStack();
-                //CurrentFragment = mStackFragments.Pop();
+                FragmentManager.PopBackStack();
             }
             else
             {
@@ -175,7 +174,7 @@ namespace ProcessDashboard.Droid
             }
 
         }
-        */
+        
 
         public override bool OnCreateOptionsMenu(IMenu menu)
         {

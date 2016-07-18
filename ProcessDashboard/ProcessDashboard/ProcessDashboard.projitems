@@ -9,6 +9,8 @@
     <Import_RootNamespace>ProcessDashboard</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)APIRoot\DeleteRoot.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)APIRoot\Err.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\ProjectsListRoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\RecentTasksRoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\TaskListRoot.cs" />
@@ -33,6 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Service\Interface\IPDashApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\Interface\IPDashServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\PDashServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Exception\" />

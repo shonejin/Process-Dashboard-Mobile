@@ -6,7 +6,7 @@ using Android.Views;
 namespace ProcessDashboard.Droid.Fragments
 {
     // Use Preference Fragment
-    public class Settings : Android.Preferences.PreferenceFragment
+    public class SettingsPage : Android.Preferences.PreferenceFragment
     {
         public override void OnCreate(Bundle savedInstanceState)
         {

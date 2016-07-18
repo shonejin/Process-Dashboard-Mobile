@@ -127,7 +127,7 @@
     <Compile Include="Fragments\ListOfProjects.cs" />
     <Compile Include="Fragments\ListProjectTasks.cs" />
     <Compile Include="Fragments\Login.cs" />
-    <Compile Include="Fragments\Settings.cs" />
+    <Compile Include="Fragments\SettingsPage.cs" />
     <Compile Include="Fragments\TaskDetails.cs" />
     <Compile Include="Fragments\TaskTimeLogDetail.cs" />
     <Compile Include="Fragments\TestFragment.cs" />

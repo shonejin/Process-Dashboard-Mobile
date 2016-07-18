@@ -15,5 +15,7 @@ namespace ProcessDashboard.APIRoot
     {
         public List<Task> recentTasks { get; set; }
         public string stat { get; set; }
+        public Err err { get; set; }
+        
     }
 }

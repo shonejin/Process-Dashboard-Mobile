@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 using System.Threading.Tasks;
 using Fusillade;
 using ProcessDashboard.APIRoot;
@@ -7,6 +9,7 @@ using ProcessDashboard.DBWrapper;
 using ProcessDashboard.DTO;
 using ProcessDashboard.Model;
 using ProcessDashboard.Service.Interface;
+using Refit;
 using Task = ProcessDashboard.DTO.Task;
 
 //using Plugin.Connectivity;
@@ -32,10 +35,12 @@ namespace ProcessDashboard.Service_Access_Layer
         private readonly IApiTypes _apiService;
         // DB Manager to manage Database operations
         private readonly DBManager _dbm;
+        private Settings settings;
 
         public PDashServices(IApiTypes apiService)
         {
             _apiService = apiService;
+            this.settings = Settings.GetInstance();
             _dbm = DBManager.getInstance();
         }
 
@@ -72,19 +77,20 @@ namespace ProcessDashboard.Service_Access_Layer
             Task<ProjectsListRoot> getTaskDtoTask;
 
             Debug.WriteLine("ProjectModel Service : " + " Setting priority");
+
             switch (priority)
             {
                 case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetProjectsList(dataset);
+                    getTaskDtoTask = _apiService.Background.GetProjectsList(dataset,settings.authHeader);
                     break;
                 case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetProjectsList(dataset);
+                    getTaskDtoTask = _apiService.UserInitiated.GetProjectsList(dataset, settings.authHeader);
                     break;
                 case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetProjectsList(dataset);
+                    getTaskDtoTask = _apiService.Speculative.GetProjectsList(dataset, settings.authHeader);
                     break;
                 default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetProjectsList(dataset);
+                    getTaskDtoTask = _apiService.UserInitiated.GetProjectsList(dataset, settings.authHeader);
                     break;
             }
 
@@ -155,16 +161,16 @@ namespace ProcessDashboard.Service_Access_Layer
             switch (priority)
             {
                 case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetTasksList(dataset, projectId);
+                    getTaskDtoTask = _apiService.Background.GetTasksList(dataset, projectId, settings.authHeader);
                     break;
                 case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTasksList(dataset, projectId);
+                    getTaskDtoTask = _apiService.UserInitiated.GetTasksList(dataset, projectId, settings.authHeader);
                     break;
                 case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetTasksList(dataset, projectId);
+                    getTaskDtoTask = _apiService.Speculative.GetTasksList(dataset, projectId, settings.authHeader);
                     break;
                 default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTasksList(dataset, projectId);
+                    getTaskDtoTask = _apiService.UserInitiated.GetTasksList(dataset, projectId, settings.authHeader);
                     break;
             }
 
@@ -237,16 +243,16 @@ namespace ProcessDashboard.Service_Access_Layer
             switch (priority)
             {
                 case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetTaskDetails(dataset, projecttaskId);
+                    getTaskDtoTask = _apiService.Background.GetTaskDetails(dataset, projecttaskId, settings.authHeader);
                     break;
                 case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTaskDetails(dataset, projecttaskId);
+                    getTaskDtoTask = _apiService.UserInitiated.GetTaskDetails(dataset, projecttaskId, settings.authHeader);
                     break;
                 case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetTaskDetails(dataset, projecttaskId);
+                    getTaskDtoTask = _apiService.Speculative.GetTaskDetails(dataset, projecttaskId, settings.authHeader);
                     break;
                 default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTaskDetails(dataset, projecttaskId);
+                    getTaskDtoTask = _apiService.UserInitiated.GetTaskDetails(dataset, projecttaskId, settings.authHeader);
                     break;
             }
 
@@ -321,16 +327,16 @@ namespace ProcessDashboard.Service_Access_Layer
             switch (priority)
             {
                 case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetRecentTasks(dataset);
+                    getTaskDtoTask = _apiService.Background.GetRecentTasks(dataset, settings.authHeader);
                     break;
                 case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetRecentTasks(dataset);
+                    getTaskDtoTask = _apiService.UserInitiated.GetRecentTasks(dataset, settings.authHeader);
                     break;
                 case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetRecentTasks(dataset);
+                    getTaskDtoTask = _apiService.Speculative.GetRecentTasks(dataset, settings.authHeader);
                     break;
                 default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetRecentTasks(dataset);
+                    getTaskDtoTask = _apiService.UserInitiated.GetRecentTasks(dataset, settings.authHeader);
                     break;
             }
 
@@ -398,16 +404,16 @@ namespace ProcessDashboard.Service_Access_Layer
             switch (priority)
             {
                 case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetTimeLogs(dataset,maxResults,  startDateFrom,  startDateTo,  taskId,  projectId);
+                    getTaskDtoTask = _apiService.Background.GetTimeLogs(dataset,maxResults,  startDateFrom,  startDateTo,  taskId,  projectId, settings.authHeader);
                     break;
                 case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId);
+                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId, settings.authHeader);
                     break;
                 case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId);
+                    getTaskDtoTask = _apiService.Speculative.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId, settings.authHeader);
                     break;
                 default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId);
+                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId, settings.authHeader);
                     break;
             }
 
@@ -432,7 +438,120 @@ namespace ProcessDashboard.Service_Access_Layer
             return task.timeLogEntries;
         }
 
+        /*
+         * Adding/Updating/Deleting Time Log entries
+         */ 
+        
+        public async Task<TimeLogsRoot> AddTimeLog(Priority priority, string dataset, string comment,string startDate, string taskId,string loggedTime)
+        {
+            string pattern = "yyyy-MM-dd\'T\'HH:mm:ss";
 
+            Dictionary<string, object> value = new Dictionary<string, object>();
+            value.Add("comment", comment);
+            value.Add("startDate", DateTime.Parse(startDate).ToString(pattern));
+            value.Add("taskId", taskId);
+            value.Add("loggedTime", loggedTime);
+            value.Add("editTimestamp", DateTime.Now.ToString(pattern));
+
+            TimeLogsRoot task = null;
+            Task<TimeLogsRoot> addTimeLog;
+            Debug.WriteLine("Task Service : " + " Setting priority");
+            switch (priority)
+            {
+                case Priority.Background:
+                    addTimeLog = _apiService.Background.AddTimeLog(settings.authHeader, dataset, value);
+                    break;
+                case Priority.UserInitiated:
+                    addTimeLog = _apiService.UserInitiated.AddTimeLog(settings.authHeader, dataset, value);
+                    break;
+                case Priority.Speculative:
+                    addTimeLog = _apiService.Speculative.AddTimeLog(settings.authHeader, dataset, value);
+                    break;
+                default:
+                    addTimeLog = _apiService.UserInitiated.AddTimeLog(settings.authHeader, dataset, value);
+                    break;
+            }
+
+
+            var timelogged = await addTimeLog;
+
+            return timelogged;
+
+        }
+
+        public async Task<TimeLogsRoot> UpdateTimeLog(Priority priority,string dataset, string timeLogId, string comment, string startDate, string taskId, string loggedTime)
+        {           
+            string pattern = "yyyy-MM-dd\'T\'HH:mm:ss";
+
+            Dictionary<string, object> value = new Dictionary<string, object>();
+            value.Add("comment", comment);
+            value.Add("startDate", startDate);
+            value.Add("taskId", taskId);
+            value.Add("loggedTime", loggedTime);
+            value.Add("editTimestamp", DateTime.Now.ToString(pattern));
+
+
+
+            TimeLogsRoot task = null;
+            Task<TimeLogsRoot> updateTimeLog;
+            Debug.WriteLine("Task Service : " + " Setting priority");
+            switch (priority)
+            {
+                case Priority.Background:
+                    updateTimeLog = _apiService.Background.UpdateTimeLog(settings.authHeader, dataset, timeLogId, value);
+                    break;
+                case Priority.UserInitiated:
+                    updateTimeLog = _apiService.UserInitiated.UpdateTimeLog(settings.authHeader, dataset, timeLogId, value);
+                    break;
+                case Priority.Speculative:
+                    updateTimeLog = _apiService.Speculative.UpdateTimeLog(settings.authHeader, dataset, timeLogId, value);
+                    break;
+                default:
+                    updateTimeLog = _apiService.UserInitiated.UpdateTimeLog(settings.authHeader, dataset, timeLogId, value);
+                    break;
+            }
+
+
+            var timelogged = await updateTimeLog;
+
+            return timelogged;
+
+        }
+
+        public async Task<DeleteRoot> DeleteTimeLog(Priority priority,string dataset, string timelogId)
+        {
+
+            string pattern = "yyyy-MM-dd\'T\'HH:mm:ss";
+            string value = DateTime.Now.ToString(pattern);
+
+            DeleteRoot task = null;
+            Task<DeleteRoot> deleteTimeLog;
+            Debug.WriteLine("Task Service : " + " Setting priority");
+            switch (priority)
+            {
+                case Priority.Background:
+                    deleteTimeLog = _apiService.Background.DeleteTimeLog(settings.authHeader, dataset,timelogId, value);
+                    break;
+                case Priority.UserInitiated:
+                    deleteTimeLog = _apiService.UserInitiated.DeleteTimeLog(settings.authHeader, dataset, timelogId, value);
+                    break;
+                case Priority.Speculative:
+                    deleteTimeLog = _apiService.Speculative.DeleteTimeLog(settings.authHeader, dataset, timelogId, value);
+                    break;
+                default:
+                    deleteTimeLog = _apiService.UserInitiated.DeleteTimeLog(settings.authHeader, dataset, timelogId, value);
+                    break;
+            }
+
+
+            var timelogged = await deleteTimeLog;
+
+            return timelogged;
+
+
+        }
+
+     
     }
 
 
