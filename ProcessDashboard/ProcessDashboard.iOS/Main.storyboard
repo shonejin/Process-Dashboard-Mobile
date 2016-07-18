@@ -240,7 +240,7 @@
                     <navigationItem key="navigationItem" id="DSy-mx-iyb">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="x31-bG-qgs">
                             <connections>
-                                <segue id="1882" destination="Uuq-3k-xee" kind="show" identifier="AddTimeLogSegue"/>
+                                <segue destination="Uuq-3k-xee" kind="show" identifier="AddTimeLogSegue" id="1882"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -254,8 +254,8 @@
                         <outlet property="TdPlayBtn" destination="334" id="name-outlet-334"/>
                         <outlet property="TdTaskNameLb" destination="333" id="name-outlet-333"/>
                         <outlet property="TdTimelogBtn" destination="1729" id="name-outlet-1729"/>
-                        <outlet property="tdProjectNameLb" destination="336" id="name-outlet-336"/>
                         <outlet property="addBtn" destination="x31-bG-qgs" id="name-outlet-x31-bG-qgs"/>
+                        <outlet property="tdProjectNameLb" destination="336" id="name-outlet-336"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="293" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -600,6 +600,7 @@
                     <view key="view" contentMode="scaleToFill" id="8uc-Dl-6DG">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" title="Time Log Detail" id="n3x-HS-Vqf"/>
@@ -611,6 +612,7 @@
     </scenes>
     <resources>
         <image name="Checkbox1.png" width="48" height="48"/>
+        <image name="ProjectsTabIcon" width="16" height="16"/>
         <image name="start.png" width="32" height="32"/>
         <image name="stop.png" width="32" height="32"/>
         <image name="Checkbox0.png" width="48" height="48"/>

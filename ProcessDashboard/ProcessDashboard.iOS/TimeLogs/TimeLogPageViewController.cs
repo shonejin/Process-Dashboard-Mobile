@@ -94,6 +94,7 @@ namespace ProcessDashboard.iOS
 		{
 			base.ViewWillAppear(animated);
 			refreshData();
+		
 		}
 
 
@@ -117,8 +118,10 @@ namespace ProcessDashboard.iOS
 		public async void refreshData()
 		{
 			await getGlobalTimeLogs();
-			TimelogsTable.Source = new TimelogTableSource(globalTimeLogCache, this);
+			TimelogTableSource  source = new TimelogTableSource(globalTimeLogCache, this);
+			TimelogsTable.Source = source;
 			TimelogsTable.ReloadData();
+			TimelogsTable.ScrollToRow(NSIndexPath.FromRowSection(0,source.keys.Length-1), UITableViewScrollPosition.Top, true);
 		}
 
 		public async System.Threading.Tasks.Task<int> getGlobalTimeLogs()

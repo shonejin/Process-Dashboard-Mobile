@@ -18,9 +18,9 @@ namespace ProcessDashboard.iOS
 	{
 		protected string cellIdentifier = "TableCell";
 
-		Dictionary<string, List<TimeLogEntry>> indexedTableItems;
-		string[] keys;
-		TimeLogPageViewController owner;
+		public Dictionary<string, List<TimeLogEntry>> indexedTableItems;
+		public string[] keys;
+		public TimeLogPageViewController owner;
 
 		public TimelogTableSource(List<TimeLogEntry> items, TimeLogPageViewController owner)
 		{

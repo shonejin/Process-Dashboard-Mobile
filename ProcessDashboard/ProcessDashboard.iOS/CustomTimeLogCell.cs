@@ -64,7 +64,7 @@ namespace ProcessDashboard.iOS
 
 			headingLabel.Frame = new CGRect(15, 10, ContentView.Bounds.Width - 180, 25);
 			subheadingLabel.Frame = new CGRect(ContentView.Bounds.Width - 140, 14, 80, 20);
-			thirdheadingLabel.Frame = new CGRect(ContentView.Bounds.Width - 60, 7, 40, 33);
+			thirdheadingLabel.Frame = new CGRect(ContentView.Bounds.Width - 55, 7, 40, 33);
 		}
 	}
 

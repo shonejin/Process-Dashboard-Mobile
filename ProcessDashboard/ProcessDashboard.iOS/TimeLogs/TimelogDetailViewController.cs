@@ -20,14 +20,16 @@ namespace ProcessDashboard.iOS
 		public TaskTimeLogViewController DelegateforTasktimelog { get; set; } // will be used to Save, Delete later
 		public TaskDetailsViewController DelegateforAddingTimelog { get; set;}
 		UILabel TaskNameLabel, StartTimeLabel, DeltaLabel, IntLabel, CommentLabel;
-		UIButton StartTimeText, IntText;
-		UILabel DeltaText;
+		UIButton StartTimeText;
+		UITextField DeltaText, IntText;
 		UIButton CommentText;
 		UIBarButtonItem delete;
 		UIBarButtonItem doneButton;
 		private DateTime[] _customDates;
-		UIPickerView samplePicker;
-		string selectedhour, selectedminute;
+		UIPickerView DeltaPicker;
+		UIPickerView IntPicker;
+		string deltaSelectedHour, deltaSelectedMinute;
+		string intSelectedHour, intSelectedMinute;
 		UIToolbar toolbar;
 
 		public TimelogDetailViewController(IntPtr handle) : base(handle)
@@ -72,7 +74,6 @@ namespace ProcessDashboard.iOS
 					presentationPopover.PermittedArrowDirections = UIPopoverArrowDirection.Up;
 				}
 
-
 				// Display the alert
 				this.PresentViewController(actionSheetAlert, true, null);
 				//delete the task time log
@@ -110,7 +111,7 @@ namespace ProcessDashboard.iOS
 
 			StartTimeText.SetTitle(currentTask.startDate.ToShortDateString()  + " " + currentTask.startDate.ToShortTimeString(), UIControlState.Normal);
 
-			StartTimeText.Frame = new CGRect(30, 220, 300, 20);
+			StartTimeText.Frame = new CGRect(30, 220, this.View.Frame.Width, 20);
 
 			StartTimeText.TitleLabel.SizeToFit();
 
@@ -136,28 +137,24 @@ namespace ProcessDashboard.iOS
 
 			DeltaLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
-			DeltaText = new UILabel(new CGRect(10, 290, 300, 20));
 
-			//int h = 0, m = 0;
-			//h = (int)currentTask.loggedTime / 60;
-			//m = (int)currentTask.loggedTime % 60;
+			/// 
+			DeltaText = new UITextField(new CGRect(30, 290, 300, 20));
 
-			DeltaText.Text = currentTask.loggedTime.ToString();
+			int newHour =  (int)currentTask.loggedTime / 60;
+			int newMin = (int)currentTask.loggedTime % 60;
+			string newLoggedTime = newHour + ":" + newMin;
+
+			DeltaText.Text = newLoggedTime;
 
 			DeltaText.TextAlignment = UITextAlignment.Center;
-
-			UITapGestureRecognizer tgrLabel = new UITapGestureRecognizer(() =>
-			{
-				samplePicker.Hidden = false;
-				this.DeltaText.Text = this.selectedhour + " : " + this.selectedminute;
-
-			});
-
-			DeltaText.AddGestureRecognizer(tgrLabel);
-			DeltaText.UserInteractionEnabled = true;
+			DeltaText.TextColor = UIColor.Blue;
+			DeltaText.Font = UIFont.SystemFontOfSize(14);
 
 			DeltaText.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
+
+			////
 			IntLabel = new UILabel(new CGRect(30, 320, 300, 20))
 			{
 				Text = "Int",
@@ -169,28 +166,37 @@ namespace ProcessDashboard.iOS
 
 			IntLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
-			IntText = new UIButton(UIButtonType.RoundedRect);
-			IntText.Frame = new CGRect(30, 360, 300, 20);
-			IntText.SetTitle(currentTask.interruptTime.ToString(), UIControlState.Normal);
-			IntText.TitleLabel.SizeToFit();
 
-			IntText.TouchUpInside += (sender, e) =>
+			/////
+			IntText = new UITextField(new CGRect(30, 360, 300, 20));
+
+			int newH = (int)currentTask.interruptTime / 60;
+			int newM = (int)currentTask.interruptTime % 60;
+			string tempH = null, tempM = null;
+			if (newH < 10)
 			{
+				tempH = "0" + newH.ToString();
+			}
+			if (newM < 10)
+			{
+				tempM = "0" + newM.ToString();
+			}
+			else {
+				tempH = newH.ToString();
+				tempM = newM.ToString();
+			}
 
-				UIAlertView alert = new UIAlertView();
-				alert.Title = "Interrupt";
-				alert.AddButton("Cancel");
-				alert.AddButton("Save");
-				alert.Message = "Please enter interrupt time";
-				alert.AlertViewStyle = UIAlertViewStyle.PlainTextInput;
-				alert.Clicked += IntButtonClicked;
-				alert.Show();
-			};
+			string newInt = tempH + ":" + tempM;
+
+			IntText.Text = newInt;
+
+			IntText.TextAlignment = UITextAlignment.Center;
+			IntText.TextColor = UIColor.Blue;
+			IntText.Font = UIFont.SystemFontOfSize(14);
 
 			IntText.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
-
-			//
+			/////
 			CommentLabel = new UILabel(new CGRect(30, 390, 300, 20))
 			{
 				Text = "Comment",
@@ -202,10 +208,11 @@ namespace ProcessDashboard.iOS
 			};
 			CommentLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
-			//
+
+			//////
 			CommentText = new UIButton(UIButtonType.RoundedRect);
 			CommentText.SetTitle(currentTask.task.taskNote, UIControlState.Normal);
-			CommentText.Frame = new CGRect(30, 420, 300, 100);
+			CommentText.Frame = new CGRect(30, 420, 300, 30);
 			CommentText.TitleLabel.SizeToFit();
 
 			CommentText.TouchUpInside += (sender, e) =>
@@ -223,13 +230,14 @@ namespace ProcessDashboard.iOS
 
 			CommentText.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
-			samplePicker = new UIPickerView(new CoreGraphics.CGRect(10f, this.View.Frame.Height - 250, this.View.Frame.Width - 20, 250f));
-			samplePicker.BackgroundColor = UIColor.FromRGB(220, 220, 220);
 
-			samplePicker.UserInteractionEnabled = true;
-			samplePicker.ShowSelectionIndicator = true;
+			/////Delta Picker 
+			DeltaPicker = new UIPickerView(new CoreGraphics.CGRect(10f, this.View.Frame.Height - 200, this.View.Frame.Width - 20, 200f));
+			DeltaPicker.BackgroundColor = UIColor.FromRGB(220, 220, 220);
 
-			samplePicker.Select(0, 0, true);
+			DeltaPicker.UserInteractionEnabled = true;
+			DeltaPicker.ShowSelectionIndicator = true;
+
 
 			string[] hours = new string[24];
 			string[] minutes = new string[60];
@@ -245,7 +253,6 @@ namespace ProcessDashboard.iOS
 					hours[i] = i.ToString();
 				}
 
-
 			}
 			for (int i = 0; i < minutes.Length; i++)
 			{
@@ -258,19 +265,95 @@ namespace ProcessDashboard.iOS
 				}
 			}
 
-			StatusPickerViewModel model = new StatusPickerViewModel(hours, minutes);
+			StatusPickerViewModel deltaModel = new StatusPickerViewModel(hours,minutes);
 
-			model.NumberSelected += (Object sender,EventArgs e) =>
+			int h = (int)currentTask.loggedTime / 60;
+			int m = (int)currentTask.loggedTime % 60;
+
+			this.deltaSelectedHour = h.ToString();
+			this.deltaSelectedMinute = m.ToString();
+
+			deltaModel.NumberSelected += (Object sender,EventArgs e) =>
 			{
-				this.selectedhour = model.selectedHour;
-				this.selectedminute = model.selectedMinute;
-				this.DeltaText.Text = this.selectedhour + " : " + this.selectedminute;
+				this.deltaSelectedHour = deltaModel.selectedHour;
+				this.deltaSelectedMinute = deltaModel.selectedMinute;
+
 			};
 
-			samplePicker.Model = model;
-			samplePicker.Hidden = true;
+			DeltaPicker.Model = deltaModel;
 
-			this.View.AddSubview(samplePicker);
+			DeltaPicker.Select(h, 0, true);
+			DeltaPicker.Select(m, 1, true);
+
+			 //Setup the toolbar
+			toolbar = new UIToolbar();
+			toolbar.BarStyle = UIBarStyle.BlackTranslucent;
+			toolbar.Translucent = true;
+			toolbar.SizeToFit();
+
+			// Create a 'done' button for the toolbar and add it to the toolbar
+			doneButton = new UIBarButtonItem("Done", UIBarButtonItemStyle.Done,
+			(s, e) =>
+			{
+				
+				this.DeltaText.Text = this.deltaSelectedHour + ":" + this.deltaSelectedMinute;
+				this.DeltaText.ResignFirstResponder();
+			});
+
+			toolbar.SetItems(new UIBarButtonItem[] { doneButton }, true);
+
+			this.DeltaText.InputView = DeltaPicker;
+			this.DeltaText.InputAccessoryView = toolbar;
+
+
+
+			////// Int Picker
+			IntPicker = new UIPickerView(new CoreGraphics.CGRect(10f, this.View.Frame.Height - 200, this.View.Frame.Width - 20, 200f));
+			IntPicker.BackgroundColor = UIColor.FromRGB(220, 220, 220);
+
+			IntPicker.UserInteractionEnabled = true;
+			IntPicker.ShowSelectionIndicator = true;
+
+			IntPicker.Select(0, 0, true);
+
+			StatusPickerViewModel intModel = new StatusPickerViewModel(hours,minutes);
+
+
+			int hh = (int)currentTask.interruptTime / 60;
+			int mm = (int)currentTask.interruptTime % 60;
+
+			this.intSelectedHour = hh.ToString();
+			this.intSelectedMinute = mm.ToString();
+
+			intModel.NumberSelected += (Object sender, EventArgs e) =>
+			{
+				this.intSelectedHour = intModel.selectedHour;
+				this.intSelectedMinute = intModel.selectedMinute;
+			};
+
+			IntPicker.Model = intModel;
+
+			IntPicker.Select(hh, 0, true);
+			IntPicker.Select(mm, 1, true);
+
+			//Setup the toolbar
+			toolbar = new UIToolbar();
+			toolbar.BarStyle = UIBarStyle.BlackTranslucent;
+			toolbar.Translucent = true;
+			toolbar.SizeToFit();
+
+			// Create a 'done' button for the toolbar and add it to the toolbar
+			doneButton = new UIBarButtonItem("Done", UIBarButtonItemStyle.Done,
+			(s, e) =>
+			{
+				this.IntText.Text = this.intSelectedHour + ":" + this.intSelectedMinute;
+				this.IntText.ResignFirstResponder();
+			});
+
+			toolbar.SetItems(new UIBarButtonItem[] { doneButton }, true);
+
+			this.IntText.InputView = IntPicker;
+			this.IntText.InputAccessoryView = toolbar;
 
 
 			View.AddSubview(TaskNameLabel);
@@ -291,7 +374,25 @@ namespace ProcessDashboard.iOS
 
 			TaskNameLabel.Text = currentTask.task.fullName;
 			StartTimeText.TitleLabel.Text = currentTask.startDate.ToLongTimeString();
-			DeltaText.Text = currentTask.loggedTime.ToString();
+		    int newHour = (int)currentTask.loggedTime / 60;
+			int newMin = (int)currentTask.loggedTime % 60;
+			string newH = null, newM = null;
+			if (newHour < 10)
+			{
+				newH = "0" + newHour.ToString();
+			}
+			if (newMin < 10)
+			{
+				newM = "0" + newMin.ToString();
+			}
+			else {
+				newH = newHour.ToString();
+				newM = newMin.ToString();
+			}
+				
+			string newLoggedTime = newH + ":" + newM;
+
+			DeltaText.Text = newLoggedTime;
 
 		}
 
@@ -314,55 +415,55 @@ namespace ProcessDashboard.iOS
 			currentTask = task;
 		}
 
-		public void DeltaButtonClicked(object sender, UIButtonEventArgs e)
-		{
-			UIAlertView parent_alert = (UIAlertView)sender;
+		//public void DeltaButtonClicked(object sender, UIButtonEventArgs e)
+		//{
+		//	UIAlertView parent_alert = (UIAlertView)sender;
 
-			if (e.ButtonIndex == 1)
-			{
+		//	if (e.ButtonIndex == 1)
+		//	{
 
-				Console.Out.WriteLine("haha: "+ DeltaText.Text);
-				DeltaText.Text = parent_alert.GetTextField(0).Text;
-				//SaveDeltaTimeChanged(parent_alert.GetTextField(0).Text);
-				TimeLogEntry newTask = new TimeLogEntry();
-				// TODO: fix the type
-				//newTask.Heading = currentTask.Heading;
-				//newTask.SubHeading = currentTask.SubHeading;
-				//newTask.StartTime = currentTask.StartTime;
-				//newTask.Delta = parent_alert.GetTextField(0).Text;
-				//newTask.Int = currentTask.Int;
-				//newTask.Comment = currentTask.Comment;
+		//		Console.Out.WriteLine("haha: "+ DeltaText.Text);
+		//		DeltaText.Text = parent_alert.GetTextField(0).Text;
+		//		//SaveDeltaTimeChanged(parent_alert.GetTextField(0).Text);
+		//		TimeLogEntry newTask = new TimeLogEntry();
+		//		// TODO: fix the type
+		//		//newTask.Heading = currentTask.Heading;
+		//		//newTask.SubHeading = currentTask.SubHeading;
+		//		//newTask.StartTime = currentTask.StartTime;
+		//		//newTask.Delta = parent_alert.GetTextField(0).Text;
+		//		//newTask.Int = currentTask.Int;
+		//		//newTask.Comment = currentTask.Comment;
 
-				//Delegate.SaveTask(currentTask, newTask);
+		//		//Delegate.SaveTask(currentTask, newTask);
 
-				Console.Out.WriteLine(parent_alert.GetTextField(0).Text);
+		//		Console.Out.WriteLine(parent_alert.GetTextField(0).Text);
 
-			}
+		//	}
 
-		}
+		//}
 
-		public void IntButtonClicked(object sender, UIButtonEventArgs e)
-		{
-			UIAlertView parent_alert = (UIAlertView)sender;
+		//public void IntButtonClicked(object sender, UIButtonEventArgs e)
+		//{
+		//	UIAlertView parent_alert = (UIAlertView)sender;
 
-			if (e.ButtonIndex == 1)
-			{
-				IntText.TitleLabel.Text = parent_alert.GetTextField(0).Text;
-				// TODO: fix the type
-				//TimelogTableItem newTask = new TimelogTableItem();
-				//newTask.Heading = currentTask.Heading;
-				//newTask.SubHeading = currentTask.SubHeading;
-				//newTask.StartTime = currentTask.StartTime;
-				//newTask.Delta = currentTask.Delta;
-				//newTask.Int = parent_alert.GetTextField(0).Text;
-				//newTask.Comment = currentTask.Comment;
+		//	if (e.ButtonIndex == 1)
+		//	{
+		//		IntText.TitleLabel.Text = parent_alert.GetTextField(0).Text;
+		//		// TODO: fix the type
+		//		//TimelogTableItem newTask = new TimelogTableItem();
+		//		//newTask.Heading = currentTask.Heading;
+		//		//newTask.SubHeading = currentTask.SubHeading;
+		//		//newTask.StartTime = currentTask.StartTime;
+		//		//newTask.Delta = currentTask.Delta;
+		//		//newTask.Int = parent_alert.GetTextField(0).Text;
+		//		//newTask.Comment = currentTask.Comment;
 
-				//Delegate.SaveTask(currentTask, newTask);
+		//		//Delegate.SaveTask(currentTask, newTask);
 
 
-			}
+		//	}
 
-		}
+		//}
 
 
 		public void CommentButtonClicked(object sender, UIButtonEventArgs e)
@@ -410,7 +511,7 @@ namespace ProcessDashboard.iOS
 					DateFormat = "MM/dd/yyyy hh:mm a"
 				};
 
-				StartTimeText.TitleLabel.Text = dateFormatter.ToString(modalPicker.DatePicker.Date);
+				StartTimeText.SetTitle(dateFormatter.ToString(modalPicker.DatePicker.Date), UIControlState.Normal);
 				SaveStartTimeChanged(dateFormatter.ToString(modalPicker.DatePicker.Date));
 
 			};
@@ -435,12 +536,6 @@ namespace ProcessDashboard.iOS
 			//Delegate.SaveTask(currentTask, newTask);
 		}
 
-		public override void ViewDidAppear(bool animated)
-		{
-			base.ViewDidAppear(animated);
-
-			this.View.AddSubview(samplePicker);
-		}
 
 	}
 }
