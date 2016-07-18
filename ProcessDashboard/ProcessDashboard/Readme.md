@@ -14,3 +14,10 @@ Refit makes it simple to perform JSON parsing into OO objects. The core of this 
 
 Preferred order for review:
 
+1.) Interfaces:
+IApiTypes.cs -> IPDashApi -> IPDashServices.cs 
+
+2.) Service
+ApiTypes.cs -> PDashService.cs 
+
+3.) Controller.cs
