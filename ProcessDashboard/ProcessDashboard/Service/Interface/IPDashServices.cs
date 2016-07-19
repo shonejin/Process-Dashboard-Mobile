@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fusillade;
+using ProcessDashboard.APIRoot;
 using ProcessDashboard.DTO;
 
 namespace ProcessDashboard.Service.Interface
@@ -50,5 +51,8 @@ namespace ProcessDashboard.Service.Interface
         Task<List<DTO.Task>> GetRecentTasksRemote(Priority priority, string dataset);
         Task<List<TimeLogEntry>> GetTimeLogsRemote(Priority priority, string dataset, int maxResults, string startDateFrom, string startDateTo, string taskId, string projectId);
 
+        Task<EditATimeLogRoot> AddTimeLog(Priority priority, string dataset, string comment, string startDate, string taskId, double loggedTime);
+        Task<EditATimeLogRoot> UpdateTimeLog(Priority priority, string dataset, string timeLogId, string comment, string startDate, string taskId, double loggedTime);
+        Task<DeleteRoot> DeleteTimeLog(Priority priority, string dataset, string timelogId);
     }
 }

@@ -31,11 +31,11 @@ namespace ProcessDashboard.iOS
 				var controller = segue.DestinationViewController as TaskTimeLogViewController;
 				controller.taskId = task.id;
 				controller.task = task;
-				//Console.WriteLine("in the task detail.");
+			
 			}
 			if (segue.Identifier == "AddTimeLogSegue")
 			{
-				//Console.WriteLine("HAHAHA");
+				
 				var controller = segue.DestinationViewController as TimelogDetailViewController;
 				TimeLogEntry newTimeLog = new TimeLogEntry();
 				newTimeLog.task = task;
@@ -58,6 +58,10 @@ namespace ProcessDashboard.iOS
 			base.ViewDidLoad();
 
 			string[] tableItems = new string[]{task.estimatedTime.ToString(), task.actualTime.ToString(), task.completionDate.ToString("MM/dd/yyyy") };
+
+			Console.WriteLine("estimated time: " + task.estimatedTime);
+			Console.WriteLine("actual time: " + task.actualTime);
+			Console.WriteLine("complete time: " + task.completionDate);
 
 			PlanTable.Source = new TaskDetailTableSource(tableItems, this);
 			PlanTable.AutoresizingMask = UIViewAutoresizing.All;

@@ -17,5 +17,7 @@ namespace ProcessDashboard.DTO
         public double interruptTime { get; set; }
         public DateTime endDate { get; set; }
 
+        public string comment { get; set; }
+
     }
 }
