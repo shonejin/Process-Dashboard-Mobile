@@ -22,14 +22,22 @@ namespace ProcessDashboard.iOS
 		public string projectName;
 		List<Task> tasksCache;
 
-        public TasksTableViewController (IntPtr handle) : base (handle)
-        {
-        }
-
-		public override void ViewWillAppear(bool animated)
+		public TasksTableViewController(IntPtr handle) : base(handle)
 		{
-			base.ViewWillAppear(animated);
+		}
+
+		public override void ViewDidLoad()
+		{
+			base.ViewDidLoad();
+			this.RefreshControl = new UIRefreshControl();
+			this.RefreshControl.ValueChanged += (sender, e) => { refreshData(); };
 			refreshData();
+		}
+
+		public override void ViewDidAppear(bool animated)
+		{
+			base.ViewDidAppear(animated);
+			//refreshData();
 		}
 
 		public override void PrepareForSegue(UIKit.UIStoryboardSegue segue, Foundation.NSObject sender)
@@ -45,10 +53,25 @@ namespace ProcessDashboard.iOS
 
 		public async void refreshData()
 		{
+			if (!this.RefreshControl.Refreshing)
+			{
+				this.RefreshControl.BeginRefreshing();
+			}
+
 			await getDataOfTask();
 
 			tasksTableView.Source = new TasksTableSource(tasksCache, this);
+
+			String refreshTime = DateTime.Now.ToString("g");
+			String subTitle = "Last refresh: " + refreshTime;
+			this.RefreshControl.AttributedTitle = new Foundation.NSAttributedString(subTitle);
+
 			tasksTableView.ReloadData();
+
+			if (this.RefreshControl.Refreshing)
+			{
+				this.RefreshControl.EndRefreshing();
+			}
 		}
 
 
