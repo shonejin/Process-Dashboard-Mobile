@@ -61,6 +61,9 @@ namespace ProcessDashboard.Droid
 
             // Attach item selected handler to navigation view
             var navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
+            navigationView.SetCheckedItem(0);
+            navigationView.Menu.GetItem(0).SetChecked(true);
+
             navigationView.NavigationItemSelected += NavigationView_NavigationItemSelected;
 
             // Create ActionBarDrawerToggle button and add it to the toolbar
@@ -98,11 +101,18 @@ namespace ProcessDashboard.Droid
             var apiService = new ApiTypes(null);
             var service = new PDashServices(apiService);
             _ctrl = new Controller(service);
-           // c.testProject();
-            //c.testTasks();
-
+            // c.testProject();
+            //_ctrl.testTasks();
+            //_ctrl.testSingleTask();
+            //_ctrl.testAddATimeLog();
+            //_ctrl.testUpdateATimeLog();
+           // _ctrl.testDeleteATimeLog();
 		}
 
+	    public void setTitle(string title)
+	    {
+	        toolbar.Title = title;
+	    }
 
         void NavigationView_NavigationItemSelected(object sender, NavigationView.NavigationItemSelectedEventArgs e)
         {
@@ -111,17 +121,17 @@ namespace ProcessDashboard.Droid
                 case (Resource.Id.nav_home):
                     // React on 'Home' selection
                     ShowFragment(HomeFragment);
-                    toolbar.Title = "Process Dasboard";
+                    
                     break;
                 case (Resource.Id.nav_messages):
                     // React on 'Messages' selection
                     ShowFragment(ListOfProjectFragment);
-                    toolbar.Title = "Projects";
+                    
                     break;
                 case (Resource.Id.nav_discussion):
                     // React on 'Friends' selection
                     ShowFragment(SettingsFragment);
-                    toolbar.Title = "Settings";
+                    
                     break;
                 case (Resource.Id.nav_view):
                     // React on 'Discussion' selection
@@ -188,7 +198,7 @@ namespace ProcessDashboard.Droid
             {
                 case fragmentTypes.home:
                     ShowFragment(HomeFragment);
-                    toolbar.Title = "Process Dasboard";
+                    
                     break;
                 case fragmentTypes.login:
                     ShowFragment(LoginFragment);
@@ -198,7 +208,7 @@ namespace ProcessDashboard.Droid
                     break;
                 case fragmentTypes.listoftasks:
                     ShowFragment(ListOfTasksFragment);
-                    toolbar.Title = "Tasks";
+                    
                     break;
                 case fragmentTypes.globaltimelog:
                     ShowFragment(GlobalTimeLogFragment);
@@ -208,7 +218,7 @@ namespace ProcessDashboard.Droid
                     break;
                 case fragmentTypes.listofprojects:
                     ShowFragment(ListOfProjectFragment);
-                    toolbar.Title = "Projects";
+                    
                     break;
                 case fragmentTypes.taskdetails:
                     ShowFragment(TaskDetailFragment); 
@@ -222,7 +232,7 @@ namespace ProcessDashboard.Droid
 
 	    public void listOfProjectsCallback(string projectid)
 	    {
-            toolbar.Title = "Tasks";
+            
             ListOfTasksFragment.SetId(projectid);
             switchToFragment(fragmentTypes.listoftasks);
             
@@ -230,7 +240,7 @@ namespace ProcessDashboard.Droid
 
 	    public void passTaskDetailsInfo(string taskId)
 	    {
-	        toolbar.Title = "Task Details";
+	        
             TaskDetailFragment.setId(taskId);
             switchToFragment(fragmentTypes.taskdetails);
         }

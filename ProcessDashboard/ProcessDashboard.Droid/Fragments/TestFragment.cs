@@ -19,12 +19,12 @@ namespace ProcessDashboard.Droid.Fragments
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
+            RetainInstance = true;
             Controller _controller = ((MainActivity)this.Activity)._ctrl;
 
            // _controller.testTimeLog();
             //_controller.testTimeLogWithID("i5ixdkxc:15565303");
-            _controller.testTaskProject();
+            _controller.testSingleTask();
 
             // Create your fragment here
         }

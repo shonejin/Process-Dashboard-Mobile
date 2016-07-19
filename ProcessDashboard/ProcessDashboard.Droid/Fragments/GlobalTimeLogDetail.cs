@@ -10,8 +10,17 @@ namespace ProcessDashboard.Droid.Fragments
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            RetainInstance = true;
 
             // Create your fragment here
+            ((MainActivity)(this.Activity)).setTitle("Global Time Log Detail");
+            // Create your fragment here
+        }
+
+        public override void OnResume()
+        {
+            base.OnResume();
+            ((MainActivity)(this.Activity)).setTitle("Global Time Log Detail");
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)

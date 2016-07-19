@@ -26,8 +26,16 @@ namespace ProcessDashboard.Droid.Fragments
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
+            RetainInstance = true;
             // Create your fragment here
+            ((MainActivity)(this.Activity)).setTitle("List of Tasks");
+            // Create your fragment here
+        }
+
+        public override void OnResume()
+        {
+            base.OnResume();
+            ((MainActivity)(this.Activity)).setTitle("List of Tasks");
         }
 
         public override void OnActivityCreated(Bundle savedInstanceState)

@@ -11,7 +11,17 @@ namespace ProcessDashboard.Droid.Fragments
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            RetainInstance = true;
+            
+            ((MainActivity)(this.Activity)).setTitle("Settings");
+            // Create your fragment here
             AddPreferencesFromResource(Resource.Layout.Settings);
+        }
+
+        public override void OnResume()
+        {
+            base.OnResume();
+            ((MainActivity)(this.Activity)).setTitle("Settings");
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)

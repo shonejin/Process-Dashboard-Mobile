@@ -12,7 +12,7 @@ namespace ProcessDashboard.SyncLogic
 {
     public class Controller
     {
-        /*
+  /*
    * 
    * Name: Controller.cs
    * 
@@ -23,7 +23,7 @@ namespace ProcessDashboard.SyncLogic
    * It also abstracts the difference between data obtained from the server and data obtained from the database.
 
    */
-        
+
         private readonly IPDashServices _pDashServices;
 
         private readonly DBManager _dbm;
@@ -128,15 +128,15 @@ namespace ProcessDashboard.SyncLogic
 
         // Get Time Log entries with optional parameters.
         // Optional parameters should be specified as null
-        public async Task<List<TimeLogEntry>> GetTimeLog(string dataset,int maxResults, string startDateFrom, string startDateTo, string taskId, string projectId)
+        public async Task<List<TimeLogEntry>> GetTimeLog(string dataset, int maxResults, string startDateFrom, string startDateTo, string taskId, string projectId)
         {
 
-            var remoteTasks = await _pDashServices.GetTimeLogsRemote(Priority.UserInitiated, dataset,maxResults,startDateFrom,startDateTo,taskId,projectId)
+            var remoteTasks = await _pDashServices.GetTimeLogsRemote(Priority.UserInitiated, dataset, maxResults, startDateFrom, startDateTo, taskId, projectId)
                 .ConfigureAwait(false);
             return remoteTasks;
 
         }
-        
+
         // Get the list of recent tasks
         public async Task<List<DTO.Task>> GetRecentTasks(string dataset)
         {
@@ -182,21 +182,22 @@ namespace ProcessDashboard.SyncLogic
 
         public async Task<DTO.Task> GetTask(string dataset, string taskId)
         {
-            var remoteTasks = await _pDashServices.GetTaskDetailsRemote(Priority.UserInitiated, dataset,taskId)
+            var remoteTasks = await _pDashServices.GetTaskDetailsRemote(Priority.UserInitiated, dataset, taskId)
              .ConfigureAwait(false);
             return remoteTasks;
         }
 
-        public async Task<TimeLogsRoot> AddATimeLog(string dataset, string comment, string startDate, string taskId, string loggedTime)
+        public async Task<EditATimeLogRoot> AddATimeLog(string dataset, string comment, string startDate, string taskId, double loggedTime)
         {
-            
-            TimeLogsRoot tro = await _pDashServices.AddTimeLog(Priority.UserInitiated,dataset,comment,startDate,taskId,loggedTime);
+
+            EditATimeLogRoot tro = await _pDashServices.AddTimeLog(Priority.UserInitiated, dataset, comment, startDate, taskId, loggedTime);
 
             System.Diagnostics.Debug.WriteLine("Add Stat :" + tro.stat);
             if (tro.stat.Equals("ok"))
             {
-                System.Diagnostics.Debug.WriteLine("Count :" + tro.timeLogEntries.Count);
-                
+
+                System.Diagnostics.Debug.WriteLine("Id:"+tro.timeLogEntry.id);
+
             }
             else
             {
@@ -207,16 +208,16 @@ namespace ProcessDashboard.SyncLogic
 
         }
 
-        public async Task<TimeLogsRoot> UpdateTimeLog(string dataset, string timeLogId, string comment, string startDate, string taskId, string loggedTime)
+        public async Task<EditATimeLogRoot> UpdateTimeLog(string dataset, string timeLogId, string comment, string startDate, string taskId, double loggedTime)
         {
 
 
-            TimeLogsRoot tro = await _pDashServices.UpdateTimeLog(Priority.UserInitiated, timeLogId,dataset, comment, startDate, taskId, loggedTime);
+            EditATimeLogRoot tro = await _pDashServices.UpdateTimeLog(Priority.UserInitiated, dataset,timeLogId, comment, startDate, taskId, loggedTime);
 
             System.Diagnostics.Debug.WriteLine("Update Stat :" + tro.stat);
             if (tro.stat.Equals("ok"))
             {
-                System.Diagnostics.Debug.WriteLine("Count :" + tro.timeLogEntries.Count);
+                System.Diagnostics.Debug.WriteLine("Count :" + tro.timeLogEntry.task);
 
             }
             else
@@ -232,7 +233,7 @@ namespace ProcessDashboard.SyncLogic
         {
             var dro = await _pDashServices.DeleteTimeLog(Priority.UserInitiated, dataset, timeLogId);
             System.Diagnostics.Debug.WriteLine("Delete status :" + dro.stat);
-            return dro ;
+            return dro;
         }
 
 
@@ -240,7 +241,7 @@ namespace ProcessDashboard.SyncLogic
 
         public async void testProject()
         {
-            
+
             List<Project> projectsList = await GetProjects("mock");
             try
             {
@@ -269,9 +270,10 @@ namespace ProcessDashboard.SyncLogic
                 System.Diagnostics.Debug.WriteLine("** LIST OF TASKS **");
                 System.Diagnostics.Debug.WriteLine("Length is " + projectsList.Count);
 
-                foreach (var proj in projectsList.Select(x => x.fullName))
+                foreach (var proj in projectsList)
                 {
-                    System.Diagnostics.Debug.WriteLine(proj);
+                    System.Diagnostics.Debug.WriteLine(proj.fullName + " : " + proj.id);
+
                     //  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
                 }
 
@@ -285,7 +287,7 @@ namespace ProcessDashboard.SyncLogic
 
         }
 
-        public async void testTaskProject()
+        public async void testProjectTask()
         {
 
             List<DTO.Task> projectsList = await GetTasks("mock", "iokdum2d");
@@ -297,7 +299,7 @@ namespace ProcessDashboard.SyncLogic
                 foreach (var proj in projectsList.Select(x => x.project))
                 {
                     System.Diagnostics.Debug.WriteLine(proj.name);
-                    
+
                 }
 
             }
@@ -312,7 +314,7 @@ namespace ProcessDashboard.SyncLogic
 
         public async void testTimeLog()
         {
-            List<TimeLogEntry> timeLogEntries = await GetTimeLog("mock",0,null,null,null,null);
+            List<TimeLogEntry> timeLogEntries = await GetTimeLog("mock", 0, null, null, null, null);
             try
             {
                 System.Diagnostics.Debug.WriteLine("** LIST OF Timelog **");
@@ -321,7 +323,7 @@ namespace ProcessDashboard.SyncLogic
                 foreach (var proj in timeLogEntries)
                 {
                     System.Diagnostics.Debug.WriteLine("Task Name : " + proj.task.fullName);
-                    System.Diagnostics.Debug.WriteLine("Start Date : "+proj.startDate);
+                    System.Diagnostics.Debug.WriteLine("Start Date : " + proj.startDate);
                     System.Diagnostics.Debug.WriteLine("End Date : " + proj.endDate);
                     //  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
                 }
@@ -335,7 +337,7 @@ namespace ProcessDashboard.SyncLogic
 
         public async void testTimeLogWithID(string taskID)
         {
-            List<TimeLogEntry> timeLogEntries = await GetTimeLog("mock", 0, null, null, taskID,null);
+            List<TimeLogEntry> timeLogEntries = await GetTimeLog("mock", 0, null, null, taskID, null);
             try
             {
                 System.Diagnostics.Debug.WriteLine("** LIST OF Timelog **");
@@ -377,38 +379,79 @@ namespace ProcessDashboard.SyncLogic
 
         }
 
-/*
-        public async void testDelete()
+        public async void testSingleTask()
         {
-
-          
-
-        }
-
-        public async void testAdd()
-        {
-
-          
-
-        }
-        public async void testUpdate(TimeLogEntry tl)
-        {
-
-            TimeLogRootObject tro = await UpdateTimeLog(tl);
-
-            System.Diagnostics.Debug.WriteLine("Update Stat :" + tro.stat);
-            if (tro.stat.Equals("ok"))
+            DTO.Task taskItem = await GetTask("mock", "iokdum2d:11401830");
+            try
             {
-                System.Diagnostics.Debug.WriteLine("Id :" + tro.timeLogEntry.id);
-                System.Diagnostics.Debug.WriteLine("Id :" + tro.timeLogEntry.startDate);
+                System.Diagnostics.Debug.WriteLine("** TASK ENTRY **");
+
+                System.Diagnostics.Debug.WriteLine(taskItem.fullName + " : " + taskItem.id);
+                System.Diagnostics.Debug.WriteLine(taskItem.estimatedTime + " & " + taskItem.actualTime);
             }
-            else
+            catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine("Id :" + tro.err.code);
-                System.Diagnostics.Debug.WriteLine("Id :" + tro.err.msg);
+                System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
             }
 
+
         }
-        */
+
+        public async Task<int> testAddATimeLog()
+        {
+            EditATimeLogRoot tr = await AddATimeLog("INST-szewf0", "Testing a comment", DateTime.Now.ToString(), "305", 2);
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("** Added a new Time Log entry **");
+
+                System.Diagnostics.Debug.WriteLine(tr.timeLogEntry.id);
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+            }
+
+            return tr.timeLogEntry.id;
+
+        }
+
+        public async void testUpdateATimeLog()
+        {
+
+            string timeLogID = ""+await testAddATimeLog();
+
+            EditATimeLogRoot tr = await UpdateTimeLog("INST-szewf0",timeLogID, "Testing a comment", DateTime.Now.ToString(Settings.GetInstance().DateTimePattern), "305", 24);
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("** Updated the new Time Log entry **");
+                System.Diagnostics.Debug.WriteLine("Updated Logged Time :"+tr.timeLogEntry.loggedTime);
+                
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+            }
+
+        }
+
+        public async void testDeleteATimeLog()
+        {
+            string timeLogID = "" + await testAddATimeLog();
+
+            DeleteRoot tr = await DeleteTimeLog("INST-szewf0", timeLogID);
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("** Delete the new Time Log entry **");
+                System.Diagnostics.Debug.WriteLine("Status :" + tr.stat);
+
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+            }
+
+
+        }
+
     }
 }

@@ -56,11 +56,11 @@ namespace ProcessDashboard.Service.Interface
 
         //Add a new time-log entry
        [Post("/datasets/{dataset}/time-log/")]
-        Task<TimeLogsRoot> AddTimeLog([Header("Authorization")] string authorization, string dataset, [Body(BodySerializationMethod.UrlEncoded)] Dictionary<string,object> tl);
+        Task<EditATimeLogRoot> AddTimeLog([Header("Authorization")] string authorization, string dataset, [Body(BodySerializationMethod.UrlEncoded)] Dictionary<string,object> tl);
 
         // Update an existing time-log entry
         [Put("/datasets/{dataset}/time-log/{timelogId}/")]
-        Task<TimeLogsRoot> UpdateTimeLog([Header("Authorization")] string authorization, string dataset, string timelogId, [Body(BodySerializationMethod.UrlEncoded)] Dictionary<string, object> tl);
+        Task<EditATimeLogRoot> UpdateTimeLog([Header("Authorization")] string authorization, string dataset, string timelogId, [Body(BodySerializationMethod.UrlEncoded)] Dictionary<string, object> tl);
 
         // Delete a time-log entry
         [Delete("/datasets/{dataset}/time-log/{timelogId}/")]

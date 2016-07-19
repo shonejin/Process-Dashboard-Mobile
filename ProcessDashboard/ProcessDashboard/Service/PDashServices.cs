@@ -37,10 +37,13 @@ namespace ProcessDashboard.Service_Access_Layer
         private readonly DBManager _dbm;
         private Settings settings;
 
+        private string pattern;
+
         public PDashServices(IApiTypes apiService)
         {
             _apiService = apiService;
             this.settings = Settings.GetInstance();
+            pattern = settings.DateTimePattern;
             _dbm = DBManager.getInstance();
         }
 
@@ -313,8 +316,6 @@ namespace ProcessDashboard.Service_Access_Layer
 
             return output;
 
-
-
         }
 
         public async Task<List<Task>> GetRecentTasksRemote(Priority priority, string dataset)
@@ -442,9 +443,9 @@ namespace ProcessDashboard.Service_Access_Layer
          * Adding/Updating/Deleting Time Log entries
          */ 
         
-        public async Task<TimeLogsRoot> AddTimeLog(Priority priority, string dataset, string comment,string startDate, string taskId,string loggedTime)
+        public async Task<EditATimeLogRoot> AddTimeLog(Priority priority, string dataset, string comment,string startDate, string taskId,double loggedTime)
         {
-            string pattern = "yyyy-MM-dd\'T\'HH:mm:ss";
+            
 
             Dictionary<string, object> value = new Dictionary<string, object>();
             value.Add("comment", comment);
@@ -453,8 +454,8 @@ namespace ProcessDashboard.Service_Access_Layer
             value.Add("loggedTime", loggedTime);
             value.Add("editTimestamp", DateTime.Now.ToString(pattern));
 
-            TimeLogsRoot task = null;
-            Task<TimeLogsRoot> addTimeLog;
+            EditATimeLogRoot task = null;
+            Task<EditATimeLogRoot> addTimeLog;
             Debug.WriteLine("Task Service : " + " Setting priority");
             switch (priority)
             {
@@ -471,17 +472,13 @@ namespace ProcessDashboard.Service_Access_Layer
                     addTimeLog = _apiService.UserInitiated.AddTimeLog(settings.authHeader, dataset, value);
                     break;
             }
-
-
             var timelogged = await addTimeLog;
-
             return timelogged;
-
         }
 
-        public async Task<TimeLogsRoot> UpdateTimeLog(Priority priority,string dataset, string timeLogId, string comment, string startDate, string taskId, string loggedTime)
+        public async Task<EditATimeLogRoot> UpdateTimeLog(Priority priority,string dataset, string timeLogId, string comment, string startDate, string taskId, double loggedTime)
         {           
-            string pattern = "yyyy-MM-dd\'T\'HH:mm:ss";
+            
 
             Dictionary<string, object> value = new Dictionary<string, object>();
             value.Add("comment", comment);
@@ -489,11 +486,9 @@ namespace ProcessDashboard.Service_Access_Layer
             value.Add("taskId", taskId);
             value.Add("loggedTime", loggedTime);
             value.Add("editTimestamp", DateTime.Now.ToString(pattern));
-
-
-
-            TimeLogsRoot task = null;
-            Task<TimeLogsRoot> updateTimeLog;
+            System.Diagnostics.Debug.WriteLine("Data set is :"+dataset+" Time Log is :"+timeLogId+" EditTime stamp:"+value["editTimestamp"]);
+            EditATimeLogRoot task = null;
+            Task<EditATimeLogRoot> updateTimeLog;
             Debug.WriteLine("Task Service : " + " Setting priority");
             switch (priority)
             {
@@ -521,7 +516,7 @@ namespace ProcessDashboard.Service_Access_Layer
         public async Task<DeleteRoot> DeleteTimeLog(Priority priority,string dataset, string timelogId)
         {
 
-            string pattern = "yyyy-MM-dd\'T\'HH:mm:ss";
+            
             string value = DateTime.Now.ToString(pattern);
 
             DeleteRoot task = null;

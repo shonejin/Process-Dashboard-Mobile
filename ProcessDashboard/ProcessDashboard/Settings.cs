@@ -10,6 +10,10 @@ namespace ProcessDashboard
 
         private string baseurl;
 
+        public string DateTimePattern
+        {
+            get { return "yyyy-MM-dd\'T\'HH:mm:ss"; }
+             }
         public string authHeader
         {
             get
