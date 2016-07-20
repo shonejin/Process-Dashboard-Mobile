@@ -453,5 +453,61 @@ namespace ProcessDashboard.SyncLogic
 
         }
 
+
+		//////////////////////////////////////////////////////////////////////
+		/// Expected Time Log API
+
+		/** TODO:
+		 * Create a new time log entry
+		 * 
+		 * @param taskId
+		 *            the task the time should be logged to
+		 * @param startDate
+		 *            the start time of the new entry
+		 * @param loggedTime
+		 *            the amount of time that has been logged
+		 * @param interruptTime
+		 *            the amount of interrupt time for the entry
+		 * @param openFlag
+		 *            true if this entry is being created by a timer that is still
+		 *            running
+		 * 
+		 * @return the server-assigned ID for the new time log entry
+		 */
+		// TODO: throws CannotReachServerException, CancelTimeLoggingException
+		public String createNewTimeLogEntry(String taskId, DateTime startDate, int loggedMinutes, int interruptMinutes, Boolean openFlag)
+		{
+			throw new NotImplementedException();
+		}
+
+		/** TODO:
+		 * Alter an existing time log entry.
+		 * 
+		 * @param timeLogEntryId
+		 *            the server ID of the entry to delete
+		 * @param loggedMinutesDelta
+		 *            the number of minutes to add to the logged time
+		 * @param interruptMinutesDelta
+		 *            the number of minutes to add to the interrupt time
+		 * @param openFlag
+		 *            true if this entry is being altered by a timer that is still
+		 *            running
+		 * @throws CannotReachServerException
+		 * @throws CancelTimeLoggingException
+		 */
+		public void alterTimeLogEntry(String timeLogEntryId,
+									  int loggedMinutesDelta, int interruptMinutesDelta, Boolean openFlag)
+		{
+			throw new NotImplementedException();
+		}
+
+		/** TODO:
+		 * Delete an existing time log entry
+		 */
+		// TODO: throws CannotReachServerException
+		public void deleteTimeLogEntry(String timeLogEntryId)
+		{
+			throw new NotImplementedException();
+		}
     }
 }

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minWidth="25px"
+    android:minHeight="25px">
+    <TextView
+        android:text="Current Task:"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:id="@+id/textView1" />
+    <TextView
+        android:text="Recent task.."
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="false"
+        android:id="@+id/recentTask_Home"
+        android:elegantTextHeight="true"
+        android:layout_marginLeft="10dp"
+        android:ellipsize="start" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:minWidth="25px"
+        android:minHeight="25px">
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+        <Button
+            android:src="@drawable/Pause"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:id="@+id/playHome"
+            android:background="@drawable/pause"
+            android:gravity="center_horizontal|center_vertical" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+        <Button
+            android:src="@drawable/Play"
+            android:layout_width="24dp"
+            android:layout_height="32dp"
+            android:background="@drawable/play"
+            android:id="@+id/pauseHome"
+            android:gravity="center_horizontal|center_vertical" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/taskComplete_Home"
+            android:gravity="center_horizontal|center_vertical" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+    <TextView
+        android:text="Recent tasks:"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="false"
+        android:id="@+id/recentTaskListText_Home"
+        android:elegantTextHeight="true"
+        android:ellipsize="start"
+        android:layout_margin="5dp" />
+    <ListView
+        android:id="@id/android:list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:drawSelectorOnTop="false"
+        android:layout_margin="5dp" />
+    <TextView
+        android:id="@id/android:empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="No data"
+        android:gravity="center" />
+</LinearLayout>
