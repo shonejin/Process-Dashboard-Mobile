@@ -45,7 +45,7 @@
         <!--Projects-->
         <scene sceneID="41">
             <objects>
-                <tableViewController title="Projects" id="42" customClass="ProjectsTableViewController" sceneMemberID="viewController" hasRefreshControl="1">
+                <tableViewController title="Projects" id="42" customClass="ProjectsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="43">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -75,22 +75,22 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Projects" id="122"/>
-                    <connections>
-                        <outlet property="projectsTableView" destination="43" id="name-outlet-43"/>
-                        <segue destination="51" kind="show" identifier="project2Tasks" id="1557"/>
-                    </connections>
                     <refreshControl key="refreshControl" opaque="NO" multipleTouchEnabled="YES" contentMode="center" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="1899">
                         <autoresizingMask key="autoresizingMask"/>
                         <attributedString key="attributedTitle">
                             <fragment content="Text">
                                 <attributes>
-                                    <font key="NSFont" name="HelveticaNeue" family="Helvetica Neue" size="15"/>
+                                    <font key="NSFont" size="15" name="HelveticaNeue"/>
                                     <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
                                 </attributes>
                             </fragment>
                         </attributedString>
                         <rect key="frame" x="0.0" y="0.0" width="0.0" height="0.0"/>
                     </refreshControl>
+                    <connections>
+                        <outlet property="projectsTableView" destination="43" id="name-outlet-43"/>
+                        <segue destination="51" kind="show" identifier="project2Tasks" id="1557"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="48" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -99,7 +99,7 @@
         <!--Tasks-->
         <scene sceneID="50">
             <objects>
-                <tableViewController title="Tasks" id="51" customClass="TasksTableViewController" sceneMemberID="viewController" hasRefreshControl="1">
+                <tableViewController title="Tasks" id="51" customClass="TasksTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="52">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -128,22 +128,22 @@
                             <outlet property="delegate" destination="51" id="54"/>
                         </connections>
                     </tableView>
-                    <connections>
-                        <outlet property="tasksTableView" destination="52" id="name-outlet-52"/>
-                        <segue destination="291" kind="show" identifier="task2TaskDetail" id="1599"/>
-                    </connections>
                     <refreshControl key="refreshControl" opaque="NO" multipleTouchEnabled="YES" contentMode="center" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="1906">
                         <autoresizingMask key="autoresizingMask"/>
                         <attributedString key="attributedTitle">
                             <fragment content="Text">
                                 <attributes>
-                                    <font key="NSFont" name="HelveticaNeue" family="Helvetica Neue" size="15"/>
+                                    <font key="NSFont" size="15" name="HelveticaNeue"/>
                                     <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
                                 </attributes>
                             </fragment>
                         </attributedString>
                         <rect key="frame" x="0.0" y="0.0" width="0.0" height="0.0"/>
                     </refreshControl>
+                    <connections>
+                        <outlet property="tasksTableView" destination="52" id="name-outlet-52"/>
+                        <segue destination="291" kind="show" identifier="task2TaskDetail" id="1599"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="57" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -286,13 +286,6 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" id="DSy-mx-iyb">
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="x31-bG-qgs">
-                            <connections>
-                                <segue destination="Uuq-3k-xee" kind="show" identifier="AddTimeLogSegue" id="1882"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
                     <connections>
                         <outlet property="PlanTable" destination="1989" id="name-outlet-1989"/>
                         <outlet property="TdCheckboxBtn" destination="1474" id="name-outlet-1474"/>
@@ -300,7 +293,6 @@
                         <outlet property="TdPauseBtn" destination="341" id="name-outlet-341"/>
                         <outlet property="TdPlayBtn" destination="334" id="name-outlet-334"/>
                         <outlet property="TdTaskNameLb" destination="333" id="name-outlet-333"/>
-                        <outlet property="addBtn" destination="x31-bG-qgs" id="name-outlet-x31-bG-qgs"/>
                         <outlet property="tdProjectNameLb" destination="336" id="name-outlet-336"/>
                     </connections>
                 </viewController>
@@ -349,13 +341,22 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
+                    <toolbarItems/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="TaskTimeLogTable" destination="588" id="587"/>
                     </connections>
+                    <navigationItem id="2222" key="navigationItem">
+                        <barButtonItem key="rightBarButtonItem" id="2225" systemItem="add">
+                            <connections>
+                                <segue id="2336" destination="Uuq-3k-xee" kind="show" identifier="AddTimeLogSegue"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="594" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2157" y="-310"/>
+            <point key="canvasLocation" x="2154" y="-376"/>
         </scene>
         <!--Home-->
         <scene sceneID="603">
@@ -657,16 +658,12 @@
     </scenes>
     <resources>
         <image name="Checkbox1.png" width="48" height="48"/>
-        <image name="ProjectsTabIcon" width="16" height="16"/>
         <image name="start.png" width="32" height="32"/>
         <image name="stop.png" width="32" height="32"/>
         <image name="Checkbox0.png" width="48" height="48"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="1599"/>
-        <segue reference="1882"/>
+        <segue reference="994"/>
     </inferredMetricsTieBreakers>
-    <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedScreenMetrics key="destination" type="retina47"/>
-    </simulatedMetricsContainer>
 </document>

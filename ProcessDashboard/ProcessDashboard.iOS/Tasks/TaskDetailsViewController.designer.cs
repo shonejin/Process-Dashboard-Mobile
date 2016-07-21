@@ -48,10 +48,6 @@ namespace ProcessDashboard.iOS
 
         void ReleaseDesignerOutlets ()
         {
-            if (addBtn != null) {
-                addBtn.Dispose ();
-                addBtn = null;
-            }
 
             if (PlanTable != null) {
                 PlanTable.Dispose ();

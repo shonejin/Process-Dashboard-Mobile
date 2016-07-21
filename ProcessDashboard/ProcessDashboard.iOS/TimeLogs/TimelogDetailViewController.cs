@@ -18,7 +18,7 @@ namespace ProcessDashboard.iOS
 		CustomTimeLogCell currentCell { get; set; }
 		public TimeLogPageViewController Delegate { get; set; } // will be used to Save, Delete later
 		public TaskTimeLogViewController DelegateforTasktimelog { get; set; } // will be used to Save, Delete later
-		public TaskDetailsViewController DelegateforAddingTimelog { get; set;}
+		public TaskTimeLogViewController DelegateforAddingTimelog { get; set;}
 		UILabel TaskNameLabel, ProjectNameLabel, StartTimeLabel, DeltaLabel, IntLabel, CommentLabel;
 		UIButton StartTimeText;
 		UITextField DeltaText, IntText;
@@ -425,7 +425,7 @@ namespace ProcessDashboard.iOS
 			currentTask = task;
 		}
 
-		public void CreateTask(TaskDetailsViewController d, TimeLogEntry task)
+		public void CreateTask(TaskTimeLogViewController d, TimeLogEntry task)
 		{
 			DelegateforAddingTimelog = d;
 			currentTask = task;

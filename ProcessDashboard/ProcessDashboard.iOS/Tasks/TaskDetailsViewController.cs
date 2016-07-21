@@ -47,16 +47,7 @@ namespace ProcessDashboard.iOS
 				controller.task = task;
 			
 			}
-			if (segue.Identifier == "AddTimeLogSegue")
-			{
-				
-				var controller = segue.DestinationViewController as TimelogDetailViewController;
-				TimeLogEntry newTimeLog = new TimeLogEntry();
-				newTimeLog.task = task;
-				newTimeLog.startDate = DateTime.Now;
-				controller.CreateTask(this, newTimeLog);
 
-			}
 		}
 
 

@@ -12,6 +12,7 @@ namespace ProcessDashboard.iOS
 {
     public partial class TaskTimeLogViewController : UIViewController
     {
+
 		UILabel ProjectNameLabel, TaskNameLabel, TimelogsLabel;
 		List<TimeLogEntry> timeLogCache;
 
@@ -129,6 +130,16 @@ namespace ProcessDashboard.iOS
 
 					navctlr.SetTaskforTaskTimelog(this, timeLogCache[rowPath.Row]); // to be defined on the TaskDetailViewController
 				}
+			}
+			if (segue.Identifier == "AddTimeLogSegue")
+			{
+
+				var controller = segue.DestinationViewController as TimelogDetailViewController;
+				TimeLogEntry newTimeLog = new TimeLogEntry();
+				newTimeLog.task = task;
+				newTimeLog.startDate = DateTime.Now;
+				controller.CreateTask(this, newTimeLog);
+
 			}
 
 		}
