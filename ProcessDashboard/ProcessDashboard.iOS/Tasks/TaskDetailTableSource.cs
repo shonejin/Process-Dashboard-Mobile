@@ -104,7 +104,15 @@ namespace ProcessDashboard.iOS
 			else {
 
 				cell.TextLabel.Text = "Completed Date";
-				cell.DetailTextLabel.Text = TaskItem.completionDate.ToShortDateString();
+				if (TaskItem.completionDate.ToShortDateString().Equals("1/1/0001"))
+				{
+					cell.DetailTextLabel.Text = "--";
+				}
+				else 
+				{
+					cell.DetailTextLabel.Text = TaskItem.completionDate.ToShortDateString();
+					//Console.WriteLine("task completion date:" + TaskItem.completionDate.ToShortDateString());
+				}
 			}
 
 			return cell;
