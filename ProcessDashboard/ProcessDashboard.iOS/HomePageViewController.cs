@@ -57,7 +57,7 @@ namespace ProcessDashboard.iOS
 
 			ProjectNameLabel = new UILabel(new CGRect(10, 80, View.Bounds.Width-20, 40))
 			{
-				Text = "/ Project / Mobile App I1",
+				Text = "",
 				Font = UIFont.SystemFontOfSize(16),
 				TextColor = UIColor.Black,
 				TextAlignment = UITextAlignment.Center,
@@ -81,7 +81,7 @@ namespace ProcessDashboard.iOS
 
 			CurrentTaskNameLabel = new UILabel(new CGRect(10, 160, View.Bounds.Width - 20, 60))
 			{
-				Text = "/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Team Walkthrough",
+				Text = " ",
 				Font = UIFont.SystemFontOfSize(13),
 				TextColor = UIColor.Black,
 				TextAlignment = UITextAlignment.Center,
@@ -171,7 +171,10 @@ namespace ProcessDashboard.iOS
 		public async void refreshData()
 		{
 			await GetRecentTasksData();
-			RecentTaskTable.Source = new TaskTableSource(RecentTaskItems, this);
+			CurrentTaskNameLabel.Text = RecentTaskItems[0].fullName;
+			ProjectNameLabel.Text = RecentTaskItems[0].project.name;
+
+			RecentTaskTable.Source = new TaskTableSource(RecentTaskItems.GetRange(1,RecentTaskItems.Count-1), this);
 			RecentTaskTable.ReloadData();
 		}
 
