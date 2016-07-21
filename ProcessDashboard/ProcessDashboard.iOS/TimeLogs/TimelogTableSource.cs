@@ -100,9 +100,16 @@ namespace ProcessDashboard.iOS
 
 			int newHour = (int)item.loggedTime/60;
 			int newMin = (int)item.loggedTime % 60;
-			string newH = null, newM = null;
+			string newM = null;
 
-			string newLoggedTime= newHour + ":" + newMin;
+			if (newMin < 10)
+			{
+				newM = "0" + newMin.ToString();
+			}
+			else {
+				newM = newMin.ToString();
+			}
+			string newLoggedTime= newHour + ":" + newM;
 
 			cell.UpdateCell(item.task.fullName.ToString()
 			                , item.startDate.ToShortTimeString()

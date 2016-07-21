@@ -85,8 +85,6 @@ namespace ProcessDashboard.iOS
 			// TODO: add exception handling logic
 			projectsCache = projectsList;
 
-			Console.WriteLine("HAHAH Length is " + projectsCache.Count);
-
 			try
 			{
 				System.Diagnostics.Debug.WriteLine("** GET PROJECTS **");

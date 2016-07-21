@@ -90,9 +90,12 @@ namespace ProcessDashboard.iOS
 				System.Diagnostics.Debug.WriteLine("** GET TASKS **");
 				System.Diagnostics.Debug.WriteLine("Length is " + tasksList.Count);
 
-				foreach (var task in tasksList.Select(x => x.fullName))
+				foreach (var task in tasksList)  //.Select(x => x.estimatedTime)
 				{
-					System.Diagnostics.Debug.WriteLine(task);
+					System.Diagnostics.Debug.WriteLine(task.fullName);
+					System.Diagnostics.Debug.WriteLine(task.actualTime);
+					System.Diagnostics.Debug.WriteLine(task.estimatedTime);
+		
 				}
 
 			}

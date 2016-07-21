@@ -3,12 +3,26 @@ using System;
 using UIKit;
 using CoreGraphics;
 using ProcessDashboard.DTO;
+using ProcessDashboard.Model;
+using ProcessDashboard.Service;
+using ProcessDashboard.Service_Access_Layer;
+using ProcessDashboard.SyncLogic;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using ProcessDashboard.Service.Interface;
+using Fusillade;
+using ProcessDashboard.APIRoot;
+using ProcessDashboard.DBWrapper;
+
 
 namespace ProcessDashboard.iOS
 {
     public partial class TaskDetailsViewController : UIViewController
     {
 		public Task task;
+		public Task taskDetail;
+
 		/*
         public string fullName { get; set; }
         public Project project { get; set; }
@@ -45,6 +59,42 @@ namespace ProcessDashboard.iOS
 			}
 		}
 
+
+		public async System.Threading.Tasks.Task<int> GetTaskithID(string taskID)
+		{
+			var apiService = new ApiTypes(null);
+			var service = new PDashServices(apiService);
+			Controller c = new Controller(service);
+			DTO.Task taskItem = await c.GetTask("mock", taskID);
+			taskDetail = taskItem;
+
+			try
+			{
+				System.Diagnostics.Debug.WriteLine("** TASK ENTRY **");
+				System.Diagnostics.Debug.WriteLine(taskItem.fullName + " : " + taskItem.id);
+				System.Diagnostics.Debug.WriteLine(taskItem.estimatedTime + " & " + taskItem.actualTime);
+			}
+			catch (Exception e)
+			{
+				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+			}
+			return 0;
+
+
+		}
+		public override void ViewDidAppear(bool animated)
+		{
+			base.ViewDidAppear(animated);
+			refreshData();
+		}
+
+		public async void refreshData()
+		{
+			await GetTaskithID(task.id);
+			PlanTable.Source = new TaskDetailTableSource(taskDetail, this);
+			PlanTable.ReloadData();
+		}
+
 		public override void ViewDidLoad()
 		{
 			if (task == null)
@@ -57,13 +107,8 @@ namespace ProcessDashboard.iOS
 
 			base.ViewDidLoad();
 
-			string[] tableItems = new string[]{task.estimatedTime.ToString(), task.actualTime.ToString(), task.completionDate.ToString("MM/dd/yyyy") };
+			refreshData();
 
-			Console.WriteLine("estimated time: " + task.estimatedTime);
-			Console.WriteLine("actual time: " + task.actualTime);
-			Console.WriteLine("complete time: " + task.completionDate);
-
-			PlanTable.Source = new TaskDetailTableSource(tableItems, this);
 			PlanTable.AutoresizingMask = UIViewAutoresizing.All;
 
 			View.AddSubview(PlanTable);
