@@ -40,13 +40,7 @@ namespace ProcessDashboard.iOS
 			selectedTask = tableItems[indexPath.Row];
 			tableView.DeselectRow(indexPath, true);
 			owner.PerformSegue("task2TaskDetail", owner);
-			/*
-			UIAlertController okAlertController = UIAlertController.Create("Row Selected", tableItems[indexPath.Row], UIAlertControllerStyle.Alert);
-			okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
-			owner.PresentViewController(okAlertController, true, null);
 
-			tableView.DeselectRow(indexPath, true);
-			*/
 		}
 
 		/// <summary>

@@ -61,6 +61,7 @@ namespace ProcessDashboard.iOS
 			await getDataOfTask();
 
 			tasksTableView.Source = new TasksTableSource(tasksCache, this);
+			NavigationItem.Title = projectName;
 
 			String refreshTime = DateTime.Now.ToString("g");
 			String subTitle = "Last refresh: " + refreshTime;

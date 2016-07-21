@@ -46,7 +46,8 @@ namespace ProcessDashboard.iOS
 			{
 				TasksTableViewController controller = (TasksTableViewController)segue.DestinationViewController;
 				controller.projectId = ((ProjectsTableSource)projectsTableView.Source).selectedProjectId;
-			
+				controller.projectName = ((ProjectsTableSource)projectsTableView.Source).selectedProjectName;
+
 			}
 		}
 
