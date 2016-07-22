@@ -28,6 +28,12 @@ namespace ProcessDashboard.iOS
 		public override nint RowsInSection(UITableView tableview, nint section)
 		{
 			// TODO: handling NULL
+			if (tableItems.Count == 0)
+			{
+				UIAlertController okAlertController = UIAlertController.Create("No Tasks Found", "", UIAlertControllerStyle.Alert);
+				okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
+				owner.PresentViewController(okAlertController, true, null);
+			}
 			return tableItems == null ? 0 : tableItems.Count;
 		}
 
