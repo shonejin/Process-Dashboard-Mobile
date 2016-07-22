@@ -11,10 +11,12 @@ namespace ProcessDashboard.iOS
 		public TasksTableSource()
 		{
 		}
-		List<Task> tableItems;
+		public List<Task> tableItems;
 		protected string cellIdentifier = "taskCell";
 		public Task selectedTask;
 		UIViewController owner;
+		//public int firstIncompleteTaskPos = 1 ;
+		//bool isFirst = true;
 
 		public TasksTableSource(List<Task> items, UIViewController owner)
 		{
@@ -60,6 +62,13 @@ namespace ProcessDashboard.iOS
 			if (cell == null)
 				cell = new UITableViewCell(UITableViewCellStyle.Default, cellIdentifier);
 
+			//if (isFirst && tableItems[indexPath.Row].completionDate.ToShortDateString().Equals("1/1/0001"))
+			//{
+			//	firstIncompleteTaskPos = indexPath.Row;
+			//	Console.WriteLine("Line:" + indexPath.Row);
+			//	isFirst = false;
+			//}
+			//Console.WriteLine(isFirst + "Outside Line:" + indexPath.Row);
 			cell.TextLabel.Text = tableItems[indexPath.Row].fullName;
 			cell.TextLabel.Font = UIFont.SystemFontOfSize(13);
 			cell.TextLabel.Lines = 0;

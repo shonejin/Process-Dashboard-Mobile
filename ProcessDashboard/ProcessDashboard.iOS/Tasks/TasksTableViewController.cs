@@ -82,15 +82,27 @@ namespace ProcessDashboard.iOS
 
 			await getDataOfTask();
 
-			tasksTableView.Source = new TasksTableSource(tasksCache, this);
+			TasksTableSource source = new TasksTableSource(tasksCache, this);
+			tasksTableView.Source = source;
 			NavigationItem.Title = "Tasks";
 			StaticLabel.Text = projectName;
-
+			int pos = 0;
+			for (int i = 0; i < tasksCache.Count; i++)
+			{
+				if (tasksCache[i].completionDate.ToShortDateString().Equals("1/1/0001"))
+				{
+					pos = i;
+					break;
+				}
+					
+			}
 			String refreshTime = DateTime.Now.ToString("g");
 			String subTitle = "Last refresh: " + refreshTime;
 			this.RefreshControl.AttributedTitle = new Foundation.NSAttributedString(subTitle);
 
 			tasksTableView.ReloadData();
+			// The scroll bar should be scrolled so that the first incomplete task is the first task in the screen.
+			tasksTableView.ScrollToRow(NSIndexPath.FromRowSection(pos, 0), UITableViewScrollPosition.Top, true);
 
 			if (this.RefreshControl.Refreshing)
 			{
@@ -116,8 +128,6 @@ namespace ProcessDashboard.iOS
 				foreach (var task in tasksList)  //.Select(x => x.estimatedTime)
 				{
 					System.Diagnostics.Debug.WriteLine(task.fullName);
-					System.Diagnostics.Debug.WriteLine(task.actualTime);
-					System.Diagnostics.Debug.WriteLine(task.estimatedTime);
 		
 				}
 

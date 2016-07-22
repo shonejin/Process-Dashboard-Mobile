@@ -53,7 +53,7 @@ namespace ProcessDashboard.iOS
 			cell.TextLabel.Lines = 1;
 			cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
 			cell.TextLabel.TextColor = UIColor.Black;
-			cell.TextLabel.LineBreakMode = UILineBreakMode.HeadTruncation;
+			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
 			return cell;
 
 
