@@ -99,6 +99,12 @@ namespace ProcessDashboard.iOS
 		
 		}
 
+		//public override void ViewDidDisappear(bool animated)
+		//{
+		//	base.ViewDidDisappear(animated);
+		//	this.NavigationController.PopToRootViewController(true);
+		//}
+
 
 		public void SaveTask(TimeLogEntry oldLog, TimeLogEntry newLog)
 		{

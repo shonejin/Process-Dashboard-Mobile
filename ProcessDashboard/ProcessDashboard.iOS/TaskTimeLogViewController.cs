@@ -30,6 +30,16 @@ namespace ProcessDashboard.iOS
 			refreshData();
 		}
 
+		//public override void ViewDidDisappear(bool animated)
+		//{
+		//	base.ViewDidDisappear(animated);
+		//	try
+		//	{
+		//		this.NavigationController.PopToRootViewController(true);
+		//	}
+		//	catch (Exception e){}
+		//}
+
 		private async void refreshData()
 		{
 			await getTimeLogsOfTask();

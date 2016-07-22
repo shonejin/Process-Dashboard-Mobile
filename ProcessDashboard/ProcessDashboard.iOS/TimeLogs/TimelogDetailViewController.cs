@@ -412,6 +412,13 @@ namespace ProcessDashboard.iOS
 
 		}
 
+		//public override void ViewDidDisappear(bool animated)
+		//{
+		//	base.ViewDidDisappear(animated);
+		//	this.NavigationController.PopToRootViewController(true);
+		//}
+
+
 		// this will be called before the view is displayed
 		public void SetTask(TimeLogPageViewController d, TimeLogEntry task)
 		{

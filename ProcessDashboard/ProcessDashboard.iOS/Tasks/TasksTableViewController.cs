@@ -62,6 +62,12 @@ namespace ProcessDashboard.iOS
 			//refreshData();
 		}
 
+		//public override void ViewWillDisappear( bool animated)
+		//{
+		//	base.ViewWillDisappear(animated);
+		//	this.NavigationController.PopToRootViewController(true);
+		//}
+
 		public override void PrepareForSegue(UIKit.UIStoryboardSegue segue, Foundation.NSObject sender)
 		{
 			base.PrepareForSegue(segue, sender);
@@ -86,6 +92,7 @@ namespace ProcessDashboard.iOS
 			tasksTableView.Source = source;
 			NavigationItem.Title = "Tasks";
 			StaticLabel.Text = projectName;
+
 			int pos = 0;
 			for (int i = 0; i < tasksCache.Count; i++)
 			{
@@ -102,8 +109,10 @@ namespace ProcessDashboard.iOS
 
 			tasksTableView.ReloadData();
 			// The scroll bar should be scrolled so that the first incomplete task is the first task in the screen.
-			tasksTableView.ScrollToRow(NSIndexPath.FromRowSection(pos, 0), UITableViewScrollPosition.Top, true);
-
+			if (tasksCache.Count != 0)
+			{
+				tasksTableView.ScrollToRow(NSIndexPath.FromRowSection(pos, 0), UITableViewScrollPosition.Top, true);
+			}
 			if (this.RefreshControl.Refreshing)
 			{
 				this.RefreshControl.EndRefreshing();

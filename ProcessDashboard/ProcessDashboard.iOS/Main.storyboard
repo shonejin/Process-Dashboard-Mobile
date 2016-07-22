@@ -7,7 +7,7 @@
         <!--Tab Bar Controller-->
         <scene sceneID="6">
             <objects>
-                <tabBarController storyboardIdentifier="rootTabBarViewController" definesPresentationContext="YES" id="7" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="rootTabBarViewController" definesPresentationContext="YES" id="7" sceneMemberID="viewController" customClass="RootTabBarController">
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="12">
                         <rect key="frame" x="0.0" y="551" width="600" height="49"/>
@@ -362,7 +362,7 @@
         <!--Home-->
         <scene sceneID="603">
             <objects>
-                <viewController id="604" customClass="HomePageViewController" sceneMemberID="viewController">
+                <viewController id="604" customClass="HomePageViewController" sceneMemberID="viewController" storyboardIdentifier="HomePageViewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="619"/>
                         <viewControllerLayoutGuide type="bottom" id="620"/>
