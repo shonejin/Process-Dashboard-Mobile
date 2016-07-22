@@ -13,6 +13,8 @@ using Fusillade;
 using ProcessDashboard.APIRoot;
 using ProcessDashboard.DBWrapper;
 using ProcessDashboard.DTO;
+using System.Drawing;
+using CoreGraphics;
 
 namespace ProcessDashboard.iOS
 {
@@ -21,6 +23,7 @@ namespace ProcessDashboard.iOS
 		public string projectId;
 		public string projectName;
 		List<Task> tasksCache;
+		UILabel StaticLabel;
 
 		public TasksTableViewController(IntPtr handle) : base(handle)
 		{
@@ -29,6 +32,25 @@ namespace ProcessDashboard.iOS
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
+
+			StaticLabel = new UILabel(new CGRect(0, 0, View.Bounds.Width, 40))
+			{
+				Text = " ",
+				Font = UIFont.SystemFontOfSize(12),
+				TextColor = UIColor.Black,
+				TextAlignment = UITextAlignment.Center,
+				BackgroundColor = UIColor.FromRGB(225, 225, 225),
+				Lines = 0,
+				LineBreakMode = UILineBreakMode.WordWrap,
+			};
+
+			StaticLabel.AutoresizingMask = UIViewAutoresizing.All;
+
+			this.Add(StaticLabel);
+
+			tasksTableView = new UITableView(new CGRect(0, 40, View.Bounds.Width, View.Bounds.Height - 40), UITableViewStyle.Plain);
+
+			this.Add(tasksTableView);
 			this.RefreshControl = new UIRefreshControl();
 			this.RefreshControl.ValueChanged += (sender, e) => { refreshData(); };
 			refreshData();
@@ -61,7 +83,8 @@ namespace ProcessDashboard.iOS
 			await getDataOfTask();
 
 			tasksTableView.Source = new TasksTableSource(tasksCache, this);
-			NavigationItem.Title = projectName;
+			NavigationItem.Title = "Tasks";
+			StaticLabel.Text = projectName;
 
 			String refreshTime = DateTime.Now.ToString("g");
 			String subTitle = "Last refresh: " + refreshTime;
@@ -74,7 +97,6 @@ namespace ProcessDashboard.iOS
 				this.RefreshControl.EndRefreshing();
 			}
 		}
-
 
 
 		public async System.Threading.Tasks.Task<int> getDataOfTask()

@@ -517,6 +517,7 @@ namespace ProcessDashboard.iOS
 				ModalPresentationStyle = UIModalPresentationStyle.Custom
 			};
 
+			//modalPicker.Select(StartTimeText.TitleLabel.Text.ToString());
 
 			modalPicker.DatePicker.Mode = UIDatePickerMode.DateAndTime;
 

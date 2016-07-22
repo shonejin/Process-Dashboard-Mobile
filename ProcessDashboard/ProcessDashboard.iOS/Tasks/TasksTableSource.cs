@@ -55,6 +55,11 @@ namespace ProcessDashboard.iOS
 				cell = new UITableViewCell(UITableViewCellStyle.Default, cellIdentifier);
 
 			cell.TextLabel.Text = tableItems[indexPath.Row].fullName;
+			cell.TextLabel.Font = UIFont.SystemFontOfSize(13);
+			cell.TextLabel.Lines = 0;
+			cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
+			cell.TextLabel.TextColor = UIColor.Black;
+			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
 
 			return cell;
 		}
