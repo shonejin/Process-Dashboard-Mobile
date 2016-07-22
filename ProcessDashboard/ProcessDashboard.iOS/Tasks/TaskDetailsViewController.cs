@@ -14,7 +14,16 @@ using ProcessDashboard.Service.Interface;
 using Fusillade;
 using ProcessDashboard.APIRoot;
 using ProcessDashboard.DBWrapper;
-
+using Foundation;
+using System;
+using UIKit;
+using CoreGraphics;
+using System.Drawing;
+using SharpMobileCode.ModalPicker;
+using ProcessDashboard.Service;
+using ProcessDashboard.Service_Access_Layer;
+using ProcessDashboard.SyncLogic;
+using ProcessDashboard.DTO;
 
 namespace ProcessDashboard.iOS
 {
@@ -46,6 +55,12 @@ namespace ProcessDashboard.iOS
 				controller.taskId = task.id;
 				controller.task = task;
 			
+			}
+			if (segue.Identifier == "showListofTasks")
+			{
+				TasksTableViewController controller = (TasksTableViewController)segue.DestinationViewController;
+				controller.projectId = task.project.id;
+				controller.projectName = task.project.name;
 			}
 
 		}
@@ -105,7 +120,9 @@ namespace ProcessDashboard.iOS
 			View.AddSubview(PlanTable);
 
 			TdTaskNameLb.Text = task.fullName ?? "";
-			tdProjectNameLb.Text = task.project != null ? task.project.name : "";
+			tdProjectNameBtn.SetTitle(task.project != null ? task.project.name : "",UIControlState.Normal);
+			tdProjectNameBtn.SetTitleColor(UIColor.Black, UIControlState.Normal);
+
 			TdNotesTf.Text = task.taskNote ?? "";
 		}
     }

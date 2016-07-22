@@ -177,13 +177,6 @@
                                     <action selector="UIButton334_TouchUpInside:" destination="291" eventType="touchUpInside" id="335"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="Project Name" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="336">
-                                <rect key="frame" x="20" y="88" width="335" height="27"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="17"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="341">
                                 <rect key="frame" x="20" y="206" width="46" height="30"/>
                                 <state key="normal" image="stop.png">
@@ -283,6 +276,14 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aip-pl-Wq7">
+                                <rect key="frame" x="20" y="85" width="324" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="19" weight="thin"/>
+                                <state key="normal" title="Project Name"/>
+                                <connections>
+                                    <segue destination="51" kind="show" identifier="showListofTasks" id="2427"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
@@ -293,7 +294,7 @@
                         <outlet property="TdPauseBtn" destination="341" id="name-outlet-341"/>
                         <outlet property="TdPlayBtn" destination="334" id="name-outlet-334"/>
                         <outlet property="TdTaskNameLb" destination="333" id="name-outlet-333"/>
-                        <outlet property="tdProjectNameLb" destination="336" id="name-outlet-336"/>
+                        <outlet property="tdProjectNameBtn" destination="aip-pl-Wq7" id="name-outlet-aip-pl-Wq7"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="293" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -342,17 +343,17 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <toolbarItems/>
+                    <navigationItem key="navigationItem" id="2222">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="2225">
+                            <connections>
+                                <segue destination="Uuq-3k-xee" kind="show" identifier="AddTimeLogSegue" id="2336"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="TaskTimeLogTable" destination="588" id="587"/>
                     </connections>
-                    <navigationItem id="2222" key="navigationItem">
-                        <barButtonItem key="rightBarButtonItem" id="2225" systemItem="add">
-                            <connections>
-                                <segue id="2336" destination="Uuq-3k-xee" kind="show" identifier="AddTimeLogSegue"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="594" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -663,7 +664,8 @@
         <image name="Checkbox0.png" width="48" height="48"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="1599"/>
         <segue reference="994"/>
+        <segue reference="1599"/>
+        <segue reference="2427"/>
     </inferredMetricsTieBreakers>
 </document>
