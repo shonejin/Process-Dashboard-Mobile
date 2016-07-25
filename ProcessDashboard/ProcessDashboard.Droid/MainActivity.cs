@@ -18,28 +18,28 @@ using ProcessDashboard.SyncLogic;
 namespace ProcessDashboard.Droid
 {
 	[Activity (Label = "ProcessDashboard.Droid", MainLauncher = true, Icon = "@drawable/icon")]
-	public class MainActivity : AppCompatActivity,ListOfProjectsInterface,ListOfTaksInterface
+	public class MainActivity : AppCompatActivity,IListOfProjectsInterface,IListOfTaksInterface,ITimeLogsInterface
     {
-        DrawerLayout drawerLayout;
+        DrawerLayout _drawerLayout;
 
-        public enum fragmentTypes { login, home, settings, listofprojects, listoftasks, taskdetails, tasktimelogdetails, globaltimelog, globaltimelogdetails };
-        private Home HomeFragment;
-        private Login LoginFragment;
-        private SettingsPage SettingsFragment;
-        private GlobalTimeLog GlobalTimeLogFragment;
-        private GlobalTimeLogDetail GlobalTimeLogDetailFragment;
-        private ListOfProjects ListOfProjectFragment;
-        private TaskDetails TaskDetailFragment;
-        private TaskTimeLogDetail TaskTimeLogDetailFragment;
-        private ListProjectTasks ListOfTasksFragment;
+        public enum FragmentTypes { Login, Home, Settings, Listofprojects, Listoftasks, Taskdetails, Tasktimelogdetails, Globaltimelog, Globaltimelogdetails };
+        private Home _homeFragment;
+        private Login _loginFragment;
+        private SettingsPage _settingsFragment;
+        private GlobalTimeLog _globalTimeLogFragment;
+        private GlobalTimeLogDetail _globalTimeLogDetailFragment;
+        private ListOfProjects _listOfProjectFragment;
+        private TaskDetails _taskDetailFragment;
+        private TaskTimeLogDetail _taskTimeLogDetailFragment;
+        private ListProjectTasks _listOfTasksFragment;
 
-	    private TestFragment testFragment;
+	    private TestFragment _testFragment;
 
-        private Fragment CurrentFragment;
+        private Fragment _currentFragment;
 
-	    private Android.Support.V7.Widget.Toolbar toolbar;
+	    private Android.Support.V7.Widget.Toolbar _toolbar;
 
-	    public Controller _ctrl;
+	    public Controller Ctrl;
 
         protected override void OnCreate (Bundle bundle)
 		{
@@ -52,12 +52,12 @@ namespace ProcessDashboard.Droid
 
             // Create UI
 
-            drawerLayout = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
+            _drawerLayout = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
 
             // Init toolbar
-            toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
-            toolbar.Title = "Process Dashboard";
-            SetSupportActionBar(toolbar);
+            _toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
+            _toolbar.Title = "Process Dashboard";
+            SetSupportActionBar(_toolbar);
 
             // Attach item selected handler to navigation view
             var navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
@@ -67,32 +67,32 @@ namespace ProcessDashboard.Droid
             navigationView.NavigationItemSelected += NavigationView_NavigationItemSelected;
 
             // Create ActionBarDrawerToggle button and add it to the toolbar
-            var drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, Resource.String.open_drawer, Resource.String.close_drawer);
-            drawerLayout.SetDrawerListener(drawerToggle);
+            var drawerToggle = new ActionBarDrawerToggle(this, _drawerLayout, _toolbar, Resource.String.open_drawer, Resource.String.close_drawer);
+            _drawerLayout.SetDrawerListener(drawerToggle);
             drawerToggle.SyncState();
 
 
-            LoginFragment = new Login();
-            HomeFragment = new Home();
-            SettingsFragment = new SettingsPage();
-            GlobalTimeLogFragment = new GlobalTimeLog();
-            GlobalTimeLogDetailFragment = new GlobalTimeLogDetail();
-            ListOfProjectFragment = new ListOfProjects();
-            TaskDetailFragment = new TaskDetails();
-            TaskTimeLogDetailFragment = new TaskTimeLogDetail();
-            ListOfTasksFragment = new ListProjectTasks("");
-            testFragment = new TestFragment();
+            _loginFragment = new Login();
+            _homeFragment = new Home();
+            _settingsFragment = new SettingsPage();
+            _globalTimeLogFragment = new GlobalTimeLog();
+            _globalTimeLogDetailFragment = new GlobalTimeLogDetail();
+            _listOfProjectFragment = new ListOfProjects();
+            _taskDetailFragment = new TaskDetails();
+            _taskTimeLogDetailFragment = new TaskTimeLogDetail();
+            _listOfTasksFragment = new ListProjectTasks("");
+            _testFragment = new TestFragment();
             
 
 
             // if logged in
-            CurrentFragment = HomeFragment;
+            _currentFragment = _homeFragment;
             // else 
             //CurrentFragment = ListOfProjectFragment;
 
             FragmentTransaction fragmentTx = this.FragmentManager.BeginTransaction();
             // The fragment will have the ID of Resource.Id.fragment_container.
-            fragmentTx.Replace(Resource.Id.fragmentContainer, CurrentFragment);
+            fragmentTx.Replace(Resource.Id.fragmentContainer, _currentFragment);
             // Commit the transaction.
             fragmentTx.Commit();
 
@@ -100,7 +100,7 @@ namespace ProcessDashboard.Droid
 
             var apiService = new ApiTypes(null);
             var service = new PDashServices(apiService);
-            _ctrl = new Controller(service);
+            Ctrl = new Controller(service);
             // c.testProject();
             //_ctrl.testTasks();
             //_ctrl.testSingleTask();
@@ -111,7 +111,7 @@ namespace ProcessDashboard.Droid
 
 	    public void setTitle(string title)
 	    {
-	        toolbar.Title = title;
+	        _toolbar.Title = title;
 	    }
 
         void NavigationView_NavigationItemSelected(object sender, NavigationView.NavigationItemSelectedEventArgs e)
@@ -120,26 +120,26 @@ namespace ProcessDashboard.Droid
             {
                 case (Resource.Id.nav_home):
                     // React on 'Home' selection
-                    ShowFragment(HomeFragment);
+                    ShowFragment(_homeFragment);
                     
                     break;
-                case (Resource.Id.nav_messages):
-                    // React on 'Messages' selection
-                    ShowFragment(ListOfProjectFragment);
+                case (Resource.Id.nav_projects):
+                    // React on 'Projects' selection
+                    ShowFragment(_listOfProjectFragment);
                     
                     break;
-                case (Resource.Id.nav_discussion):
-                    // React on 'Friends' selection
-                    ShowFragment(SettingsFragment);
-                    
+                case (Resource.Id.nav_timelogs):
+                    // React on 'Time Logs' selection
+                    ShowFragment(_globalTimeLogFragment);
                     break;
-                case (Resource.Id.nav_view):
-                    // React on 'Discussion' selection
+                case (Resource.Id.nav_settings):
+                    // React on 'Settings' selection
+                    ShowFragment(_settingsFragment);
                     break;
             }
 
             // Close drawer
-            drawerLayout.CloseDrawers();
+            _drawerLayout.CloseDrawers();
         }
 
 
@@ -171,79 +171,66 @@ namespace ProcessDashboard.Droid
             }
         }
         
-        public override bool OnOptionsItemSelected(IMenuItem item)
-        {
-            switch (item.ItemId)
-            {
-                //case Resource.Id.settings:
-                  //  switchToFragment(fragmentTypes.settings);
-                    //return true;
-
-                default:
-                    return true;
-            }
-
-        }
         
-
-        public override bool OnCreateOptionsMenu(IMenu menu)
-        {
-         //   MenuInflater.Inflate(Resource.Menu.action_menu, menu);
-            return base.OnCreateOptionsMenu(menu);
-        }
-
-        public void switchToFragment(fragmentTypes fragmentType)
+        public void SwitchToFragment(FragmentTypes fragmentType)
         {
             switch (fragmentType)
             {
-                case fragmentTypes.home:
-                    ShowFragment(HomeFragment);
+                case FragmentTypes.Home:
+                    ShowFragment(_homeFragment);
                     
                     break;
-                case fragmentTypes.login:
-                    ShowFragment(LoginFragment);
+                case FragmentTypes.Login:
+                    ShowFragment(_loginFragment);
                     break;
-                case fragmentTypes.settings:
-                    //ShowFragment(SettingsFragment);
+                case FragmentTypes.Settings:
+                    ShowFragment(_settingsFragment);
                     break;
-                case fragmentTypes.listoftasks:
-                    ShowFragment(ListOfTasksFragment);
+                case FragmentTypes.Listoftasks:
+                    ShowFragment(_listOfTasksFragment);
                     
                     break;
-                case fragmentTypes.globaltimelog:
-                    ShowFragment(GlobalTimeLogFragment);
+                case FragmentTypes.Globaltimelog:
+                    ShowFragment(_globalTimeLogFragment);
                     break;
-                case fragmentTypes.globaltimelogdetails:
-                    ShowFragment(GlobalTimeLogDetailFragment);
+                case FragmentTypes.Globaltimelogdetails:
+                    ShowFragment(_globalTimeLogDetailFragment);
                     break;
-                case fragmentTypes.listofprojects:
-                    ShowFragment(ListOfProjectFragment);
+                case FragmentTypes.Listofprojects:
+                    ShowFragment(_listOfProjectFragment);
                     
                     break;
-                case fragmentTypes.taskdetails:
-                    ShowFragment(TaskDetailFragment); 
+                case FragmentTypes.Taskdetails:
+                    ShowFragment(_taskDetailFragment); 
                     break;
-                case fragmentTypes.tasktimelogdetails:
-                    ShowFragment(TaskTimeLogDetailFragment);
+                case FragmentTypes.Tasktimelogdetails:
+                    ShowFragment(_taskTimeLogDetailFragment);
                     break;
 
             }
         }
 
-	    public void listOfProjectsCallback(string projectid)
+	    public void ListOfProjectsCallback(string projectid)
 	    {
             
-            ListOfTasksFragment.SetId(projectid);
-            switchToFragment(fragmentTypes.listoftasks);
+            _listOfTasksFragment.SetId(projectid);
+            SwitchToFragment(FragmentTypes.Listoftasks);
             
 	    }
 
-	    public void passTaskDetailsInfo(string taskId)
+	    public void PassTaskDetailsInfo(string taskId)
 	    {
 	        
-            TaskDetailFragment.setId(taskId);
-            switchToFragment(fragmentTypes.taskdetails);
+            _taskDetailFragment.SetId(taskId);
+            SwitchToFragment(FragmentTypes.Taskdetails);
         }
+
+	    public void PassTimeLogInfo(string timelogId)
+	    {
+	        _taskTimeLogDetailFragment.Id = (timelogId);
+            SwitchToFragment(FragmentTypes.Tasktimelogdetails);
+
+	    }
     }
 }
 

@@ -6,22 +6,23 @@
     android:minWidth="25px"
     android:minHeight="25px">
     <TextView
-        android:text="Current Task:"
+        android:text="Current Project:"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:id="@+id/textView1" />
+        android:id="@+id/Home_CurrentProject"
+        android:layout_gravity="center_horizontal" />
     <TextView
         android:text="Recent task.."
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="false"
-        android:id="@+id/recentTask_Home"
+        android:id="@+id/Home_RecentTask"
         android:elegantTextHeight="true"
-        android:layout_marginLeft="10dp"
-        android:ellipsize="start" />
+        android:ellipsize="none"
+        android:layout_gravity="center_horizontal" />
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -37,7 +38,7 @@
             android:src="@drawable/Pause"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:id="@+id/playHome"
+            android:id="@+id/Home_Play"
             android:background="@drawable/pause"
             android:gravity="center_horizontal|center_vertical" />
         <Space
@@ -49,7 +50,7 @@
             android:layout_width="24dp"
             android:layout_height="32dp"
             android:background="@drawable/play"
-            android:id="@+id/pauseHome"
+            android:id="@+id/Home_Pause"
             android:gravity="center_horizontal|center_vertical" />
         <Space
             android:layout_width="0dp"
@@ -58,7 +59,7 @@
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:id="@+id/taskComplete_Home"
+            android:id="@+id/Home_TaskComplete"
             android:gravity="center_horizontal|center_vertical" />
         <Space
             android:layout_width="0dp"
@@ -71,7 +72,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="false"
-        android:id="@+id/recentTaskListText_Home"
+        android:id="@+id/Home_RecentTaskListText"
         android:elegantTextHeight="true"
         android:ellipsize="start"
         android:layout_margin="5dp" />

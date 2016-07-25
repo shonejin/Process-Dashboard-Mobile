@@ -31,7 +31,7 @@ namespace ProcessDashboard.Droid.Fragments
             // Login logic
 
             // Switch to next screen
-            ((MainActivity)(this.Activity)).switchToFragment(MainActivity.fragmentTypes.home);
+            ((MainActivity)(this.Activity)).SwitchToFragment(MainActivity.FragmentTypes.Home);
         }
     }
 }

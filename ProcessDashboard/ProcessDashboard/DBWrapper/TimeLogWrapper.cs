@@ -11,18 +11,18 @@ namespace ProcessDashboard.DBWrapper
 {
     public class TimeLogWrapper
     {
-        SQLiteConnection db;
+        SQLiteConnection _db;
 
         public TimeLogWrapper(SQLiteConnection db)
         {
-            this.db = db;
+            this._db = db;
         }
 
-        public bool createTable()
+        public bool CreateTable()
         {
             try
             {
-                db.CreateTable<TimeLogEntryModel>();
+                _db.CreateTable<TimeLogEntryModel>();
                 return true;
             }
             catch (Exception e)
@@ -32,25 +32,25 @@ namespace ProcessDashboard.DBWrapper
             }
         }
 
-        public bool insertMultipleRecords(List<TimeLogEntryModel> entries)
+        public bool InsertMultipleRecords(List<TimeLogEntryModel> entries)
         {
-            db.RunInTransaction(() =>
+            _db.RunInTransaction(() =>
             {
                 // database calls inside the transaction
                 foreach (TimeLogEntryModel tem in entries)
                 {
-                    db.Insert(tem);
+                    _db.Insert(tem);
                 }
 
             });
             return true;
         }
 
-        public bool insertRecord(TimeLogEntryModel timelogentry)
+        public bool InsertRecord(TimeLogEntryModel timelogentry)
         {
             try
             {
-                db.Insert(timelogentry);
+                _db.Insert(timelogentry);
                 return true;
             }
             catch (Exception e)
@@ -64,7 +64,7 @@ namespace ProcessDashboard.DBWrapper
         {
             try
             {
-                var table = db.Table<TimeLogEntryModel>().ToList();
+                var table = _db.Table<TimeLogEntryModel>().ToList();
 
                 return table;
             }
@@ -75,11 +75,11 @@ namespace ProcessDashboard.DBWrapper
             }
         }
 
-        public TimeLogEntryModel getRecord(string RowId)
+        public TimeLogEntryModel GetRecord(string rowId)
         {
             try
             {
-                var item = db.Get<TimeLogEntryModel>(RowId);
+                var item = _db.Get<TimeLogEntryModel>(rowId);
                 return item;
             }
             catch (Exception e)
@@ -89,11 +89,11 @@ namespace ProcessDashboard.DBWrapper
             }
         }
 
-        public bool updateRecord(string RowId, Hashtable ht)
+        public bool UpdateRecord(string rowId, Hashtable ht)
         {
             try
             {
-                var item = db.Get<TimeLogEntryModel>(RowId);
+                var item = _db.Get<TimeLogEntryModel>(rowId);
 
                 if (ht.ContainsKey("TimeLogId"))
                 {
@@ -130,7 +130,7 @@ namespace ProcessDashboard.DBWrapper
                     item.ChangeFlag = (ht["ChangeFlag"].ToString()[0]);
                 }
                 item.EditTimestamp = DateTime.Now;
-                db.Update(item);
+                _db.Update(item);
                 return true;
             }
             catch (Exception e)
@@ -140,11 +140,11 @@ namespace ProcessDashboard.DBWrapper
             }
         }
 
-        public bool deleteRecord(string RowId)
+        public bool DeleteRecord(string rowId)
         {
             try
             {
-                db.Delete<TimeLogEntryModel>(RowId);
+                _db.Delete<TimeLogEntryModel>(rowId);
                 return true;
             }
             catch (Exception e)

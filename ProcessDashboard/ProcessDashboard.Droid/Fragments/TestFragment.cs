@@ -20,11 +20,11 @@ namespace ProcessDashboard.Droid.Fragments
         {
             base.OnCreate(savedInstanceState);
             RetainInstance = true;
-            Controller _controller = ((MainActivity)this.Activity)._ctrl;
+            Controller controller = ((MainActivity)this.Activity).Ctrl;
 
            // _controller.testTimeLog();
             //_controller.testTimeLogWithID("i5ixdkxc:15565303");
-            _controller.testSingleTask();
+            controller.TestSingleTask();
 
             // Create your fragment here
         }

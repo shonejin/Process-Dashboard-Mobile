@@ -9,18 +9,18 @@ namespace ProcessDashboard.DBWrapper
 {
     public class ProjectWrapper
     {
-        SQLiteConnection db;
+        SQLiteConnection _db;
 
         public ProjectWrapper(SQLiteConnection db)
         {
-            this.db = db;
+            this._db = db;
         }
 
-        public bool createTable()
+        public bool CreateTable()
         {
             try
             {
-                db.CreateTable<ProjectModel>();
+                _db.CreateTable<ProjectModel>();
                 return true;
             }
             catch (Exception e)
@@ -30,11 +30,11 @@ namespace ProcessDashboard.DBWrapper
             }
         }
 
-        public bool insertRecord(ProjectModel projectModel)
+        public bool InsertRecord(ProjectModel projectModel)
         {
             try
             {
-                db.Insert(projectModel);
+                _db.Insert(projectModel);
                 return true;
             }
             catch (Exception e)
@@ -44,11 +44,11 @@ namespace ProcessDashboard.DBWrapper
             }
         }
 
-        public bool insertOrUpdateRecord(ProjectModel projectModel)
+        public bool InsertOrUpdateRecord(ProjectModel projectModel)
         {
             try
             {
-                db.InsertOrReplace(projectModel);
+                _db.InsertOrReplace(projectModel);
                 return true;
             }
             catch (Exception e)
@@ -58,12 +58,12 @@ namespace ProcessDashboard.DBWrapper
             }
         }
 
-        public bool insertMultipleRecords(List<ProjectModel> entries)
+        public bool InsertMultipleRecords(List<ProjectModel> entries)
         {
                 // database calls inside the transaction
                 foreach (ProjectModel pm in entries)
                 {
-                    db.InsertOrReplace(pm);
+                    _db.InsertOrReplace(pm);
                 }
 
             return true;
@@ -72,7 +72,7 @@ namespace ProcessDashboard.DBWrapper
         {
             try
             {
-                var table = db.Table<ProjectModel>().ToList();
+                var table = _db.Table<ProjectModel>().ToList();
                 // Can we directly return table ??
                 return table;
             }
@@ -83,11 +83,11 @@ namespace ProcessDashboard.DBWrapper
             }
         }
 
-        public ProjectModel getRecord(string projectID)
+        public ProjectModel GetRecord(string projectId)
         {
             try
             {
-                var item = db.Get<ProjectModel>(projectID);
+                var item = _db.Get<ProjectModel>(projectId);
                 return item;
             }
             catch (Exception e)
@@ -97,11 +97,11 @@ namespace ProcessDashboard.DBWrapper
             }
         }
 
-        public bool updateRecord(string projectID, Hashtable ht)
+        public bool UpdateRecord(string projectId, Hashtable ht)
         {
             try
             {
-                var item = db.Get<ProjectModel>(projectID);
+                var item = _db.Get<ProjectModel>(projectId);
 
                 if (ht.ContainsKey("Name"))
                 {
@@ -115,7 +115,7 @@ namespace ProcessDashboard.DBWrapper
                 {
                     item.IsActive = bool.Parse(ht["IsActive"].ToString());
                 }
-                db.Update(item);
+                _db.Update(item);
                 return true;
             }
             catch (Exception e)
@@ -127,11 +127,11 @@ namespace ProcessDashboard.DBWrapper
 
         }
 
-        public bool deleteRecord(string projectID)
+        public bool DeleteRecord(string projectId)
         {
             try
             {
-                db.Delete<ProjectModel>(projectID);
+                _db.Delete<ProjectModel>(projectId);
                 return true;
             }
             catch (Exception e)

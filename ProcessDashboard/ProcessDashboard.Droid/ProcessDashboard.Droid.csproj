@@ -119,11 +119,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapter\GlobalTimeLogAdapter.cs" />
     <Compile Include="Fragments\GlobalTimeLog.cs" />
     <Compile Include="Fragments\GlobalTimeLogDetail.cs" />
     <Compile Include="Fragments\Home.cs" />
-    <Compile Include="Fragments\Interfaces\ListOfProjectsInterface.cs" />
-    <Compile Include="Fragments\Interfaces\ListOfTaksInterface.cs" />
+    <Compile Include="Interfaces\ListOfProjectsInterface.cs" />
+    <Compile Include="Interfaces\ListOfTaksInterface.cs" />
     <Compile Include="Fragments\ListOfProjects.cs" />
     <Compile Include="Fragments\ListProjectTasks.cs" />
     <Compile Include="Fragments\Login.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLite.cs" />
     <Compile Include="SQLiteAsync.cs" />
+    <Compile Include="TimeLogsInterface.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -145,17 +147,32 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Assets\AboutAssets.txt" />
-    <AndroidResource Include="Resources\layout\GlobalTimeLog.axml" />
+    <AndroidResource Include="Resources\layout\GlobalTimeLog.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\layout\GlobalTimeLogDetail.axml" />
     <AndroidResource Include="Resources\layout\Home.axml" />
-    <AndroidResource Include="Resources\layout\listGroup.axml" />
+    <AndroidResource Include="Resources\layout\listGroup.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\layout\ListOfProjects.axml" />
     <AndroidResource Include="Resources\layout\ListProjectTasks.axml" />
     <AndroidResource Include="Resources\layout\Login.axml" />
     <AndroidResource Include="Resources\layout\Settings.axml" />
     <AndroidResource Include="Resources\layout\TaskDetail.axml" />
-    <AndroidResource Include="Resources\layout\TaskTimeLogDetail.axml" />
+    <AndroidResource Include="Resources\layout\TaskTimeLogDetail.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\layout\projectlistitem.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\listItem.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\ListControl_Group.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\ListControl_ChildItem.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
@@ -189,7 +206,9 @@
     <AndroidResource Include="Resources\drawable-xhdpi\ic_supervisor_account_black_24dp.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\ic_supervisor_account_black_24dp.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\ic_supervisor_account_black_24dp.png" />
-    <AndroidResource Include="Resources\layout\Header.axml" />
+    <AndroidResource Include="Resources\layout\Header.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\menu\NavMenu.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -199,7 +218,7 @@
     </XamarinComponentReference>
     <XamarinComponentReference Include="xamandroidsupportv4-18">
       <Visible>False</Visible>
-      <Version>23.1.1.1</Version>
+      <Version>23.2.1</Version>
     </XamarinComponentReference>
     <XamarinComponentReference Include="xamandroidsupportv7appcompat">
       <Visible>False</Visible>
@@ -212,9 +231,7 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-hdpi\Play.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\NewFolder1\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="..\ProcessDashboard\ProcessDashboard.projitems" Label="Shared" Condition="Exists('..\ProcessDashboard\ProcessDashboard.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <Import Project="..\..\packages\refit.2.4.1\build\portable-net45+netcore45+wp8+wpa81+monoandroid+xamarin.ios10\refit.targets" Condition="Exists('..\..\packages\refit.2.4.1\build\portable-net45+netcore45+wp8+wpa81+monoandroid+xamarin.ios10\refit.targets')" />

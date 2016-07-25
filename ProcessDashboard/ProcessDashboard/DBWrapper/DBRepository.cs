@@ -5,44 +5,44 @@ using SQLite;
 
 namespace ProcessDashboard.DBWrapper
 {
-    public class DBManager
+    public class DbManager
     {
-        private static DBManager instance;
+        private static DbManager _instance;
 
-        public ProjectWrapper pw;
-        public TaskWrapper tw;
-        public TimeLogWrapper tlw;
+        public ProjectWrapper Pw;
+        public TaskWrapper Tw;
+        public TimeLogWrapper Tlw;
 
-        private static SQLiteConnection db;
+        private static SQLiteConnection _db;
 
-        private const string DB_NAME = "pdash.db3";
+        private const string DbName = "pdash.db3";
 
         // Private Constructor for Singleton Class.
-        private DBManager()
+        private DbManager()
         {
-            createConnection();
+            CreateConnection();
 
-            pw = new ProjectWrapper(db);
-            tw = new TaskWrapper(db);
-            tlw = new TimeLogWrapper(db);
+            Pw = new ProjectWrapper(_db);
+            Tw = new TaskWrapper(_db);
+            Tlw = new TimeLogWrapper(_db);
 
             
             //Create the table
-            pw.createTable();
-            tw.createTable();
-            tlw.createTable();
+            Pw.CreateTable();
+            Tw.CreateTable();
+            Tlw.CreateTable();
         }
 
-        public static DBManager getInstance()
+        public static DbManager GetInstance()
         {
-            return instance ?? (instance = new DBManager());
+            return _instance ?? (_instance = new DbManager());
         }
 
         //Create the Database
-        public static bool createDB()
+        public static bool CreateDb()
         {
             try {
-                createConnection();
+                CreateConnection();
                 Debug.WriteLine("DB Created");
                 return true;
             }
@@ -54,10 +54,10 @@ namespace ProcessDashboard.DBWrapper
         }
 
         // Create the connection to the DB.
-        private static void createConnection()
+        private static void CreateConnection()
         {
-            string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), DB_NAME);
-            db = new SQLiteConnection(dbPath);
+            string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), DbName);
+            _db = new SQLiteConnection(dbPath);
         }
     }
 }

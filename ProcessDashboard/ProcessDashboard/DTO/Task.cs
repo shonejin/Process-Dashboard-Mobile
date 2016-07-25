@@ -13,17 +13,17 @@ namespace ProcessDashboard.DTO
 
     public class Task
     {
-        public string id { get; set; }
-        public string fullName { get; set; }
-        public Project project { get; set; }
-        public DateTime completionDate { get; set; }
-        public double estimatedTime { get; set; }
-        public double actualTime { get; set; }
-        public string taskNote { get; set; }
+        public string Id { get; set; }
+        public string FullName { get; set; }
+        public Project Project { get; set; }
+        public DateTime CompletionDate { get; set; }
+        public double EstimatedTime { get; set; }
+        public double ActualTime { get; set; }
+        public string TaskNote { get; set; }
 
         public override string ToString()
         {
-            return fullName;
+            return FullName;
             
         }
     }

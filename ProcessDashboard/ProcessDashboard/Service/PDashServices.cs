@@ -34,17 +34,17 @@ namespace ProcessDashboard.Service_Access_Layer
         // Api Service for making the request using Fusilade
         private readonly IApiTypes _apiService;
         // DB Manager to manage Database operations
-        private readonly DBManager _dbm;
-        private Settings settings;
+        private readonly DbManager _dbm;
+        private Settings _settings;
 
-        private string pattern;
+        private string _pattern;
 
         public PDashServices(IApiTypes apiService)
         {
             _apiService = apiService;
-            this.settings = Settings.GetInstance();
-            pattern = settings.DateTimePattern;
-            _dbm = DBManager.getInstance();
+            this._settings = Settings.GetInstance();
+            _pattern = _settings.DateTimePattern;
+            _dbm = DbManager.GetInstance();
         }
 
         /*
@@ -58,7 +58,7 @@ namespace ProcessDashboard.Service_Access_Layer
 
             List<Project> output = null;
 
-            List<ProjectModel> values = _dbm.pw.GetAllRecords();
+            List<ProjectModel> values = _dbm.Pw.GetAllRecords();
 
             if (values == null || values.Count == 0)
             {
@@ -66,7 +66,7 @@ namespace ProcessDashboard.Service_Access_Layer
                 return null;
             }
             // Map from project model to project and return values.
-            output = Mapper.GetInstance().toProjectList(values);
+            output = Mapper.GetInstance().ToProjectList(values);
 
             Debug.WriteLine("ProjectModel Service : " + " Done with that");
 
@@ -84,16 +84,16 @@ namespace ProcessDashboard.Service_Access_Layer
             switch (priority)
             {
                 case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetProjectsList(dataset,settings.authHeader);
+                    getTaskDtoTask = _apiService.Background.GetProjectsList(dataset,_settings.AuthHeader);
                     break;
                 case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetProjectsList(dataset, settings.authHeader);
+                    getTaskDtoTask = _apiService.UserInitiated.GetProjectsList(dataset, _settings.AuthHeader);
                     break;
                 case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetProjectsList(dataset, settings.authHeader);
+                    getTaskDtoTask = _apiService.Speculative.GetProjectsList(dataset, _settings.AuthHeader);
                     break;
                 default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetProjectsList(dataset, settings.authHeader);
+                    getTaskDtoTask = _apiService.UserInitiated.GetProjectsList(dataset, _settings.AuthHeader);
                     break;
             }
 
@@ -103,10 +103,10 @@ namespace ProcessDashboard.Service_Access_Layer
             //ProjectsListRoot projects = await gitHubApi.GetProjectsList("mock");
 
             Debug.WriteLine("ProjectModel Service : " + "Got the content I guess");
-            Debug.WriteLine("ProjectModel Service : " + projects.stat);
-            Debug.WriteLine("ProjectModel Service : " + (projects.projects.Count));
+            Debug.WriteLine("ProjectModel Service : " + projects.Stat);
+            Debug.WriteLine("ProjectModel Service : " + (projects.Projects.Count));
 
-            if (!projects.stat.Equals("ok") || projects.projects==null)
+            if (!projects.Stat.Equals("ok") || projects.Projects==null)
             {
                 Debug.WriteLine("ProjectModel Service : " + "Null here");
                 return null;
@@ -128,7 +128,7 @@ namespace ProcessDashboard.Service_Access_Layer
                     .ExecuteAsync(async () => await getTaskDtoTask);
             }
             */
-            return projects.projects;
+            return projects.Projects;
         }
 
         /*
@@ -140,14 +140,14 @@ namespace ProcessDashboard.Service_Access_Layer
             Debug.WriteLine("TaskModel Service : " + " Going to get data from DB");
             List<Task> output = null;
 
-            List<TaskModel> values = _dbm.tw.GetAllRecords();
+            List<TaskModel> values = _dbm.Tw.GetAllRecords();
 
             if (values == null || values.Count == 0)
             {
                 return null;
             }
             // Map from project model to project and return values.
-            output = Mapper.GetInstance().toTaskList(values);
+            output = Mapper.GetInstance().ToTaskList(values);
 
             Debug.WriteLine("TaskModel Service : " + " Done with that");
 
@@ -164,30 +164,30 @@ namespace ProcessDashboard.Service_Access_Layer
             switch (priority)
             {
                 case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetTasksList(dataset, projectId, settings.authHeader);
+                    getTaskDtoTask = _apiService.Background.GetTasksList(dataset, projectId, _settings.AuthHeader);
                     break;
                 case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTasksList(dataset, projectId, settings.authHeader);
+                    getTaskDtoTask = _apiService.UserInitiated.GetTasksList(dataset, projectId, _settings.AuthHeader);
                     break;
                 case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetTasksList(dataset, projectId, settings.authHeader);
+                    getTaskDtoTask = _apiService.Speculative.GetTasksList(dataset, projectId, _settings.AuthHeader);
                     break;
                 default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTasksList(dataset, projectId, settings.authHeader);
+                    getTaskDtoTask = _apiService.UserInitiated.GetTasksList(dataset, projectId, _settings.AuthHeader);
                     break;
             }
 
             tasks = await getTaskDtoTask;
-            Debug.WriteLine("Task Service : " + "Got the content. STATUS :"+tasks.stat);
-            Debug.WriteLine("Task Service : " + "Is null : " + (tasks.projectTasks==null));
+            Debug.WriteLine("Task Service : " + "Got the content. STATUS :"+tasks.Stat);
+            Debug.WriteLine("Task Service : " + "Is null : " + (tasks.ProjectTasks==null));
 
-            Project p = tasks.forProject;
-            Debug.Assert(tasks.projectTasks != null, "tasks.projectTasks != null");
-            for (int i = 0; i < tasks.projectTasks.Count; i++)
+            Project p = tasks.ForProject;
+            Debug.Assert(tasks.ProjectTasks != null, "tasks.projectTasks != null");
+            for (int i = 0; i < tasks.ProjectTasks.Count; i++)
             {
-                Task t = tasks.projectTasks[i];
-                t.project = p;
-                tasks.projectTasks[i] = t;
+                Task t = tasks.ProjectTasks[i];
+                t.Project = p;
+                tasks.ProjectTasks[i] = t;
             }
 
             /*
@@ -200,7 +200,7 @@ namespace ProcessDashboard.Service_Access_Layer
                     .ExecuteAsync(async () => await getTaskDtoTask);
             }
             */
-            return tasks.projectTasks;
+            return tasks.ProjectTasks;
         }
         
         /**
@@ -211,7 +211,7 @@ namespace ProcessDashboard.Service_Access_Layer
             Debug.WriteLine("TaskModel Service : " + " Going to get data from DB");
             Task output = null;
 
-            TaskModel values = _dbm.tw.getRecord(projecttaskId);
+            TaskModel values = _dbm.Tw.GetRecord(projecttaskId);
 
             if (values == null)
             {
@@ -220,15 +220,15 @@ namespace ProcessDashboard.Service_Access_Layer
                 output = await GetTaskDetailsRemote(priority, dataset, projecttaskId);
 
                 // Map from task to task model
-                values = Mapper.GetInstance().toTaskModel(output);
+                values = Mapper.GetInstance().ToTaskModel(output);
                 // Store in DB
-                _dbm.tw.insertRecord(values);
+                _dbm.Tw.InsertRecord(values);
 
             }
             else
             {
                 // Map from project model to project and return values.
-                output = Mapper.GetInstance().toTask(values);
+                output = Mapper.GetInstance().ToTask(values);
             }
 
             Debug.WriteLine("TaskModel Service : " + " Done with that");
@@ -246,16 +246,16 @@ namespace ProcessDashboard.Service_Access_Layer
             switch (priority)
             {
                 case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetTaskDetails(dataset, projecttaskId, settings.authHeader);
+                    getTaskDtoTask = _apiService.Background.GetTaskDetails(dataset, projecttaskId, _settings.AuthHeader);
                     break;
                 case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTaskDetails(dataset, projecttaskId, settings.authHeader);
+                    getTaskDtoTask = _apiService.UserInitiated.GetTaskDetails(dataset, projecttaskId, _settings.AuthHeader);
                     break;
                 case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetTaskDetails(dataset, projecttaskId, settings.authHeader);
+                    getTaskDtoTask = _apiService.Speculative.GetTaskDetails(dataset, projecttaskId, _settings.AuthHeader);
                     break;
                 default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTaskDetails(dataset, projecttaskId, settings.authHeader);
+                    getTaskDtoTask = _apiService.UserInitiated.GetTaskDetails(dataset, projecttaskId, _settings.AuthHeader);
                     break;
             }
 
@@ -264,8 +264,8 @@ namespace ProcessDashboard.Service_Access_Layer
 
             // Convert to model and store in DB
 
-            TaskModel output = Mapper.GetInstance().toTaskModel(task.task);
-            _dbm.tw.insertRecord(output);
+            TaskModel output = Mapper.GetInstance().ToTaskModel(task.Task);
+            _dbm.Tw.InsertRecord(output);
 
             /*
             if (CrossConnectivity.Current.IsConnected)
@@ -277,7 +277,7 @@ namespace ProcessDashboard.Service_Access_Layer
                     .ExecuteAsync(async () => await getTaskDtoTask);
             }
             */
-            return task.task;
+            return task.Task;
         }
 
         /*
@@ -288,7 +288,7 @@ namespace ProcessDashboard.Service_Access_Layer
             Debug.WriteLine("TaskModel Service : " + " Going to get data from DB");
             List<Task> output = null;
 
-            List<TaskModel> values = _dbm.tw.GetAllRecords();
+            List<TaskModel> values = _dbm.Tw.GetAllRecords();
 
             values.Sort((val1, val2) => val1.RecentOrdinal.CompareTo(val2.RecentOrdinal));
 
@@ -299,7 +299,7 @@ namespace ProcessDashboard.Service_Access_Layer
                 output = await GetRecentTasksRemote(priority, dataset);
 
                 // Map from project to project model
-                Mapper.GetInstance().toTaskModelList(output);
+                Mapper.GetInstance().ToTaskModelList(output);
                 
                 // Update Recent ordinal
                 
@@ -309,7 +309,7 @@ namespace ProcessDashboard.Service_Access_Layer
             else
             {
                 // Map from project model to project and return values.
-                output = Mapper.GetInstance().toTaskList(values);
+                output = Mapper.GetInstance().ToTaskList(values);
             }
 
             Debug.WriteLine("TaskModel Service : " + " Done with that");
@@ -328,16 +328,16 @@ namespace ProcessDashboard.Service_Access_Layer
             switch (priority)
             {
                 case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetRecentTasks(dataset, settings.authHeader);
+                    getTaskDtoTask = _apiService.Background.GetRecentTasks(dataset, _settings.AuthHeader);
                     break;
                 case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetRecentTasks(dataset, settings.authHeader);
+                    getTaskDtoTask = _apiService.UserInitiated.GetRecentTasks(dataset, _settings.AuthHeader);
                     break;
                 case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetRecentTasks(dataset, settings.authHeader);
+                    getTaskDtoTask = _apiService.Speculative.GetRecentTasks(dataset, _settings.AuthHeader);
                     break;
                 default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetRecentTasks(dataset, settings.authHeader);
+                    getTaskDtoTask = _apiService.UserInitiated.GetRecentTasks(dataset, _settings.AuthHeader);
                     break;
             }
 
@@ -346,7 +346,7 @@ namespace ProcessDashboard.Service_Access_Layer
             
             // Convert to model and store in DB
 
-            var output = Mapper.GetInstance().toTaskModelList(task.recentTasks);
+            var output = Mapper.GetInstance().ToTaskModelList(task.RecentTasks);
 
             // TODO: UPdate Recent Ordinal
             /*
@@ -359,7 +359,7 @@ namespace ProcessDashboard.Service_Access_Layer
                     .ExecuteAsync(async () => await getTaskDtoTask);
             }
             */
-            return task.recentTasks;
+            return task.RecentTasks;
         }
 
         /* 
@@ -370,7 +370,7 @@ namespace ProcessDashboard.Service_Access_Layer
             Debug.WriteLine("Time log Service : " + " Going to get data from DB");
             List<TimeLogEntry> output = null;
 
-            var values = _dbm.tlw.GetAllRecords();
+            var values = _dbm.Tlw.GetAllRecords();
 
             if (values == null || values.Count == 0)
             {
@@ -379,15 +379,15 @@ namespace ProcessDashboard.Service_Access_Layer
             //    output = await GetTimeLogsRemote(priority, dataset);
 
                 // Map from project to project model
-                values = Mapper.GetInstance().toTimeLogEntryModelList(output);
+                values = Mapper.GetInstance().ToTimeLogEntryModelList(output);
                 // Store in DB
-                _dbm.tlw.insertMultipleRecords(values);
+                _dbm.Tlw.InsertMultipleRecords(values);
 
             }
             else
             {
                 // Map from project model to project and return values.
-                output = Mapper.GetInstance().toTimeLogEntryList(values);
+                output = Mapper.GetInstance().ToTimeLogEntryList(values);
             }
 
             Debug.WriteLine("TaskModel Service : " + " Done with that");
@@ -397,7 +397,7 @@ namespace ProcessDashboard.Service_Access_Layer
 
         }
 
-        public async Task<List<TimeLogEntry>> GetTimeLogsRemote(Priority priority, string dataset, int maxResults, string startDateFrom, string startDateTo, string taskId, string projectId)
+        public async Task<List<TimeLogEntry>> GetTimeLogsRemote(Priority priority, string dataset, int? maxResults, DateTime? startDateFrom, DateTime? startDateTo, string taskId, string projectId)
         {
             Debug.WriteLine("Task Service : " + " Going for remote task");
             Task<TimeLogsRoot> getTaskDtoTask;
@@ -405,16 +405,16 @@ namespace ProcessDashboard.Service_Access_Layer
             switch (priority)
             {
                 case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetTimeLogs(dataset,maxResults,  startDateFrom,  startDateTo,  taskId,  projectId, settings.authHeader);
+                    getTaskDtoTask = _apiService.Background.GetTimeLogs(dataset,maxResults,  startDateFrom,  startDateTo,  taskId,  projectId, _settings.AuthHeader);
                     break;
                 case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId, settings.authHeader);
+                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId, _settings.AuthHeader);
                     break;
                 case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId, settings.authHeader);
+                    getTaskDtoTask = _apiService.Speculative.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId, _settings.AuthHeader);
                     break;
                 default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId, settings.authHeader);
+                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId, _settings.AuthHeader);
                     break;
             }
 
@@ -436,7 +436,7 @@ namespace ProcessDashboard.Service_Access_Layer
                     .ExecuteAsync(async () => await getTaskDtoTask);
             }
             */
-            return task.timeLogEntries;
+            return task.TimeLogEntries;
         }
 
         /*
@@ -449,10 +449,10 @@ namespace ProcessDashboard.Service_Access_Layer
 
             Dictionary<string, object> value = new Dictionary<string, object>();
             value.Add("comment", comment);
-            value.Add("startDate", DateTime.Parse(startDate).ToString(pattern));
+            value.Add("startDate", DateTime.Parse(startDate).ToString(_pattern));
             value.Add("taskId", taskId);
             value.Add("loggedTime", loggedTime);
-            value.Add("editTimestamp", DateTime.Now.ToString(pattern));
+            value.Add("editTimestamp", DateTime.Now.ToString(_pattern));
 
             EditATimeLogRoot task = null;
             Task<EditATimeLogRoot> addTimeLog;
@@ -460,16 +460,16 @@ namespace ProcessDashboard.Service_Access_Layer
             switch (priority)
             {
                 case Priority.Background:
-                    addTimeLog = _apiService.Background.AddTimeLog(settings.authHeader, dataset, value);
+                    addTimeLog = _apiService.Background.AddTimeLog(_settings.AuthHeader, dataset, value);
                     break;
                 case Priority.UserInitiated:
-                    addTimeLog = _apiService.UserInitiated.AddTimeLog(settings.authHeader, dataset, value);
+                    addTimeLog = _apiService.UserInitiated.AddTimeLog(_settings.AuthHeader, dataset, value);
                     break;
                 case Priority.Speculative:
-                    addTimeLog = _apiService.Speculative.AddTimeLog(settings.authHeader, dataset, value);
+                    addTimeLog = _apiService.Speculative.AddTimeLog(_settings.AuthHeader, dataset, value);
                     break;
                 default:
-                    addTimeLog = _apiService.UserInitiated.AddTimeLog(settings.authHeader, dataset, value);
+                    addTimeLog = _apiService.UserInitiated.AddTimeLog(_settings.AuthHeader, dataset, value);
                     break;
             }
             var timelogged = await addTimeLog;
@@ -485,7 +485,7 @@ namespace ProcessDashboard.Service_Access_Layer
             value.Add("startDate", startDate);
             value.Add("taskId", taskId);
             value.Add("loggedTime", loggedTime);
-            value.Add("editTimestamp", DateTime.Now.ToString(pattern));
+            value.Add("editTimestamp", DateTime.Now.ToString(_pattern));
             System.Diagnostics.Debug.WriteLine("Data set is :"+dataset+" Time Log is :"+timeLogId+" EditTime stamp:"+value["editTimestamp"]);
             EditATimeLogRoot task = null;
             Task<EditATimeLogRoot> updateTimeLog;
@@ -493,16 +493,16 @@ namespace ProcessDashboard.Service_Access_Layer
             switch (priority)
             {
                 case Priority.Background:
-                    updateTimeLog = _apiService.Background.UpdateTimeLog(settings.authHeader, dataset, timeLogId, value);
+                    updateTimeLog = _apiService.Background.UpdateTimeLog(_settings.AuthHeader, dataset, timeLogId, value);
                     break;
                 case Priority.UserInitiated:
-                    updateTimeLog = _apiService.UserInitiated.UpdateTimeLog(settings.authHeader, dataset, timeLogId, value);
+                    updateTimeLog = _apiService.UserInitiated.UpdateTimeLog(_settings.AuthHeader, dataset, timeLogId, value);
                     break;
                 case Priority.Speculative:
-                    updateTimeLog = _apiService.Speculative.UpdateTimeLog(settings.authHeader, dataset, timeLogId, value);
+                    updateTimeLog = _apiService.Speculative.UpdateTimeLog(_settings.AuthHeader, dataset, timeLogId, value);
                     break;
                 default:
-                    updateTimeLog = _apiService.UserInitiated.UpdateTimeLog(settings.authHeader, dataset, timeLogId, value);
+                    updateTimeLog = _apiService.UserInitiated.UpdateTimeLog(_settings.AuthHeader, dataset, timeLogId, value);
                     break;
             }
 
@@ -517,7 +517,7 @@ namespace ProcessDashboard.Service_Access_Layer
         {
 
             
-            string value = DateTime.Now.ToString(pattern);
+            string value = DateTime.Now.ToString(_pattern);
 
             DeleteRoot task = null;
             Task<DeleteRoot> deleteTimeLog;
@@ -525,16 +525,16 @@ namespace ProcessDashboard.Service_Access_Layer
             switch (priority)
             {
                 case Priority.Background:
-                    deleteTimeLog = _apiService.Background.DeleteTimeLog(settings.authHeader, dataset,timelogId, value);
+                    deleteTimeLog = _apiService.Background.DeleteTimeLog(_settings.AuthHeader, dataset,timelogId, value);
                     break;
                 case Priority.UserInitiated:
-                    deleteTimeLog = _apiService.UserInitiated.DeleteTimeLog(settings.authHeader, dataset, timelogId, value);
+                    deleteTimeLog = _apiService.UserInitiated.DeleteTimeLog(_settings.AuthHeader, dataset, timelogId, value);
                     break;
                 case Priority.Speculative:
-                    deleteTimeLog = _apiService.Speculative.DeleteTimeLog(settings.authHeader, dataset, timelogId, value);
+                    deleteTimeLog = _apiService.Speculative.DeleteTimeLog(_settings.AuthHeader, dataset, timelogId, value);
                     break;
                 default:
-                    deleteTimeLog = _apiService.UserInitiated.DeleteTimeLog(settings.authHeader, dataset, timelogId, value);
+                    deleteTimeLog = _apiService.UserInitiated.DeleteTimeLog(_settings.AuthHeader, dataset, timelogId, value);
                     break;
             }
 

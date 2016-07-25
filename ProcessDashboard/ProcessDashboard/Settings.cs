@@ -6,15 +6,19 @@ namespace ProcessDashboard
 {
     class Settings
     {
-        private static Settings instance;
+        private static Settings _instance;
 
-        private string baseurl;
+        private string _baseurl;
+
+        public string Dataset {
+            get { return "mock"; }
+        }
 
         public string DateTimePattern
         {
-            get { return "yyyy-MM-dd\'T\'HH:mm:ss"; }
+            get { return "yyyy-MM-dd\'T\'HH:mm:ssZ"; }
              }
-        public string authHeader
+        public string AuthHeader
         {
             get
             {
@@ -32,7 +36,7 @@ namespace ProcessDashboard
 
         public static Settings GetInstance()
         {
-            return instance ?? (instance = new Settings());
+            return _instance ?? (_instance = new Settings());
         }
 
 

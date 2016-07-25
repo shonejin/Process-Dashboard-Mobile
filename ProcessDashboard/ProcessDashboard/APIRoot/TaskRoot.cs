@@ -12,9 +12,9 @@ namespace ProcessDashboard.APIRoot
 {
     public class TaskRoot
     {
-        public Task task { get; set; }
-        public string stat { get; set; }
-        public Err err { get; set; }
+        public Task Task { get; set; }
+        public string Stat { get; set; }
+        public Err Err { get; set; }
 
     }
 }

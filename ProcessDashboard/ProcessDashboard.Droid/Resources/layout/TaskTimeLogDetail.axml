@@ -2,6 +2,51 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:minWidth="25px"
+    android:minHeight="25px">
+  <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:scrollbars="vertical"
+      android:scrollbarStyle="insideOverlay"
+      android:fadeScrollbars="true">
+    <TextView
+        android:text="Project NAme"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/TaskTimeLog_ProjectName" />
+    <TextView
+        android:text="Task Name"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/TaskTimeLog_ProjectName"
+        android:id="@+id/TaskTimeLog_TaskName" />
+    <TextView
+        android:text="Time Log Entries"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/TaskTimeLog_TaskName"
+        android:id="@+id/TaskTimeLog_TimeLogEntriesText" />
 
+    <ListView
+    android:id="@id/android:list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:drawSelectorOnTop="false"
+    android:layout_below="@id/TaskTimeLog_TimeLogEntriesText"
+    android:layout_margin="5dp" />
+    <TextView
+        android:id="@id/android:empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="No data"
+        android:gravity="center" />
+    
+ 
+  </RelativeLayout>
 </LinearLayout>

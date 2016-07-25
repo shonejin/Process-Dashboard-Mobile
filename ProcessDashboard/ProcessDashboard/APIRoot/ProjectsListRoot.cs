@@ -14,9 +14,9 @@ namespace ProcessDashboard.APIRoot
 {
     public class ProjectsListRoot
     {
-        public List<Project> projects { get; set; }
-        public string stat { get; set; }
-        public Err err { get; set; }
+        public List<Project> Projects { get; set; }
+        public string Stat { get; set; }
+        public Err Err { get; set; }
     }
 
 
