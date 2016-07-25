@@ -166,6 +166,17 @@
     <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Untitled-1 2.png" />
     <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\180.png" />
     <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\180 2.png" />
+    <ImageAsset Include="Resources\Images.xcassets\play-activated.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\play-deactivated.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\pause-activated.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\pause-deactivated.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\play-activated.imageset\play-activated.png" />
+    <ImageAsset Include="Resources\Images.xcassets\play-deactivated.imageset\play-deactivated.png" />
+    <ImageAsset Include="Resources\Images.xcassets\pause-deactivated.imageset\pause-deactivated.png" />
+    <ImageAsset Include="Resources\Images.xcassets\checkbox-checked.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\checkbox-empty.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\checkbox-empty.imageset\checkbox-empty.png" />
+    <ImageAsset Include="Resources\Images.xcassets\play-deactivated.imageset\play-activated copy.png" />
   </ItemGroup>
   <ItemGroup>
     <ITunesArtwork Include="Resources\ITunesArtwork" />
@@ -248,15 +259,15 @@
     <Compile Include="Tasks\TaskDetailTableSource.cs" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Checkbox0.png" />
-    <BundleResource Include="Checkbox1.png" />
-    <BundleResource Include="start.png" />
-    <BundleResource Include="stop.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="TimeLogs\" />
     <Folder Include="ProjectsTab\" />
     <Folder Include="Tasks\" />
+    <Folder Include="Resources\Images.xcassets\play-activated.imageset\" />
+    <Folder Include="Resources\Images.xcassets\play-deactivated.imageset\" />
+    <Folder Include="Resources\Images.xcassets\pause-activated.imageset\" />
+    <Folder Include="Resources\Images.xcassets\pause-deactivated.imageset\" />
+    <Folder Include="Resources\Images.xcassets\checkbox-checked.imageset\" />
+    <Folder Include="Resources\Images.xcassets\checkbox-empty.imageset\" />
   </ItemGroup>
   <Import Project="..\ProcessDashboard\ProcessDashboard.projitems" Label="Shared" Condition="Exists('..\ProcessDashboard\ProcessDashboard.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

@@ -50,7 +50,7 @@ namespace ProcessDashboard.iOS
 			//populate the cell with the appropriate data based on the indexPath
 			cell.TextLabel.Text = item;
 			cell.TextLabel.Font = UIFont.SystemFontOfSize(12);
-			cell.TextLabel.Lines = 1;
+			cell.TextLabel.Lines = 2;
 			cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
 			cell.TextLabel.TextColor = UIColor.Black;
 			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;

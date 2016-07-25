@@ -22,17 +22,19 @@ namespace ProcessDashboard.iOS
     public partial class HomePageViewController : UIViewController
     {
 		UIScrollView scrollView;
-		UIButton startButton, stopButton;
-		private DateTime[] _customDates;
+		UIButton playButton, pauseButton;
+		UIButton ProjectNameBtn, CurrentTaskNameBtn;
 		UILabel CurrentTaskLabel;
-		UIButton ProjectNameBtnLabel, CurrentTaskNameBtnLabel;
-		//Boolean isClicked = true;
 		List<DTO.Task> RecentTaskItems;
+		TimeLoggingController timeLoggingController;
 
-		public HomePageViewController (IntPtr handle) : base (handle)
-        {
+
+		private DateTime[] _customDates;
+
+		public HomePageViewController(IntPtr handle) : base(handle)
+		{
 			Initialize();
-        }
+		}
 
 		private void Initialize()
 		{
@@ -45,6 +47,7 @@ namespace ProcessDashboard.iOS
 				DateTime.Now.AddDays(7*12), DateTime.Now.AddDays(7*13), DateTime.Now.AddDays(7*14)
 			};
 		}
+
 
 		public void ProjectLabelOnClick(object sender, EventArgs ea)
 		{
@@ -62,9 +65,67 @@ namespace ProcessDashboard.iOS
 			return;
 		}
 
+		public void PauseBtnOnClick(object sender, EventArgs ea)
+		{
+			try
+			{
+				timeLoggingController.stopTiming();
+				pauseButton.Enabled = false;
+				playButton.Enabled = true;
+			}
+			catch (CannotReachServerException e)
+			{
+				UIAlertController okAlertController = UIAlertController.Create("Cannot Reach Server", "Please check network connection and server availability and try again", UIAlertControllerStyle.Alert);
+				okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
+				PresentViewController(okAlertController, true, null);
+			}
+
+			return;
+		}
+
+		public void PlayBtnOnClick(object sender, EventArgs ea)
+		{
+			try
+			{
+				timeLoggingController.startTiming(RecentTaskItems[0].id);
+				playButton.Enabled = false;
+				pauseButton.Enabled = true;
+			}
+			catch (CannotReachServerException e)
+			{
+				UIAlertController okAlertController = UIAlertController.Create("Cannot Reach Server", "Please check network connection and server availability and try again", UIAlertControllerStyle.Alert);
+				okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
+				PresentViewController(okAlertController, true, null);
+			}
+
+			return;
+		}
+
+		public void CheckboxBtnOnClick(object sender, EventArgs ea)
+		{
+			UIAlertController okAlertController = UIAlertController.Create("Oops", "not implemented", UIAlertControllerStyle.Alert);
+			okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
+			PresentViewController(okAlertController, true, null);
+			return;
+		}
+
+		public void CheckBtnShowIcon(bool completed)
+		{
+			if (completed)
+			{
+				checkButton.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Selected);
+			}
+			else
+			{
+				checkButton.SetImage(UIImage.FromBundle("checkbox-empty"), UIControlState.Normal);
+			}
+		}
+
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
+
+			timeLoggingController = new TimeLoggingController();
 
 			scrollView = new UIScrollView(
 			new CGRect(0, 0, View.Frame.Width, View.Frame.Height));
@@ -73,12 +134,12 @@ namespace ProcessDashboard.iOS
 			scrollView.ContentSize = View.Frame.Size;
 
 
-			ProjectNameBtnLabel = new UIButton();
-			ProjectNameBtnLabel.Frame = new CGRect(10, 80, View.Bounds.Width - 20, 40);
-			ProjectNameBtnLabel.SetTitle("/ Project / Mobile App I1", UIControlState.Normal);
-			ProjectNameBtnLabel.BackgroundColor = UIColor.Gray;            
-			ProjectNameBtnLabel.AutoresizingMask = UIViewAutoresizing.All;
-			ProjectNameBtnLabel.TouchUpInside += ProjectLabelOnClick;
+			ProjectNameBtn = new UIButton();
+			ProjectNameBtn.Frame = new CGRect(10, 80, View.Bounds.Width - 20, 40);
+			ProjectNameBtn.SetTitle("/ Project / Mobile App I1", UIControlState.Normal);
+			ProjectNameBtn.BackgroundColor = UIColor.Gray;            
+			ProjectNameBtn.AutoresizingMask = UIViewAutoresizing.All;
+			ProjectNameBtn.TouchUpInside += ProjectLabelOnClick;
 
 			CurrentTaskLabel = new UILabel(new CGRect(10, 130, 100, 20))
 			{
@@ -88,88 +149,63 @@ namespace ProcessDashboard.iOS
 				TextAlignment = UITextAlignment.Left,
 				//BackgroundColor = UIColor.LightGray,
 			};
-
 			CurrentTaskLabel.AutoresizingMask = UIViewAutoresizing.All;
 
+			CurrentTaskNameBtn = new UIButton();
+			CurrentTaskNameBtn.Frame = new CGRect(10, 160, View.Bounds.Width - 20, 60);
+			CurrentTaskNameBtn.SetTitle("/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Team Walkthrough", UIControlState.Normal);
+			CurrentTaskNameBtn.TitleLabel.Lines = 2;
+			CurrentTaskNameBtn.TitleLabel.AdjustsFontSizeToFitWidth = true;
+			CurrentTaskNameBtn.TitleLabel.TextAlignment = UITextAlignment.Center;
+			CurrentTaskNameBtn.BackgroundColor = UIColor.LightGray;
+			CurrentTaskNameBtn.TouchUpInside += TaskLabelOnClick;
 
-			CurrentTaskNameBtnLabel = new UIButton();
-			CurrentTaskNameBtnLabel.Frame = new CGRect(10, 160, View.Bounds.Width - 20, 60);
-			CurrentTaskNameBtnLabel.SetTitle("/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Team Walkthrough", UIControlState.Normal);
-			CurrentTaskNameBtnLabel.TitleLabel.Lines = 2;
-			CurrentTaskNameBtnLabel.TitleLabel.AdjustsFontSizeToFitWidth = true;
-			CurrentTaskNameBtnLabel.TitleLabel.TextAlignment = UITextAlignment.Center;
-			CurrentTaskNameBtnLabel.BackgroundColor = UIColor.LightGray;
-			CurrentTaskNameBtnLabel.TouchUpInside += TaskLabelOnClick;
+			CurrentTaskNameBtn.AutoresizingMask = UIViewAutoresizing.All;
 
-			CurrentTaskNameBtnLabel.AutoresizingMask = UIViewAutoresizing.All;
+			pauseButton = UIButton.FromType(UIButtonType.RoundedRect);
+			pauseButton.ImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
+			pauseButton.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
+			pauseButton.SetImage(UIImage.FromBundle("pause-activated"), UIControlState.Disabled);
+			pauseButton.Enabled = false; // init state: not started. pause is activated
+			pauseButton.Frame = new CGRect(50, 230, 60, 60);
 
-			stopButton = UIButton.FromType(UIButtonType.RoundedRect);
-			stopButton.SetImage(UIImage.FromFile("stop.png"), UIControlState.Normal);
-			//stopButton.SetImage(UIImage.FromFile("stop.png"), UIControlState.Disabled);
-			//stopButton.TintColor = UIColor.Black;
-			stopButton.Frame = new CGRect(50, 230, 40, 40);
-			stopButton.TouchUpInside += (sender, e) =>
-			{
-				stopButton.Enabled = false;
-				startButton.Enabled = true;
+			pauseButton.TouchUpInside += PauseBtnOnClick;
 
-			};
-
-			startButton = UIButton.FromType(UIButtonType.RoundedRect);
-			startButton.SetImage(UIImage.FromFile("start.png"), UIControlState.Normal);
-			startButton.SetImage(UIImage.FromFile("start.png"), UIControlState.Disabled);
-			//startButton.TintColor = UIColor.Black;
-			startButton.Frame = new CGRect(120, 230, 40, 40);
-			startButton.TouchUpInside += (sender, e) =>
-			{
-				startButton.Enabled = false;
-				stopButton.Enabled = true;
-
-			};
+			playButton = UIButton.FromType(UIButtonType.RoundedRect);
+			playButton.ImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
+			playButton.SetImage(UIImage.FromBundle("play-deactivated"), UIControlState.Normal);
+			playButton.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Disabled);
+			playButton.Enabled = true;	// init state: not started. play can be clicked
+			playButton.Frame = new CGRect(120, 230, 60, 60);
+			playButton.TouchUpInside += PlayBtnOnClick;
 	
 			checkButton = UIButton.FromType(UIButtonType.Custom);
-			checkButton.SetImage(UIImage.FromFile("Checkbox0.png"), UIControlState.Normal);
-			checkButton.SetImage(UIImage.FromFile("Checkbox1.png"), UIControlState.Selected);
+			checkButton.Frame = new CGRect(310, 230, 60, 60);
+			checkButton.TouchUpInside += CheckboxBtnOnClick;
 
-			//checkButton.TintColor = UIColor.Black;
-			checkButton.Frame = new CGRect(310, 230, 40, 40);
-
-			//checkButton.TouchUpInside += DatePickerButtonTapped;
-			checkButton.TouchUpInside += (sender, e) =>
-			{
-				//isClicked = !isClicked;
-			//	checkButton.Selected = !checkButton.Selected;
-				Console.WriteLine("status of checkbutton"+ checkButton.Selected); // True means checked. False means uncheck.
-			    DatePickerButtonTapped(sender,e);
-				//CustomPickerButtonTapped(sender,e);
-			};
-
-			// 
 			var RecentTasksLabel = new UILabel(new CGRect(10, 280, 100, 20))
 			{
 				Text = "Recent Tasks:",
 				Font = UIFont.SystemFontOfSize(12),
 				TextColor = UIColor.Black,
-				TextAlignment = UITextAlignment.Left,
-
+				TextAlignment = UITextAlignment.Left
 			};
 
 			RecentTasksLabel.AutoresizingMask = UIViewAutoresizing.All;
 
 			RecentTaskTable = new UITableView(new CGRect(0, 310, View.Bounds.Width, View.Bounds.Height - 310 ));
 			refreshData();
-
 			RecentTaskTable.AutoresizingMask = UIViewAutoresizing.All;
 
 			scrollView.AddSubview(RecentTaskTable);
-			scrollView.AddSubview(startButton);
-			scrollView.AddSubview(stopButton);
+			scrollView.AddSubview(playButton);
+			scrollView.AddSubview(pauseButton);
 			scrollView.AddSubview(checkButton);
-			scrollView.AddSubview(ProjectNameBtnLabel);
+			scrollView.AddSubview(ProjectNameBtn);
 			scrollView.AddSubview(CurrentTaskLabel);
 			scrollView.AddSubview(RecentTaskTable);
 			scrollView.AddSubview(RecentTasksLabel);
-			scrollView.AddSubview(CurrentTaskNameBtnLabel);
+			scrollView.AddSubview(CurrentTaskNameBtn);
 
 		}
 
@@ -182,8 +218,9 @@ namespace ProcessDashboard.iOS
 		public async void refreshData()
 		{
 			await GetRecentTasksData();
-			//CurrentTaskNameLabel.Text = RecentTaskItems[0].fullName;
-			//ProjectNameLabel.Text = RecentTaskItems[0].project.name;
+
+			ProjectNameBtn.TitleLabel.Text = RecentTaskItems[0].project.name;
+			CurrentTaskNameBtn.TitleLabel.Text = RecentTaskItems[0].fullName;
 
 			RecentTaskTable.Source = new TaskTableSource(RecentTaskItems.GetRange(1,RecentTaskItems.Count-1), this);
 			RecentTaskTable.ReloadData();
