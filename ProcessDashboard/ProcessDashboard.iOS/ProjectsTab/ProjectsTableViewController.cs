@@ -81,7 +81,7 @@ namespace ProcessDashboard.iOS
 			Controller c = new Controller(service);
 
 			// TODO: should this line be wrapped in try-catch?
-			List<Project> projectsList = await c.GetProjects("mock");
+			List<Project> projectsList = await c.GetProjects(Settings.GetInstance().Dataset);
 
 			// TODO: add exception handling logic
 			projectsCache = projectsList;

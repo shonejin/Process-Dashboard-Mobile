@@ -55,7 +55,7 @@ namespace ProcessDashboard.iOS
 			var service = new PDashServices(apiService);
 			Controller c = new Controller(service);
 
-			List<TimeLogEntry> timeLogEntries = await c.GetTimeLog("mock", 0, null, null,taskId, null);
+			List<TimeLogEntry> timeLogEntries = await c.GetTimeLog(Settings.GetInstance().Dataset, 0, null, null,taskId, null);
 
 			timeLogCache = timeLogEntries;
 
