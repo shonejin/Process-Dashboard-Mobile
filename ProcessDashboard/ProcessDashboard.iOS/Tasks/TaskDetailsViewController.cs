@@ -52,15 +52,15 @@ namespace ProcessDashboard.iOS
 			if (segue.Identifier == "TaskTimeLogsSegue")
 			{
 				var controller = segue.DestinationViewController as TaskTimeLogViewController;
-				controller.taskId = task.id;
+				controller.taskId = task.Id;
 				controller.task = task;
 			
 			}
 			if (segue.Identifier == "showListofTasks")
 			{
 				TasksTableViewController controller = (TasksTableViewController)segue.DestinationViewController;
-				controller.projectId = task.project.id;
-				controller.projectName = task.project.name;
+				controller.projectId = task.Project.Id;
+				controller.projectName = task.Project.Name;
 			}
 
 		}
@@ -77,8 +77,8 @@ namespace ProcessDashboard.iOS
 			try
 			{
 				System.Diagnostics.Debug.WriteLine("** TASK ENTRY **");
-				System.Diagnostics.Debug.WriteLine(taskItem.fullName + " : " + taskItem.id);
-				System.Diagnostics.Debug.WriteLine(taskItem.estimatedTime + " & " + taskItem.actualTime);
+				System.Diagnostics.Debug.WriteLine(taskItem.FullName + " : " + taskItem.Id);
+				System.Diagnostics.Debug.WriteLine(taskItem.EstimatedTime + " & " + taskItem.ActualTime);
 			}
 			catch (Exception e)
 			{
@@ -109,7 +109,7 @@ namespace ProcessDashboard.iOS
 
 		public async void refreshData()
 		{
-			await GetTaskithID(task.id);
+			await GetTaskithID(task.Id);
 			PlanTable.Source = new TaskDetailTableSource(taskDetail, this);
 			PlanTable.ReloadData();
 		}
@@ -126,24 +126,24 @@ namespace ProcessDashboard.iOS
 
 			base.ViewDidLoad();
 
-			var estimated = TimeSpan.FromMinutes(task.estimatedTime);
-			var actual = TimeSpan.FromMinutes(task.actualTime);
-			string[] tableItems = new string[]{estimated.ToString("hh\\:mm"), actual.ToString("hh\\:mm"), task.completionDate.ToString("MM/dd/yyyy") };
+			var estimated = TimeSpan.FromMinutes(task.EstimatedTime);
+			var actual = TimeSpan.FromMinutes(task.ActualTime);
+			string[] tableItems = new string[]{estimated.ToString("hh\\:mm"), actual.ToString("hh\\:mm"), task.CompletionDate.ToString("MM/dd/yyyy") };
 
-			Console.WriteLine("estimated time: " + task.estimatedTime);
-			Console.WriteLine("actual time: " + task.actualTime);
-			Console.WriteLine("complete time: " + task.completionDate);
+			Console.WriteLine("estimated time: " + task.EstimatedTime);
+			Console.WriteLine("actual time: " + task.ActualTime);
+			Console.WriteLine("complete time: " + task.CompletionDate);
 			refreshData();
 
 			PlanTable.AutoresizingMask = UIViewAutoresizing.All;
 
 			View.AddSubview(PlanTable);
 
-			TdTaskNameLb.Text = task.fullName ?? "";
-			tdProjectNameBtn.SetTitle(task.project != null ? task.project.name : "",UIControlState.Normal);
+			TdTaskNameLb.Text = task.FullName ?? "";
+			tdProjectNameBtn.SetTitle(task.Project != null ? task.Project.Name : "",UIControlState.Normal);
 			tdProjectNameBtn.SetTitleColor(UIColor.Black, UIControlState.Normal);
 
-			TdNotesTf.Text = task.taskNote ?? "";
+			TdNotesTf.Text = task.TaskNote ?? "";
 		}
     }
 }

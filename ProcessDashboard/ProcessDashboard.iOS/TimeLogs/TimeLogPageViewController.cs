@@ -108,7 +108,7 @@ namespace ProcessDashboard.iOS
 
 		public void SaveTask(TimeLogEntry oldLog, TimeLogEntry newLog)
 		{
-			var oldTask = globalTimeLogCache.Find(temp => temp.task.fullName.Equals(oldLog.task.fullName));
+			var oldTask = globalTimeLogCache.Find(temp => temp.Task.FullName.Equals(oldLog.Task.FullName));
 			globalTimeLogCache.Remove(oldTask);
 			globalTimeLogCache.Add(newLog);
 		}
@@ -116,7 +116,7 @@ namespace ProcessDashboard.iOS
 		public void DeleteTask(TimeLogEntry log)
 		{
 
-			var oldTask = globalTimeLogCache.Find(t => t.task.fullName.Equals(log.task.fullName));
+			var oldTask = globalTimeLogCache.Find(t => t.Task.FullName.Equals(log.Task.FullName));
 			globalTimeLogCache.Remove(oldTask);
 			NavigationController.PopViewController(true);
 		}
@@ -149,9 +149,9 @@ namespace ProcessDashboard.iOS
 
 				foreach (var proj in timeLogEntries)
 				{
-					System.Diagnostics.Debug.WriteLine("Task Name : " + proj.task.fullName);
-					System.Diagnostics.Debug.WriteLine("Start Date : " + proj.startDate);
-					System.Diagnostics.Debug.WriteLine("End Date : " + proj.endDate);
+					System.Diagnostics.Debug.WriteLine("Task Name : " + proj.Task.FullName);
+					System.Diagnostics.Debug.WriteLine("Start Date : " + proj.StartDate);
+					System.Diagnostics.Debug.WriteLine("End Date : " + proj.EndDate);
 					//  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
 				}
 			}

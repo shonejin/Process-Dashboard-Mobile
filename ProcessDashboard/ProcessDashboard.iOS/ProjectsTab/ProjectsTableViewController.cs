@@ -91,7 +91,7 @@ namespace ProcessDashboard.iOS
 				System.Diagnostics.Debug.WriteLine("** GET PROJECTS **");
 				System.Diagnostics.Debug.WriteLine("Length is " + projectsCache.Count);
 
-				foreach (var proj in projectsList.Select(x => x.name))
+				foreach (var proj in projectsList.Select(x => x.Name))
 				{
 					System.Diagnostics.Debug.WriteLine(proj);
 				}

@@ -73,6 +73,11 @@ namespace ProcessDashboard.iOS
 				pauseButton.Enabled = false;
 				playButton.Enabled = true;
 			}
+
+			// TODO: we can't received this exception here
+			// all exceptions are handled before here
+			// if we pass back exceptions, we can't guarentee that we can handle all of them, because some are not called by UI
+			// the controller automatically retry saving to the server. If so, what do we show in the UI?
 			catch (CannotReachServerException e)
 			{
 				UIAlertController okAlertController = UIAlertController.Create("Cannot Reach Server", "Please check network connection and server availability and try again", UIAlertControllerStyle.Alert);
@@ -87,7 +92,7 @@ namespace ProcessDashboard.iOS
 		{
 			try
 			{
-				timeLoggingController.startTiming(RecentTaskItems[0].id);
+				timeLoggingController.startTiming(RecentTaskItems[0].Id);
 				playButton.Enabled = false;
 				pauseButton.Enabled = true;
 			}
@@ -219,8 +224,8 @@ namespace ProcessDashboard.iOS
 		{
 			await GetRecentTasksData();
 
-			ProjectNameBtn.TitleLabel.Text = RecentTaskItems[0].project.name;
-			CurrentTaskNameBtn.TitleLabel.Text = RecentTaskItems[0].fullName;
+			ProjectNameBtn.TitleLabel.Text = RecentTaskItems[0].Project.Name;
+			CurrentTaskNameBtn.TitleLabel.Text = RecentTaskItems[0].FullName;
 
 			RecentTaskTable.Source = new TaskTableSource(RecentTaskItems.GetRange(1,RecentTaskItems.Count-1), this);
 			RecentTaskTable.ReloadData();
@@ -239,7 +244,7 @@ namespace ProcessDashboard.iOS
 				System.Diagnostics.Debug.WriteLine("** LIST OF RECENT TASKS **");
 				System.Diagnostics.Debug.WriteLine("Length is " + projectsList.Count);
 
-				foreach (var proj in projectsList.Select(x => x.fullName))
+				foreach (var proj in projectsList.Select(x => x.FullName))
 				{
 					System.Diagnostics.Debug.WriteLine(proj);
 

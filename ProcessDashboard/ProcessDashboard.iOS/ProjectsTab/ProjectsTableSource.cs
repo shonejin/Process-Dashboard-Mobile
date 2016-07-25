@@ -34,8 +34,8 @@ namespace ProcessDashboard.iOS
 		/// </summary>
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 		{
-			selectedProjectId = tableItems[indexPath.Row].id;
-			selectedProjectName = tableItems[indexPath.Row].name;
+			selectedProjectId = tableItems[indexPath.Row].Id;
+			selectedProjectName = tableItems[indexPath.Row].Name;
 			tableView.DeselectRow(indexPath, true);
 			owner.PerformSegue("project2Tasks", owner);
 
@@ -52,7 +52,7 @@ namespace ProcessDashboard.iOS
 			if (cell == null)
 				cell = new UITableViewCell(UITableViewCellStyle.Default, cellIdentifier);
 
-			cell.TextLabel.Text = tableItems[indexPath.Row].name;
+			cell.TextLabel.Text = tableItems[indexPath.Row].Name;
 			return cell;
 		}
 	}

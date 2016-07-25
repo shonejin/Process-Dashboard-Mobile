@@ -94,7 +94,7 @@ namespace ProcessDashboard.iOS
 			int pos = 0;
 			for (int i = 0; i < tasksCache.Count; i++)
 			{
-				if (tasksCache[i].completionDate.ToShortDateString().Equals("1/1/0001"))
+				if (tasksCache[i].CompletionDate.ToShortDateString().Equals("1/1/0001"))
 				{
 					pos = i;
 					break;
@@ -134,7 +134,7 @@ namespace ProcessDashboard.iOS
 
 				foreach (var task in tasksList)  //.Select(x => x.estimatedTime)
 				{
-					System.Diagnostics.Debug.WriteLine(task.fullName);
+					System.Diagnostics.Debug.WriteLine(task.FullName);
 		
 				}
 

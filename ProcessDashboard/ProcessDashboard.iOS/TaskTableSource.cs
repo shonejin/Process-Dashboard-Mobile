@@ -43,7 +43,7 @@ namespace ProcessDashboard.iOS
 		{
 
 			var cell = tableView.DequeueReusableCell(CellIdentifier);
-			string item = TableItems[indexPath.Row].fullName;
+			string item = TableItems[indexPath.Row].FullName;
 			if (cell == null)
 				cell = new UITableViewCell(UITableViewCellStyle.Default, CellIdentifier);
 

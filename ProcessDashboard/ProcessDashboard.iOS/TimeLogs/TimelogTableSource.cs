@@ -29,12 +29,12 @@ namespace ProcessDashboard.iOS
 			indexedTableItems = new Dictionary<string, List<TimeLogEntry>>();
 			foreach (var t in items)
 			{
-				if (indexedTableItems.ContainsKey(t.startDate.ToShortDateString()))
+				if (indexedTableItems.ContainsKey(t.StartDate.ToShortDateString()))
 				{
-					indexedTableItems[t.startDate.ToShortDateString()].Add(t);
+					indexedTableItems[t.StartDate.ToShortDateString()].Add(t);
 				}
 				else {
-					indexedTableItems.Add(t.startDate.ToShortDateString(), new List<TimeLogEntry>() { t });
+					indexedTableItems.Add(t.StartDate.ToShortDateString(), new List<TimeLogEntry>() { t });
 				}
 			}
 			keys = indexedTableItems.Keys.ToArray();
@@ -98,8 +98,8 @@ namespace ProcessDashboard.iOS
 
 			//cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
 
-			int newHour = (int)item.loggedTime/60;
-			int newMin = (int)item.loggedTime % 60;
+			int newHour = (int)item.LoggedTime/60;
+			int newMin = (int)item.LoggedTime % 60;
 			string newM = null;
 
 			if (newMin < 10)
@@ -111,11 +111,11 @@ namespace ProcessDashboard.iOS
 			}
 			string newLoggedTime= newHour + ":" + newM;
 
-			cell.UpdateCell(item.task.fullName.ToString()
-			                , item.startDate.ToShortTimeString()
+			cell.UpdateCell(item.Task.FullName.ToString()
+			                , item.StartDate.ToShortTimeString()
 			                , newLoggedTime);
 
-			Console.WriteLine("taks full name: " + item.task.fullName.ToString());
+			Console.WriteLine("taks full name: " + item.Task.FullName.ToString());
 
 			return cell;
 		}

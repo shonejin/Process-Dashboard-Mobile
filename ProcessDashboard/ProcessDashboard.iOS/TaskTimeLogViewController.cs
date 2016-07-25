@@ -65,9 +65,9 @@ namespace ProcessDashboard.iOS
 
 				foreach (var proj in timeLogEntries)
 				{
-					System.Diagnostics.Debug.WriteLine("Task Name : " + proj.task.fullName);
-					System.Diagnostics.Debug.WriteLine("Start Date : " + proj.startDate);
-					System.Diagnostics.Debug.WriteLine("End Date : " + proj.endDate);
+					System.Diagnostics.Debug.WriteLine("Task Name : " + proj.Task.FullName);
+					System.Diagnostics.Debug.WriteLine("Start Date : " + proj.StartDate);
+					System.Diagnostics.Debug.WriteLine("End Date : " + proj.EndDate);
 					//  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
 				}
 			}
@@ -85,7 +85,7 @@ namespace ProcessDashboard.iOS
 
 			ProjectNameLabel = new UILabel(new CGRect(30, 100, 300, 40))
 			{
-				Text = task.project != null ? task.project.name : "",
+				Text = task.Project != null ? task.Project.Name : "",
 				Font = UIFont.SystemFontOfSize(16),
 				TextColor = UIColor.Black,
 				TextAlignment = UITextAlignment.Center,
@@ -96,7 +96,7 @@ namespace ProcessDashboard.iOS
 
 			TaskNameLabel = new UILabel(new CGRect(30, 160, 300, 60))
 			{
-				Text = task.fullName.ToString(),
+				Text = task.FullName.ToString(),
 				Font = UIFont.SystemFontOfSize(13),
 				TextColor = UIColor.Black,
 				TextAlignment = UITextAlignment.Center,
@@ -146,8 +146,8 @@ namespace ProcessDashboard.iOS
 
 				var controller = segue.DestinationViewController as TimelogDetailViewController;
 				TimeLogEntry newTimeLog = new TimeLogEntry();
-				newTimeLog.task = task;
-				newTimeLog.startDate = DateTime.Now;
+				newTimeLog.Task = task;
+				newTimeLog.StartDate = DateTime.Now;
 				controller.CreateTask(this, newTimeLog);
 
 			}

@@ -86,7 +86,7 @@ namespace ProcessDashboard.iOS
 
 			ProjectNameLabel = new UILabel(new CGRect(30, 100, 300, 20))
 			{
-				Text = currentTask.task.project.name,
+				Text = currentTask.Task.Project.Name,
 				Font = UIFont.SystemFontOfSize(16),
 				TextColor = UIColor.Black,
 				TextAlignment = UITextAlignment.Center,
@@ -99,7 +99,7 @@ namespace ProcessDashboard.iOS
 
 			TaskNameLabel = new UILabel(new CGRect(30, 130, 300, 60))
 			{
-				Text = currentTask.task.fullName,
+				Text = currentTask.Task.FullName,
 				Font = UIFont.SystemFontOfSize(14),
 				TextColor = UIColor.Black,
 				TextAlignment = UITextAlignment.Center,
@@ -123,7 +123,7 @@ namespace ProcessDashboard.iOS
 
 			StartTimeText = new UIButton(UIButtonType.RoundedRect);
 
-			StartTimeText.SetTitle(currentTask.startDate.ToShortDateString()  + " " + currentTask.startDate.ToShortTimeString(), UIControlState.Normal);
+			StartTimeText.SetTitle(currentTask.StartDate.ToShortDateString()  + " " + currentTask.StartDate.ToShortTimeString(), UIControlState.Normal);
 
 			StartTimeText.Frame = new CGRect(30, 240, 300, 20);
 
@@ -157,8 +157,8 @@ namespace ProcessDashboard.iOS
 			/// 
 			DeltaText = new UITextField(new CGRect(30, 310, 300, 20));
 
-			int newHour =  (int)currentTask.loggedTime / 60;
-			int newMin = (int)currentTask.loggedTime % 60;
+			int newHour =  (int)currentTask.LoggedTime / 60;
+			int newMin = (int)currentTask.LoggedTime % 60;
 			string newLoggedTime = newHour + ":" + newMin;
 
 			DeltaText.Text = newLoggedTime;
@@ -186,8 +186,8 @@ namespace ProcessDashboard.iOS
 			/////
 			IntText = new UITextField(new CGRect(30, 370, 300, 20));
 
-			int newH = (int)currentTask.interruptTime / 60;
-			int newM = (int)currentTask.interruptTime % 60;
+			int newH = (int)currentTask.InterruptTime / 60;
+			int newM = (int)currentTask.InterruptTime % 60;
 			string tempH = null, tempM = null;
 			if (newH < 10)
 			{
@@ -227,7 +227,7 @@ namespace ProcessDashboard.iOS
 
 			//////
 			CommentText = new UIButton(UIButtonType.RoundedRect);
-			CommentText.SetTitle(currentTask.task.taskNote, UIControlState.Normal);
+			CommentText.SetTitle(currentTask.Task.TaskNote, UIControlState.Normal);
 			CommentText.Frame = new CGRect(30, 430, 300, 30);
 			CommentText.TitleLabel.SizeToFit();
 
@@ -283,8 +283,8 @@ namespace ProcessDashboard.iOS
 
 			StatusPickerViewModel deltaModel = new StatusPickerViewModel(hours,minutes);
 
-			int h = (int)currentTask.loggedTime / 60;
-			int m = (int)currentTask.loggedTime % 60;
+			int h = (int)currentTask.LoggedTime / 60;
+			int m = (int)currentTask.LoggedTime % 60;
 
 			this.deltaSelectedHour = h.ToString();
 			this.deltaSelectedMinute = m.ToString();
@@ -335,8 +335,8 @@ namespace ProcessDashboard.iOS
 			StatusPickerViewModel intModel = new StatusPickerViewModel(hours,minutes);
 
 
-			int hh = (int)currentTask.interruptTime / 60;
-			int mm = (int)currentTask.interruptTime % 60;
+			int hh = (int)currentTask.InterruptTime / 60;
+			int mm = (int)currentTask.InterruptTime % 60;
 
 			this.intSelectedHour = hh.ToString();
 			this.intSelectedMinute = mm.ToString();
@@ -388,10 +388,10 @@ namespace ProcessDashboard.iOS
 		{
 			base.ViewWillAppear(animated);
 
-			TaskNameLabel.Text = currentTask.task.fullName;
-			StartTimeText.TitleLabel.Text = currentTask.startDate.ToLongTimeString();
-		    int newHour = (int)currentTask.loggedTime / 60;
-			int newMin = (int)currentTask.loggedTime % 60;
+			TaskNameLabel.Text = currentTask.Task.FullName;
+			StartTimeText.TitleLabel.Text = currentTask.StartDate.ToLongTimeString();
+		    int newHour = (int)currentTask.LoggedTime / 60;
+			int newMin = (int)currentTask.LoggedTime % 60;
 			string newH = null, newM = null;
 			if (newHour < 10)
 			{

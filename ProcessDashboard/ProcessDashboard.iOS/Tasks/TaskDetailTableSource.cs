@@ -68,8 +68,8 @@ namespace ProcessDashboard.iOS
 			{
 				cell.TextLabel.Text = "Planned Time";
 
-				int newHour = (int)TaskItem.estimatedTime / 60;
-				int newMin = (int)TaskItem.estimatedTime % 60;
+				int newHour = (int)TaskItem.EstimatedTime / 60;
+				int newMin = (int)TaskItem.EstimatedTime % 60;
 				string newM = null;
 
 				if (newMin < 10)
@@ -87,8 +87,8 @@ namespace ProcessDashboard.iOS
 			else if (indexPath.Row == 1)
 			{
 				cell.TextLabel.Text = "Actual Time";
-				int newHour = (int)TaskItem.actualTime / 60;
-				int newMin = (int)TaskItem.actualTime % 60;
+				int newHour = (int)TaskItem.ActualTime / 60;
+				int newMin = (int)TaskItem.ActualTime % 60;
 				string newM = null;
 				if (newMin < 10)
 				{
@@ -104,13 +104,13 @@ namespace ProcessDashboard.iOS
 			else {
 
 				cell.TextLabel.Text = "Completed Date";
-				if (TaskItem.completionDate.ToShortDateString().Equals("1/1/0001"))
+				if (TaskItem.CompletionDate.ToShortDateString().Equals("1/1/0001"))
 				{
 					cell.DetailTextLabel.Text = "--";
 				}
 				else 
 				{
-					cell.DetailTextLabel.Text = TaskItem.completionDate.ToShortDateString();
+					cell.DetailTextLabel.Text = TaskItem.CompletionDate.ToShortDateString();
 					//Console.WriteLine("task completion date:" + TaskItem.completionDate.ToShortDateString());
 				}
 			}

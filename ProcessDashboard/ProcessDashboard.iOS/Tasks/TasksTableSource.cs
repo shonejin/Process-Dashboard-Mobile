@@ -79,7 +79,7 @@ namespace ProcessDashboard.iOS
 			//	isFirst = false;
 			//}
 			//Console.WriteLine(isFirst + "Outside Line:" + indexPath.Row);
-			cell.TextLabel.Text = tableItems[indexPath.Row].fullName;
+			cell.TextLabel.Text = tableItems[indexPath.Row].FullName;
 			cell.TextLabel.Font = UIFont.SystemFontOfSize(13);
 			cell.TextLabel.Lines = 0;
 			cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;

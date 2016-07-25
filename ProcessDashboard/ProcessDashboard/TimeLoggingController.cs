@@ -30,6 +30,9 @@ namespace ProcessDashboard
 		// TODO: throws CannotReachServerException
 		public void startTiming(String taskId)
 		{
+
+			Console.WriteLine("Trying to start timer for task: " + taskId);
+
 			setTaskId(taskId);
 			if (stopwatch.getTrailingLoggedMinutes() > maxContinuousInterruptTime)
 			{
@@ -101,6 +104,7 @@ namespace ProcessDashboard
 
 		private void save()
 		{
+			Console.WriteLine("save() called");
 			try
 			{
 				saveIfNeeded();
@@ -109,12 +113,15 @@ namespace ProcessDashboard
 			catch (CannotReachServerException e)
 			{
 				osTimerService.setBackgroundPingsEnabled(true);
+				Console.WriteLine("save() catched CannotReachServerException. Background ping enabled.");
 			}
 		}
 
 		// TODO: throws CannotReachServerException
 		private async void saveIfNeeded()
 		{
+			Console.WriteLine("saveIfNeeded() called");
+
 			if (timeLogEntryId == null)
 			{
 				if (stopwatch.isRunning() || timeIsDiscrepant())
@@ -139,6 +146,8 @@ namespace ProcessDashboard
 			{
 				if (stopwatch.isPaused() && stopwatch.getTrailingLoggedMinutes() < 0.5)
 				{
+					Console.WriteLine("Calling DeleteTimeLog()");
+
 					await controller.DeleteTimeLog(Settings.GetInstance().Dataset,timeLogEntryId);
 					releaseTimeLogEntry(false);
 				}
@@ -148,6 +157,8 @@ namespace ProcessDashboard
 					{
 						int logged = round(stopwatch.getLoggedMinutes());
 						int interrupt = round(stopwatch.getInterruptMinutes());
+
+						Console.WriteLine("Calling UpdateTimeLog()");
 						await controller.UpdateTimeLog(Settings.GetInstance().Dataset,timeLogEntryId,"", stopwatch.getFirstStartTime().ToString(),taskId,
 
                             loggedTimeDelta(), interruptTimeDelta(),
@@ -157,6 +168,7 @@ namespace ProcessDashboard
 					}
 					catch (CancelTimeLoggingException e)
 					{
+						//TODO: update UI
 						handleCancelTimeLoggingException(e);
 					}
 				}
@@ -166,6 +178,8 @@ namespace ProcessDashboard
 		// TODO: CannotReachServerException
 		private void handleCancelTimeLoggingException(CancelTimeLoggingException e)
 		{
+			Console.WriteLine("handleCancelTimeLoggingException() called");
+
 			stopwatch.cancelTimingAsOf(e.getStopTime());
 			saveIfNeeded();
 			releaseTimeLogEntry(true);
