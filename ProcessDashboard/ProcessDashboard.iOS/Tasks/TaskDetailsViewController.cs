@@ -71,7 +71,7 @@ namespace ProcessDashboard.iOS
 			var apiService = new ApiTypes(null);
 			var service = new PDashServices(apiService);
 			Controller c = new Controller(service);
-			DTO.Task taskItem = await c.GetTask("mock", taskID);
+			DTO.Task taskItem = await c.GetTask(Settings.GetInstance().Dataset, taskID);
 			taskDetail = taskItem;
 
 			try

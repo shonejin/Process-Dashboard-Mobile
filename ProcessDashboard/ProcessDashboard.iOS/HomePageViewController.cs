@@ -108,10 +108,8 @@ namespace ProcessDashboard.iOS
 
 		public void CheckboxBtnOnClick(object sender, EventArgs ea)
 		{
-			UIAlertController okAlertController = UIAlertController.Create("Oops", "not implemented", UIAlertControllerStyle.Alert);
-			okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
-			PresentViewController(okAlertController, true, null);
-			return;
+			
+			DatePickerButtonTapped(sender, ea);
 		}
 
 		public void CheckBtnShowIcon(bool completed)
@@ -236,7 +234,7 @@ namespace ProcessDashboard.iOS
 			var apiService = new ApiTypes(null);
 			var service = new PDashServices(apiService);
 			Controller c = new Controller(service);
-			List<DTO.Task> projectsList = await c.GetRecentTasks("mock");
+			List<DTO.Task> projectsList = await c.GetRecentTasks(Settings.GetInstance().Dataset);
 			RecentTaskItems = projectsList;
 
 			try
@@ -293,9 +291,16 @@ namespace ProcessDashboard.iOS
 				if (checkButton.Selected == false)
 				{
 					checkButton.Selected = !checkButton.Selected;
+					var apiService = new ApiTypes(null);
+					var service = new PDashServices(apiService);
+					Controller c = new Controller(service);
+					//List<DTO.Task> projectsList = await //GetRecentTasks(Settings.GetInstance().Dataset);
 				}
 				//Console.WriteLine("after" + checkBtnStatus);
 				CurrentTaskLabel.Text = dateFormatter.ToString(modalPicker.DatePicker.Date);
+
+
+
 			};
 
 			// When user clicks Cancel and the task has been mark as completed

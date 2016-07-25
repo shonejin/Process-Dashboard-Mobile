@@ -123,7 +123,7 @@ namespace ProcessDashboard.iOS
 			var apiService = new ApiTypes(null);
 			var service = new PDashServices(apiService);
 			Controller c = new Controller(service);
-			List<Task> tasksList = await c.GetTasks("mock", projectId);
+			List<Task> tasksList = await c.GetTasks(Settings.GetInstance().Dataset, projectId);
 			tasksCache = tasksList;
 
 

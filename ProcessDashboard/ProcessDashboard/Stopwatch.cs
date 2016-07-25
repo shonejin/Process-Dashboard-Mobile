@@ -81,11 +81,13 @@ namespace ProcessDashboard
 
 		public double getLoggedMinutes()
 		{
+			Console.WriteLine("stopwatch-getLoggedMinutes: loggedMillis=" + loggedMillis + "; isRunning=" + isRunning());
 			long time = (long)(loggedMillis / MINUTES);
 			if (isRunning())
 			{
 				time += (long)(DateTime.Now - startTime).TotalMinutes;
 			}
+			Console.WriteLine("return: " + time);
 			return time;
 		}
 
@@ -103,10 +105,12 @@ namespace ProcessDashboard
 		{
 			if (isRunning())
 			{
+				Console.WriteLine("getTrailingLoggedMinutes: from " + startTime.ToString() + " has minutes: " + (DateTime.Now - startTime).TotalMinutes);
 				return (DateTime.Now - startTime).TotalMinutes;
 			}
 			else
 			{
+				Console.WriteLine("getTrailingLoggedMinutes: not running. Return 0 ");
 				return 0;
 			}
 		}

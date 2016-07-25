@@ -28,45 +28,45 @@ namespace ProcessDashboard
 		}
 
 		// TODO: throws CannotReachServerException
-		public void startTiming(String taskId)
+		public async System.Threading.Tasks.Task startTiming(String taskId)
 		{
 
 			Console.WriteLine("Trying to start timer for task: " + taskId);
 
-			setTaskId(taskId);
+			await setTaskId(taskId);
 			if (stopwatch.getTrailingLoggedMinutes() > maxContinuousInterruptTime)
 			{
-				saveIfNeeded();
+				await saveIfNeeded();
 				releaseTimeLogEntry(true);
 			}
 			stopwatch.start();
-			save();
+			await save();
 
 			if (stopwatch.isPaused())
 			{
 				stopwatch.start();
-				save();
+				await save();
 			}
 		}
 
 		// TODO: throws CannotReachServerException
-		private void setTaskId(String newTaskId)
+		private async System.Threading.Tasks.Task setTaskId(String newTaskId)
 		{
 			if (newTaskId.Equals(this.taskId))
 			{
 				return;
 			}
 			stopwatch.stop();
-			saveIfNeeded();
+			await saveIfNeeded();
 
 			this.taskId = newTaskId;
 			releaseTimeLogEntry(true);
 		}
 
-		public void stopTiming()
+		public async System.Threading.Tasks.Task stopTiming()
 		{
 			stopwatch.stop();
-			save();
+			await save();
 		}
 
 		public String getTimingTaskId()
@@ -84,16 +84,16 @@ namespace ProcessDashboard
 			return timeLogEntryId;
 		}
 
-		public void setLoggedTime(int minutes)
+		public async System.Threading.Tasks.Task setLoggedTime(int minutes)
 		{
 			stopwatch.setLoggedMinutes(minutes);
-			save();
+			await save();
 		}
 
-		public void setInterruptTime(int minutes)
+		public async System.Threading.Tasks.Task setInterruptTime(int minutes)
 		{
 			stopwatch.setInterruptMinutes(minutes);
-			save();
+			await save();
 		}
 
 		public void ping(Object stateInfo)
@@ -102,12 +102,12 @@ namespace ProcessDashboard
 			save();
 		}
 
-		private void save()
+		private async System.Threading.Tasks.Task save()
 		{
 			Console.WriteLine("save() called");
 			try
 			{
-				saveIfNeeded();
+				await saveIfNeeded();
 				osTimerService.setBackgroundPingsEnabled(stopwatch.isRunning());
 			}
 			catch (CannotReachServerException e)
@@ -118,7 +118,7 @@ namespace ProcessDashboard
 		}
 
 		// TODO: throws CannotReachServerException
-		private async void saveIfNeeded()
+		private async System.Threading.Tasks.Task saveIfNeeded()
 		{
 			Console.WriteLine("saveIfNeeded() called");
 
@@ -130,15 +130,29 @@ namespace ProcessDashboard
 					{
 						int logged = round(stopwatch.getLoggedMinutes());
 						int interrupt = round(stopwatch.getInterruptMinutes());
-						timeLogEntryId = ""+controller.AddATimeLog(Settings.GetInstance().Dataset,"", ""+stopwatch.getFirstStartTime(), taskId, logged, interrupt, stopwatch.isRunning()).Id;
 
+						try
+						{
+							var value = await controller.AddATimeLog(Settings.GetInstance().Dataset, "",
+												 "" + stopwatch.getFirstStartTime(), taskId, logged, interrupt, stopwatch.isRunning());
+
+							timeLogEntryId = "" + value.TimeLogEntry.Id;
+						}
+						catch (Exception e)
+						{
+							Console.WriteLine(e.ToString());
+							throw e;
+						}
+
+
+						Console.WriteLine("timelogentryid: " + timeLogEntryId);
                        
                         savedLoggedTime = logged;
 						savedInterruptTime = interrupt;
 					}
 					catch (CancelTimeLoggingException e)
 					{
-						handleCancelTimeLoggingException(e);
+						await handleCancelTimeLoggingException(e);
 					}
 				}
 			}
@@ -146,7 +160,7 @@ namespace ProcessDashboard
 			{
 				if (stopwatch.isPaused() && stopwatch.getTrailingLoggedMinutes() < 0.5)
 				{
-					Console.WriteLine("Calling DeleteTimeLog()");
+					Console.WriteLine("Calling DeleteTimeLog(). Minutes: " + stopwatch.getTrailingLoggedMinutes());
 
 					await controller.DeleteTimeLog(Settings.GetInstance().Dataset,timeLogEntryId);
 					releaseTimeLogEntry(false);
@@ -159,8 +173,7 @@ namespace ProcessDashboard
 						int interrupt = round(stopwatch.getInterruptMinutes());
 
 						Console.WriteLine("Calling UpdateTimeLog()");
-						await controller.UpdateTimeLog(Settings.GetInstance().Dataset,timeLogEntryId,"", stopwatch.getFirstStartTime().ToString(),taskId,
-
+						await controller.UpdateTimeLog(Settings.GetInstance().Dataset,timeLogEntryId,"", stopwatch.getFirstStartTime().ToString(Settings.GetInstance().DateTimePattern),taskId,
                             loggedTimeDelta(), interruptTimeDelta(),
 							stopwatch.isRunning());
 						savedLoggedTime = logged;
@@ -169,19 +182,19 @@ namespace ProcessDashboard
 					catch (CancelTimeLoggingException e)
 					{
 						//TODO: update UI
-						handleCancelTimeLoggingException(e);
+						await handleCancelTimeLoggingException(e);
 					}
 				}
 			}
 		}
 
 		// TODO: CannotReachServerException
-		private void handleCancelTimeLoggingException(CancelTimeLoggingException e)
+		private async System.Threading.Tasks.Task handleCancelTimeLoggingException(CancelTimeLoggingException e)
 		{
 			Console.WriteLine("handleCancelTimeLoggingException() called");
 
 			stopwatch.cancelTimingAsOf(e.getStopTime());
-			saveIfNeeded();
+			await saveIfNeeded();
 			releaseTimeLogEntry(true);
 		}
 
