@@ -14,16 +14,8 @@ namespace ProcessDashboard.iOS
     [Register ("TaskTimeLogViewController")]
     partial class TaskTimeLogViewController
     {
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UITableView TaskTimeLogTable { get; set; }
-
         void ReleaseDesignerOutlets ()
         {
-            if (TaskTimeLogTable != null) {
-                TaskTimeLogTable.Dispose ();
-                TaskTimeLogTable = null;
-            }
         }
     }
 }
