@@ -4,7 +4,17 @@ using UIKit;
 using CoreGraphics;
 using System.Collections.Generic;
 using SharpMobileCode.ModalPicker;
-
+using ProcessDashboard.DTO;
+using ProcessDashboard.Model;
+using ProcessDashboard.Service;
+using ProcessDashboard.Service_Access_Layer;
+using ProcessDashboard.SyncLogic;
+using System.Linq;
+using System.Text;
+using ProcessDashboard.Service.Interface;
+using Fusillade;
+using ProcessDashboard.APIRoot;
+using ProcessDashboard.DBWrapper;
 
 
 namespace ProcessDashboard.iOS
@@ -17,6 +27,7 @@ namespace ProcessDashboard.iOS
 		UILabel CurrentTaskLabel;
 		UIButton ProjectNameBtnLabel, CurrentTaskNameBtnLabel;
 		//Boolean isClicked = true;
+		List<DTO.Task> RecentTaskItems;
 
 		public HomePageViewController (IntPtr handle) : base (handle)
         {
@@ -61,6 +72,7 @@ namespace ProcessDashboard.iOS
 
 			scrollView.ContentSize = View.Frame.Size;
 
+
 			ProjectNameBtnLabel = new UIButton();
 			ProjectNameBtnLabel.Frame = new CGRect(10, 80, View.Bounds.Width - 20, 40);
 			ProjectNameBtnLabel.SetTitle("/ Project / Mobile App I1", UIControlState.Normal);
@@ -78,6 +90,7 @@ namespace ProcessDashboard.iOS
 			};
 
 			CurrentTaskLabel.AutoresizingMask = UIViewAutoresizing.All;
+
 
 			CurrentTaskNameBtnLabel = new UIButton();
 			CurrentTaskNameBtnLabel.Frame = new CGRect(10, 160, View.Bounds.Width - 20, 60);
@@ -143,17 +156,8 @@ namespace ProcessDashboard.iOS
 
 			RecentTasksLabel.AutoresizingMask = UIViewAutoresizing.All;
 
-			string[] tableItems = new string[] { "/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Draft",
-				"/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Draft",
-				"/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Team Walkthrough",
-				"/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / UI experiment/Refine",
-				"/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Task2 / Publish", 
-				"/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Refine", 
-				"/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Draft", 
-				"/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Publish"};
-
 			RecentTaskTable = new UITableView(new CGRect(0, 310, View.Bounds.Width, View.Bounds.Height - 310 ));
-			RecentTaskTable.Source = new TaskTableSource(tableItems,this);
+			refreshData();
 
 			RecentTaskTable.AutoresizingMask = UIViewAutoresizing.All;
 
@@ -166,6 +170,50 @@ namespace ProcessDashboard.iOS
 			scrollView.AddSubview(RecentTaskTable);
 			scrollView.AddSubview(RecentTasksLabel);
 			scrollView.AddSubview(CurrentTaskNameBtnLabel);
+
+		}
+
+		public override void ViewDidAppear(bool animated)
+		{
+			base.ViewDidAppear(animated);
+			refreshData();
+		}
+
+		public async void refreshData()
+		{
+			await GetRecentTasksData();
+			//CurrentTaskNameLabel.Text = RecentTaskItems[0].fullName;
+			//ProjectNameLabel.Text = RecentTaskItems[0].project.name;
+
+			RecentTaskTable.Source = new TaskTableSource(RecentTaskItems.GetRange(1,RecentTaskItems.Count-1), this);
+			RecentTaskTable.ReloadData();
+		}
+
+		public async System.Threading.Tasks.Task<int> GetRecentTasksData()
+		{
+			var apiService = new ApiTypes(null);
+			var service = new PDashServices(apiService);
+			Controller c = new Controller(service);
+			List<DTO.Task> projectsList = await c.GetRecentTasks("mock");
+			RecentTaskItems = projectsList;
+
+			try
+			{
+				System.Diagnostics.Debug.WriteLine("** LIST OF RECENT TASKS **");
+				System.Diagnostics.Debug.WriteLine("Length is " + projectsList.Count);
+
+				foreach (var proj in projectsList.Select(x => x.fullName))
+				{
+					System.Diagnostics.Debug.WriteLine(proj);
+
+				}
+
+			}
+			catch (Exception e)
+			{
+				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+			}
+			return 0;
 
 		}
 
@@ -223,17 +271,12 @@ namespace ProcessDashboard.iOS
 			base.PrepareForSegue(segue, sender);
 
 			// set the View Controller that’s powering the screen we’re
-			// transitioning to
+			// transitioning to task detail screen
 			if (segue.Identifier == "home2taskDetailsSegue")
 			{
-				var detailContoller = segue.DestinationViewController as TaskDetailsViewController;
-				var indexPath = (NSIndexPath)sender;
+				TaskDetailsViewController controller = (TaskDetailsViewController)segue.DestinationViewController;
+				controller.task = ((TaskTableSource)RecentTaskTable.Source).selectedTask;
 			}
-			//if (segue.Identifier == "calendarSegue")
-			//{
-			//	var calendarContoller = segue.DestinationViewController as CalendarViewController;
-
-			//}
 
 		}
 

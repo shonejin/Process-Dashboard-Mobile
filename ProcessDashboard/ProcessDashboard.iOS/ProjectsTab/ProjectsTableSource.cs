@@ -11,6 +11,7 @@ namespace ProcessDashboard.iOS
 	{
 		List<Project> tableItems;
 		public string selectedProjectId;
+		public string selectedProjectName;
 		protected string cellIdentifier = "projectCell";
 		UIViewController owner;
 
@@ -34,15 +35,10 @@ namespace ProcessDashboard.iOS
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 		{
 			selectedProjectId = tableItems[indexPath.Row].id;
+			selectedProjectName = tableItems[indexPath.Row].name;
 			tableView.DeselectRow(indexPath, true);
 			owner.PerformSegue("project2Tasks", owner);
-			/*
-			UIAlertController okAlertController = UIAlertController.Create("Row Selected", tableItems[indexPath.Row].name + " id: " + tableItems[indexPath.Row].id, UIAlertControllerStyle.Alert);
-			okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
-			owner.PresentViewController(okAlertController, true, null);
 
-			tableView.DeselectRow(indexPath, true);
-			*/
 		}
 
 		/// <summary>

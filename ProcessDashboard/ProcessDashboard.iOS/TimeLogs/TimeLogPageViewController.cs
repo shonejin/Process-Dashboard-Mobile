@@ -26,6 +26,7 @@ namespace ProcessDashboard.iOS
 		{
 			base.ViewDidLoad();
 
+
 			TimelogsTable = new UITableView(new CGRect(0,100,View.Bounds.Width,View.Bounds.Height-100), UITableViewStyle.Grouped);
 
 			done = new UIBarButtonItem(UIBarButtonSystemItem.Done, (s, e) =>
@@ -45,8 +46,9 @@ namespace ProcessDashboard.iOS
 			});
 
 			NavigationItem.RightBarButtonItem = delete;
-
+		
 			TimelogsTable.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
+	
 			Add(TimelogsTable);
 
 			UILabel StaticLabel = new UILabel(new CGRect(0, 60, View.Bounds.Width, 40))
@@ -96,6 +98,12 @@ namespace ProcessDashboard.iOS
 			refreshData();
 		
 		}
+
+		//public override void ViewDidDisappear(bool animated)
+		//{
+		//	base.ViewDidDisappear(animated);
+		//	this.NavigationController.PopToRootViewController(true);
+		//}
 
 
 		public void SaveTask(TimeLogEntry oldLog, TimeLogEntry newLog)

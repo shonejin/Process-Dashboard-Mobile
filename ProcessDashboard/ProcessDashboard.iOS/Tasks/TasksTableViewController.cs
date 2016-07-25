@@ -13,6 +13,8 @@ using Fusillade;
 using ProcessDashboard.APIRoot;
 using ProcessDashboard.DBWrapper;
 using ProcessDashboard.DTO;
+using System.Drawing;
+using CoreGraphics;
 
 namespace ProcessDashboard.iOS
 {
@@ -21,6 +23,7 @@ namespace ProcessDashboard.iOS
 		public string projectId;
 		public string projectName;
 		List<Task> tasksCache;
+		UILabel StaticLabel;
 
 		public TasksTableViewController(IntPtr handle) : base(handle)
 		{
@@ -29,6 +32,23 @@ namespace ProcessDashboard.iOS
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
+
+			StaticLabel = new UILabel(new CGRect(0, 0, View.Bounds.Width, 40))
+			{
+				Text = " ",
+				Font = UIFont.SystemFontOfSize(12),
+				TextColor = UIColor.Black,
+				TextAlignment = UITextAlignment.Center,
+				BackgroundColor = UIColor.FromRGB(225, 225, 225),
+				Lines = 0,
+				LineBreakMode = UILineBreakMode.WordWrap,
+			};
+
+			StaticLabel.AutoresizingMask = UIViewAutoresizing.All;
+
+			tasksTableView.TableHeaderView = new UIView(new CGRect(0, 0, View.Bounds.Width, 40));
+			tasksTableView.TableHeaderView.AddSubview(StaticLabel);
+
 			this.RefreshControl = new UIRefreshControl();
 			this.RefreshControl.ValueChanged += (sender, e) => { refreshData(); };
 			refreshData();
@@ -39,6 +59,12 @@ namespace ProcessDashboard.iOS
 			base.ViewDidAppear(animated);
 			//refreshData();
 		}
+
+		//public override void ViewWillDisappear( bool animated)
+		//{
+		//	base.ViewWillDisappear(animated);
+		//	this.NavigationController.PopToRootViewController(true);
+		//}
 
 		public override void PrepareForSegue(UIKit.UIStoryboardSegue segue, Foundation.NSObject sender)
 		{
@@ -60,20 +86,36 @@ namespace ProcessDashboard.iOS
 
 			await getDataOfTask();
 
-			tasksTableView.Source = new TasksTableSource(tasksCache, this);
+			TasksTableSource source = new TasksTableSource(tasksCache, this);
+			tasksTableView.Source = source;
+			NavigationItem.Title = "Tasks";
+			StaticLabel.Text = projectName;
 
+			int pos = 0;
+			for (int i = 0; i < tasksCache.Count; i++)
+			{
+				if (tasksCache[i].completionDate.ToShortDateString().Equals("1/1/0001"))
+				{
+					pos = i;
+					break;
+				}
+					
+			}
 			String refreshTime = DateTime.Now.ToString("g");
 			String subTitle = "Last refresh: " + refreshTime;
 			this.RefreshControl.AttributedTitle = new Foundation.NSAttributedString(subTitle);
 
 			tasksTableView.ReloadData();
-
+			// The scroll bar should be scrolled so that the first incomplete task is the first task in the screen.
+			if (tasksCache.Count != 0)
+			{
+				tasksTableView.ScrollToRow(NSIndexPath.FromRowSection(pos, 0), UITableViewScrollPosition.Top, true);
+			}
 			if (this.RefreshControl.Refreshing)
 			{
 				this.RefreshControl.EndRefreshing();
 			}
 		}
-
 
 
 		public async System.Threading.Tasks.Task<int> getDataOfTask()
@@ -90,9 +132,10 @@ namespace ProcessDashboard.iOS
 				System.Diagnostics.Debug.WriteLine("** GET TASKS **");
 				System.Diagnostics.Debug.WriteLine("Length is " + tasksList.Count);
 
-				foreach (var task in tasksList.Select(x => x.fullName))
+				foreach (var task in tasksList)  //.Select(x => x.estimatedTime)
 				{
-					System.Diagnostics.Debug.WriteLine(task);
+					System.Diagnostics.Debug.WriteLine(task.fullName);
+		
 				}
 
 			}

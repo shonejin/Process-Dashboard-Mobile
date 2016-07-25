@@ -1,19 +1,20 @@
 ﻿using System;
-using CoreGraphics;
+using System.Collections.Generic;
 using Foundation;
+using ProcessDashboard.DTO;
 using UIKit;
-
 
 namespace ProcessDashboard.iOS
 {
 	public class TaskTableSource : UITableViewSource
 	{
 
-		string[] TableItems;
+		List<Task> TableItems;
 		string CellIdentifier = "TableCell";
 		HomePageViewController tvcontroller;
+		public Task selectedTask;
 
-		public TaskTableSource(string[] items, HomePageViewController tvcontroller)
+		public TaskTableSource(List<Task> items, HomePageViewController tvcontroller)
 		{
 			this.tvcontroller = tvcontroller;
 			TableItems = items;
@@ -22,11 +23,12 @@ namespace ProcessDashboard.iOS
 		public override nint RowsInSection(UITableView tableview, nint section)
 		{
 
-			return TableItems.Length;
+			return TableItems == null ? 0 : TableItems.Count;
 		}
 
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 		{
+			selectedTask = TableItems[indexPath.Row];
 			tvcontroller.PerformSegue("home2taskDetailsSegue", indexPath);
 			tableView.DeselectRow(indexPath, true);
 		}
@@ -41,7 +43,7 @@ namespace ProcessDashboard.iOS
 		{
 
 			var cell = tableView.DequeueReusableCell(CellIdentifier);
-			string item = TableItems[indexPath.Row];
+			string item = TableItems[indexPath.Row].fullName;
 			if (cell == null)
 				cell = new UITableViewCell(UITableViewCellStyle.Default, CellIdentifier);
 
@@ -51,7 +53,7 @@ namespace ProcessDashboard.iOS
 			cell.TextLabel.Lines = 1;
 			cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
 			cell.TextLabel.TextColor = UIColor.Black;
-			cell.TextLabel.LineBreakMode = UILineBreakMode.HeadTruncation;
+			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
 			return cell;
 
 

@@ -53,9 +53,17 @@ namespace ProcessDashboard.iOS
 
 			int newHour = (int)tableItems[indexPath.Row].loggedTime / 60;
 			int newMin = (int)tableItems[indexPath.Row].loggedTime % 60;
-			//string newH = null, newM = null;
+			string newM = null;
 
-			string newLoggedTime = newHour + ":" + newMin;
+			if (newMin < 10)
+			{
+				newM = "0" + newMin.ToString();
+			}
+			else {
+				newM = newMin.ToString();
+				                       
+			}
+			string newLoggedTime = newHour + ":" + newM;
 
 			cell.TextLabel.Text = tableItems[indexPath.Row].startDate.ToShortDateString() + " " + tableItems[indexPath.Row].startDate.ToShortTimeString();
 			cell.DetailTextLabel.Text = newLoggedTime;

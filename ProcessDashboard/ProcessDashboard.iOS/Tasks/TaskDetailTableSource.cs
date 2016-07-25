@@ -11,13 +11,13 @@ namespace ProcessDashboard.iOS
 		public TaskDetailTableSource()
 		{
 		}
-		string[] TableItems;
+		Task TaskItem;
 		protected string cellIdentifier = "Cell";
 		UIViewController owner;
 
-		public TaskDetailTableSource(string[] items, UIViewController owner)
+		public TaskDetailTableSource(Task items, UIViewController owner)
 		{
-			TableItems = items;
+			TaskItem = items;
 			this.owner = owner;
 		}
 
@@ -27,7 +27,7 @@ namespace ProcessDashboard.iOS
 		public override nint RowsInSection(UITableView tableview, nint section)
 		{
 			// TODO: handling NULL
-			return TableItems.Length;
+			return 3;
 		}
 
 		/// <summary>
@@ -67,18 +67,52 @@ namespace ProcessDashboard.iOS
 			if (indexPath.Row == 0)
 			{
 				cell.TextLabel.Text = "Planned Time";
-				cell.DetailTextLabel.Text = TableItems[0];
+
+				int newHour = (int)TaskItem.estimatedTime / 60;
+				int newMin = (int)TaskItem.estimatedTime % 60;
+				string newM = null;
+
+				if (newMin < 10)
+				{
+					newM = "0" + newMin.ToString();
+				}
+				else {
+					newM = newMin.ToString();
+				}
+
+				string newEstimatedTime = newHour + ":" + newM;
+
+				cell.DetailTextLabel.Text = newEstimatedTime;
 			}
 			else if (indexPath.Row == 1)
 			{
 				cell.TextLabel.Text = "Actual Time";
-				cell.DetailTextLabel.Text = TableItems[1];
+				int newHour = (int)TaskItem.actualTime / 60;
+				int newMin = (int)TaskItem.actualTime % 60;
+				string newM = null;
+				if (newMin < 10)
+				{
+					newM = "0" + newMin.ToString();
+				}
+				else {
+					newM = newMin.ToString();
+				}
+				string newActualTime = newHour + ":" + newM;
+				cell.DetailTextLabel.Text = newActualTime;
 				cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
 			}
 			else {
 
 				cell.TextLabel.Text = "Completed Date";
-				cell.DetailTextLabel.Text = TableItems[2];
+				if (TaskItem.completionDate.ToShortDateString().Equals("1/1/0001"))
+				{
+					cell.DetailTextLabel.Text = "--";
+				}
+				else 
+				{
+					cell.DetailTextLabel.Text = TaskItem.completionDate.ToShortDateString();
+					//Console.WriteLine("task completion date:" + TaskItem.completionDate.ToShortDateString());
+				}
 			}
 
 			return cell;

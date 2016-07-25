@@ -16,10 +16,6 @@ namespace ProcessDashboard.iOS
     {
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UIBarButtonItem addBtn { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UITableView PlanTable { get; set; }
 
         [Outlet]
@@ -40,7 +36,7 @@ namespace ProcessDashboard.iOS
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UILabel tdProjectNameLb { get; set; }
+        UIKit.UIButton tdProjectNameBtn { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
@@ -48,11 +44,6 @@ namespace ProcessDashboard.iOS
 
         void ReleaseDesignerOutlets ()
         {
-            if (addBtn != null) {
-                addBtn.Dispose ();
-                addBtn = null;
-            }
-
             if (PlanTable != null) {
                 PlanTable.Dispose ();
                 PlanTable = null;
@@ -78,9 +69,9 @@ namespace ProcessDashboard.iOS
                 TdPlayBtn = null;
             }
 
-            if (tdProjectNameLb != null) {
-                tdProjectNameLb.Dispose ();
-                tdProjectNameLb = null;
+            if (tdProjectNameBtn != null) {
+                tdProjectNameBtn.Dispose ();
+                tdProjectNameBtn = null;
             }
 
             if (TdTaskNameLb != null) {
