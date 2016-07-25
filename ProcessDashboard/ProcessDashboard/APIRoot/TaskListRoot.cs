@@ -13,10 +13,10 @@ namespace ProcessDashboard.APIRoot
 {
     public class TaskListRoot
     {
-        public List<Task> projectTasks { get; set; }
-        public Project forProject { get; set; }
-        public string stat { get; set; }
-        public Err err { get; set; }
+        public List<Task> ProjectTasks { get; set; }
+        public Project ForProject { get; set; }
+        public string Stat { get; set; }
+        public Err Err { get; set; }
 
     }
 }

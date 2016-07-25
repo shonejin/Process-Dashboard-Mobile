@@ -7,6 +7,8 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
+using Android.Text;
+using Android.Text.Style;
 using Android.Views;
 using Android.Widget;
 using ProcessDashboard.DTO;
@@ -47,13 +49,13 @@ namespace ProcessDashboard.Droid.Fragments
             {
                 TaskAdapter ta = (TaskAdapter)listView.Adapter;
                 Task p = ta.GetTask(e.Position);
-                string taskId = p.id;
+                string taskId = p.Id;
                 //  ((MainActivity)this.Activity).switchToFragment(MainActivity.fragmentTypes.taskdetails);
-                ((MainActivity)this.Activity).passTaskDetailsInfo(taskId);
+                ((MainActivity)this.Activity).PassTaskDetailsInfo(taskId);
                 //Project p = listView.GetItemAtPosition(e.Position);
 
             };
-            AddData(((MainActivity)this.Activity)._ctrl, _projectId);
+            AddData(((MainActivity)this.Activity).Ctrl, _projectId);
 
 
         }
@@ -69,7 +71,7 @@ namespace ProcessDashboard.Droid.Fragments
         private async void AddData(Controller ctrl,string projectId)
         {
             List<Task> output = await ctrl.GetTasks("mock",projectId);
-            TaskAdapter listAdapter = new TaskAdapter(Activity, Android.Resource.Layout.SimpleListItem1,output.ToArray(),1,Activity);
+            TaskAdapter listAdapter = new TaskAdapter(Activity, Android.Resource.Layout.SimpleListItem1,output.ToArray());
             ListView.Adapter = listAdapter;
             SetListShown(true);
         }
@@ -96,53 +98,26 @@ namespace ProcessDashboard.Droid.Fragments
     {
         readonly Task[] _taskList;
 
-        public Activity Activity1 { get; }
-
-        public TaskAdapter(Context context, int resource, Task[] objects, int flag, Activity activity) : base(context, resource, objects)
+        public TaskAdapter(Context context, int resource, Task[] objects) : base(context, resource, objects)
         {
             System.Diagnostics.Debug.WriteLine("We are in the right constructor");
             _taskList = objects;
-            Activity1 = activity;
         }
 
-        public TaskAdapter(IntPtr javaReference, JniHandleOwnership transfer, Activity activity) : base(javaReference, transfer)
+        public override View GetView(int position, View convertView, ViewGroup parent)
         {
-            Activity1 = activity;
+            View v = base.GetView(position, convertView, parent);
+            if(!_taskList[position].CompletionDate.Equals(DateTime.MinValue))
+            {
+                string text = _taskList[position].FullName;
+                TextView tv = v.FindViewById<TextView>(Android.Resource.Id.Text1);
+                SpannableString spannable = new SpannableString(text);
+                spannable.SetSpan(new StrikethroughSpan(), 0, text.Length, SpanTypes.InclusiveExclusive);
+                tv.TextFormatted = spannable;
+                
+            }
+            return v;
         }
-
-        public TaskAdapter(Context context, int resource, Activity activity) : base(context, resource)
-        {
-            Activity1 = activity;
-        }
-
-        public TaskAdapter(Context context, int resource, int textViewResourceId, Activity activity)
-            : base(context, resource, textViewResourceId)
-        {
-            Activity1 = activity;
-        }
-
-        public TaskAdapter(Context context, int resource, int textViewResourceId, IList objects, Activity activity)
-            : base(context, resource, textViewResourceId, objects)
-        {
-            Activity1 = activity;
-        }
-
-        public TaskAdapter(Context context, int resource, int textViewResourceId, Object[] objects, Activity activity)
-            : base(context, resource, textViewResourceId, objects)
-        {
-            Activity1 = activity;
-        }
-
-        public TaskAdapter(Context context, int resource, IList objects, Activity activity) : base(context, resource, objects)
-        {
-            Activity1 = activity;
-        }
-
-        public TaskAdapter(Context context, int resource, Object[] objects, Activity activity) : base(context, resource, objects)
-        {
-            Activity1 = activity;
-        }
-
 
         public Task GetTask(int position)
         {

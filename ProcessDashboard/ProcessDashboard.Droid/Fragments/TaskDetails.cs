@@ -1,4 +1,5 @@
 
+using System;
 using Android.App;
 using Android.OS;
 using Android.Views;
@@ -9,7 +10,7 @@ namespace ProcessDashboard.Droid.Fragments
 {
     public class TaskDetails : Fragment
     {
-        public string taskId;
+        public string TaskId;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -27,9 +28,9 @@ namespace ProcessDashboard.Droid.Fragments
             ((MainActivity)(this.Activity)).setTitle("Task Details");
         }
 
-        public void setId(string id)
+        public void SetId(string id)
         {
-            taskId = id;
+            TaskId = id;
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -46,38 +47,51 @@ namespace ProcessDashboard.Droid.Fragments
         private async void AddData(View view)
         {
 
-            Task t = await (((MainActivity)(Activity))._ctrl).GetTask("mock", taskId);
+            Task t = await (((MainActivity)(Activity)).Ctrl).GetTask("mock", TaskId);
 
             if (t == null)
             {
                 System.Diagnostics.Debug.WriteLine("T is null");
             }
 
-            TextView projectName = view.FindViewById<TextView>(Resource.Id.TdProjectNameTextView);
-            projectName.Text = t.project.name;
-            System.Diagnostics.Debug.WriteLine("1");
+            TextView projectName = view.FindViewById<TextView>(Resource.Id.TaskDetails_ProjectName);
+            projectName.Text = t.Project.Name;
 
-            TextView taskName = view.FindViewById<TextView>(Resource.Id.TdTaskNameTextView);
-            taskName.Text = t.fullName;
-            System.Diagnostics.Debug.WriteLine("2");
-            TextView tdCompleteTextView = view.FindViewById<TextView>(Resource.Id.TdCompleteTextView);
-            tdCompleteTextView.Text = "Completed on : " + t.completionDate;
 
-            System.Diagnostics.Debug.WriteLine("3");
-            TextView tdPlannedTimeTextView = view.FindViewById<TextView>(Resource.Id.TdPlannedTimeTextView);
-            tdPlannedTimeTextView.Text = "" + t.estimatedTime;
-            System.Diagnostics.Debug.WriteLine("4");
-            TextView tdActualTimeTextView = view.FindViewById<TextView>(Resource.Id.TdActualTimeTextView);
-            tdActualTimeTextView.Text = "" + t.actualTime;
-            System.Diagnostics.Debug.WriteLine("5");
-            EditText a = view.FindViewById<EditText>(Resource.Id.TdNotesEditText);
-            if (t.taskNote == null || t.taskNote.Length == 0)
+            TextView taskName = view.FindViewById<TextView>(Resource.Id.TaskDetails_TaskName);
+            taskName.Text = t.FullName;
+
+            TextView tdCompleteTextView = view.FindViewById<TextView>(Resource.Id.TaskDetails_CompletionDate);
+            tdCompleteTextView.Text =  ""+t.CompletionDate;
+
+
+            TextView tdPlannedTimeTextView = view.FindViewById<TextView>(Resource.Id.TaskDetails_PlannedTime);
+
+
+            tdPlannedTimeTextView.Text = "" + TimeSpan.FromMinutes(t.EstimatedTime).ToString(@"hh\:mm");
+
+            TextView tdActualTimeTextView = view.FindViewById<TextView>(Resource.Id.TaskDetails_ActualTime);
+            tdActualTimeTextView.Text = "" + TimeSpan.FromMinutes(t.ActualTime).ToString(@"hh\:mm");
+
+
+            EditText a = view.FindViewById<EditText>(Resource.Id.TaskDetails_Notes);
+            if (t.TaskNote == null || t.TaskNote.Length == 0)
             {
                 a.Text = "-";
-            }else
-            a.Text = t.taskNote;
-            System.Diagnostics.Debug.WriteLine("6");
+            }
+            else
+                a.Text = t.TaskNote;
+
+
+            Button timeLogs = view.FindViewById<Button>(Resource.Id.TaskDetails_TimeLogButton);
+            timeLogs.Click += (sender, args) =>
+            {
+               ((MainActivity)(this.Activity)).PassTimeLogInfo(t.Id);
+            };
+
 
         }
+
+       
     }
 }

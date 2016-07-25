@@ -11,14 +11,14 @@ namespace ProcessDashboard.DTO
     */
     public class Project
     {
-        public string id { get; set; }
-        public string name { get; set; }
-        public DateTime creationDate { get; set; }
-        public bool isActive { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public DateTime CreationDate { get; set; }
+        public bool IsActive { get; set; }
 
         public override string ToString()
         {
-            return this.name;
+            return this.Name;
         }
     }
 

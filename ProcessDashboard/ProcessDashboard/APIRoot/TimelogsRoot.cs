@@ -12,8 +12,8 @@ namespace ProcessDashboard.APIRoot
 {
     public class TimeLogsRoot
     {
-        public List<TimeLogEntry> timeLogEntries { get; set; }
-        public string stat { get; set; }
-        public Err err { get; set; }
+        public List<TimeLogEntry> TimeLogEntries { get; set; }
+        public string Stat { get; set; }
+        public Err Err { get; set; }
     }
 }

@@ -8,128 +8,141 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/taskDetailRelativeLayout"
         android:scrollbars="vertical"
         android:scrollbarStyle="insideOverlay"
-        android:fadeScrollbars="true"
-        android:paddingRight="10dp"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:paddingLeft="10dp">
+        android:fadeScrollbars="true">
         <TextView
-            android:text="Project Name / Sample Project / May Be Multiline / Very Long"
+            android:text=""
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/TdProjectNameTextView"
-            android:paddingTop="5dp"
-            android:paddingRight="10dp"
-            android:paddingLeft="10dp"
-            android:paddingBottom="10dp" />
+            android:id="@+id/TaskDetails_ProjectName" />
         <TextView
-            android:text="The Task Name / Sample Component 1 / Sample Component 2 / Some Other Components / Iteration N / Code / Very Long Task Name"
+            android:text=""
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/TdProjectNameTextView"
-            android:id="@+id/TdTaskNameTextView"
-            android:paddingRight="10dp"
-            android:paddingTop="5dp"
-            android:paddingLeft="10dp" />
-        <TextView
-            android:text="completed on 6/23/2016"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_below="@id/TaskDetails_ProjectName"
+            android:id="@+id/TaskDetails_TaskName" />
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/TdTaskNameTextView"
-            android:id="@+id/TdCompleteTextView"
-            android:gravity="center"
-            android:paddingTop="30dp"
-            android:paddingBottom="15dp" />
+            android:layout_below="@id/TaskDetails_TaskName"
+            android:id="@+id/TaskDetails_PlayPauseLayout"
+            android:minWidth="25px"
+            android:minHeight="25px">
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+            <Button
+                android:src="@drawable/Pause"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:id="@+id/TaskDetails_Play"
+                android:background="@drawable/pause"
+                android:gravity="center_horizontal|center_vertical" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+            <Button
+                android:src="@drawable/Play"
+                android:layout_width="24dp"
+                android:layout_height="32dp"
+                android:background="@drawable/play"
+                android:id="@+id/TaskDetails_Pause"
+                android:gravity="center_horizontal|center_vertical" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/TaskDetails_TaskComplete"
+                android:gravity="center_horizontal|center_vertical" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+        </LinearLayout>
         <TextView
-            android:text="planned:"
+            android:text="Planned time:"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/TdCompleteTextView"
-            android:id="@+id/TdPlannedTextView"
-            android:paddingLeft="10dp" />
+            android:id="@+id/TaskDetails_PlannedTimeText"
+            android:layout_below="@id/TaskDetails_PlayPauseLayout" />
+      <TextView
+           android:text=""
+           android:textAppearance="?android:attr/textAppearanceMedium"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_toRightOf="@id/TaskDetails_PlannedTimeText"
+           android:id="@+id/TaskDetails_PlannedTime"
+           android:layout_below="@id/TaskDetails_PlayPauseLayout" />
+      
+      
         <TextView
-            android:text="actual:"
+            android:text="Actual time:"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/TdPlannedTextView"
-            android:id="@+id/TdActualTextView"
-            android:paddingLeft="10dp" />
+            android:layout_below="@id/TaskDetails_PlannedTimeText"
+            android:id="@+id/TaskDetails_ActualTimeText" />
+       
         <TextView
-            android:text="3:20"
+            android:text=""
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/TdPlannedTextView"
-            android:id="@+id/TdPlannedTimeTextView"
-            android:layout_below="@id/TdCompleteTextView"
-            android:paddingLeft="10dp" />
-        <TextView
-            android:text="2:55"
+            android:layout_toRightOf="@id/TaskDetails_ActualTimeText"
+            android:id="@+id/TaskDetails_ActualTime"
+            android:layout_below="@id/TaskDetails_PlannedTime" />
+
+
+      <TextView
+        android:text="Completion Date:"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/TaskDetails_CompletionDateText"
+        android:layout_below="@id/TaskDetails_ActualTimeText" />
+
+      <TextView
+            android:text="--"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/TdPlannedTextView"
-            android:id="@+id/TdActualTimeTextView"
-            android:layout_below="@id/TdPlannedTextView"
-            android:paddingLeft="10dp" />
-        <Button
-            
-            android:src="@drawable/Play"
-            android:background="@drawable/play"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:id="@+id/TdPlayBtn"
-            android:layout_below="@+id/TdCompleteTextView"
-            android:layout_toLeftOf="@+id/TdPauseBtn" />
-        <Button
-            
-            android:src="@drawable/Pause"
-            android:background="@drawable/pause"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:id="@+id/TdPauseBtn"
-            android:layout_below="@id/TdCompleteTextView"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="10dp" />
-        <Button
-            android:text="Time Logs ..."
+            android:layout_toRightOf="@id/TaskDetails_CompletionDateText"
+            android:id="@+id/TaskDetails_CompletionDate"
+            android:layout_below="@id/TaskDetails_ActualTime" />
+
+
+      <Button
+            android:text="Time Log Entries"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/TdActualTextView"
-            android:id="@+id/TdTimeLogBtn"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp" />
-        <EditText
+            android:layout_below="@+id/TaskDetails_CompletionDateText"
+            android:id="@+id/TaskDetails_TimeLogButton" />
+
+      <TextView
+          android:text="Note:"
+          android:textAppearance="?android:attr/textAppearanceMedium"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:id="@+id/TaskDetails_NotesText"
+          android:layout_below="@+id/TaskDetails_TimeLogButton" />
+
+      <EditText
             android:inputType="textMultiLine"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/TdNotesTextView"
-            android:id="@+id/TdNotesEditText"
-            android:text="This is the text area of a note. It can be multiple lines. Automatically wrap text."
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp"
-            android:paddingLeft="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp" />
-        <TextView
-            android:text="Note:"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/TdNotesTextView"
-            android:paddingLeft="10dp"
-            android:layout_below="@+id/TdTimeLogBtn"
-            android:paddingTop="30dp" />
+            android:layout_below="@+id/TaskDetails_NotesText"
+            android:id="@+id/TaskDetails_Notes"
+            android:text="" />
+      
     </RelativeLayout>
 </LinearLayout>

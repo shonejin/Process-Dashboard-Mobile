@@ -14,18 +14,18 @@ namespace ProcessDashboard.DBWrapper
 {
     public class TaskWrapper
     {
-        SQLiteConnection db;
+        SQLiteConnection _db;
 
         public TaskWrapper(SQLiteConnection db)
         {
-            this.db = db;
+            this._db = db;
         }
 
-        public bool createTable()
+        public bool CreateTable()
         {
             try
             {
-                db.CreateTable<TaskModel>();
+                _db.CreateTable<TaskModel>();
                 return true;
             }
             catch (Exception e)
@@ -35,11 +35,11 @@ namespace ProcessDashboard.DBWrapper
             }
         }
 
-        public bool insertRecord(TaskModel taskModel)
+        public bool InsertRecord(TaskModel taskModel)
         {
             try
             {
-                db.Insert(taskModel);
+                _db.Insert(taskModel);
                 return true;
             }
             catch (Exception e)
@@ -49,14 +49,14 @@ namespace ProcessDashboard.DBWrapper
             }
         }
 
-        public bool insertMultipleRecords(List<TaskModel> entries)
+        public bool InsertMultipleRecords(List<TaskModel> entries)
         {
-            db.RunInTransaction(() =>
+            _db.RunInTransaction(() =>
             {
                 // database calls inside the transaction
                 foreach (TaskModel tm in entries)
                 {
-                    db.Insert(tm);
+                    _db.Insert(tm);
                 }
 
             });
@@ -67,7 +67,7 @@ namespace ProcessDashboard.DBWrapper
         {
             try
             {
-                var table = db.Table<TaskModel>().ToList();
+                var table = _db.Table<TaskModel>().ToList();
                 
                 return table;
             }
@@ -78,11 +78,11 @@ namespace ProcessDashboard.DBWrapper
             }
         }
 
-        public TaskModel getRecord(string taskID)
+        public TaskModel GetRecord(string taskId)
         {
             try
             {
-                var item = db.Get<TaskModel>(taskID);
+                var item = _db.Get<TaskModel>(taskId);
                 return item;
             }
             catch (Exception e)
@@ -92,11 +92,11 @@ namespace ProcessDashboard.DBWrapper
             }
         }
 
-        public bool updateRecord(string taskID, Hashtable ht)
+        public bool UpdateRecord(string taskId, Hashtable ht)
         {
             try
             {
-                var item = db.Get<TaskModel>(taskID);
+                var item = _db.Get<TaskModel>(taskId);
 
                 if (ht.ContainsKey("TaskName"))
                 {
@@ -131,7 +131,7 @@ namespace ProcessDashboard.DBWrapper
                     //TODO: Add a new entry to EditToTaskCompletionDate
                     item.CompletionDate = DateTime.Parse(ht["CompletionDate"].ToString());
                 }
-                db.Update(item);
+                _db.Update(item);
                 return true;
             }
             catch (Exception e)
@@ -141,11 +141,11 @@ namespace ProcessDashboard.DBWrapper
             }
         }
 
-        public bool deleteRecord(string taskID)
+        public bool DeleteRecord(string taskId)
         {
             try
             {
-                db.Delete<TaskModel>(taskID);
+                _db.Delete<TaskModel>(taskId);
                 return true;
             }
             catch (Exception e)

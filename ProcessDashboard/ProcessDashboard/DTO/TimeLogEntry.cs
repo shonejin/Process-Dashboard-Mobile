@@ -10,14 +10,18 @@ namespace ProcessDashboard.DTO
  */ 
     public class TimeLogEntry
     {
-        public int id { get; set; }
-        public Task task { get; set; }
-        public DateTime startDate { get; set; }
-        public double loggedTime { get; set; }
-        public double interruptTime { get; set; }
-        public DateTime endDate { get; set; }
+        public int Id { get; set; }
+        public Task Task { get; set; }
+        public DateTime StartDate { get; set; }
+        public double LoggedTime { get; set; }
+        public double InterruptTime { get; set; }
+        public DateTime EndDate { get; set; }
 
-        public string comment { get; set; }
+        public string Comment { get; set; }
 
+        public override string ToString()
+        {
+            return StartDate.ToLongDateString() + " : "+LoggedTime;
+        }
     }
 }

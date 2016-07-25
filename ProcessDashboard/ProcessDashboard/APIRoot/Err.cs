@@ -6,7 +6,9 @@ namespace ProcessDashboard.APIRoot
 {
     public class Err
     {
-        public string code { get; set; }
-        public string msg { get; set; }
+        public string Code { get; set; }
+        public string Msg { get; set; }
+
+        public DateTime stopTime { get; set; }
     }
 }

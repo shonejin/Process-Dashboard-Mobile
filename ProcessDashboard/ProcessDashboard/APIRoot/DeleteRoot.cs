@@ -2,7 +2,7 @@
 {
     public class DeleteRoot
     {
-        public string stat;
+        public string Stat;
 
     }
 }

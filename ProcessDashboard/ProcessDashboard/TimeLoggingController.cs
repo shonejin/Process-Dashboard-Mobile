@@ -113,7 +113,7 @@ namespace ProcessDashboard
 		}
 
 		// TODO: throws CannotReachServerException
-		private void saveIfNeeded()
+		private async void saveIfNeeded()
 		{
 			if (timeLogEntryId == null)
 			{
@@ -123,8 +123,10 @@ namespace ProcessDashboard
 					{
 						int logged = round(stopwatch.getLoggedMinutes());
 						int interrupt = round(stopwatch.getInterruptMinutes());
-						timeLogEntryId = controller.createNewTimeLogEntry(taskId, stopwatch.getFirstStartTime(), logged, interrupt, stopwatch.isRunning());
-						savedLoggedTime = logged;
+						timeLogEntryId = ""+controller.AddATimeLog(Settings.GetInstance().Dataset,"", ""+stopwatch.getFirstStartTime(), taskId, logged, interrupt, stopwatch.isRunning()).Id;
+
+                       
+                        savedLoggedTime = logged;
 						savedInterruptTime = interrupt;
 					}
 					catch (CancelTimeLoggingException e)
@@ -137,7 +139,7 @@ namespace ProcessDashboard
 			{
 				if (stopwatch.isPaused() && stopwatch.getTrailingLoggedMinutes() < 0.5)
 				{
-					controller.deleteTimeLogEntry(timeLogEntryId);
+					await controller.DeleteTimeLog(Settings.GetInstance().Dataset,timeLogEntryId);
 					releaseTimeLogEntry(false);
 				}
 				else if (timeIsDiscrepant())
@@ -146,8 +148,9 @@ namespace ProcessDashboard
 					{
 						int logged = round(stopwatch.getLoggedMinutes());
 						int interrupt = round(stopwatch.getInterruptMinutes());
-						controller.alterTimeLogEntry(timeLogEntryId,
-							loggedTimeDelta(), interruptTimeDelta(),
+						await controller.UpdateTimeLog(Settings.GetInstance().Dataset,timeLogEntryId,"", stopwatch.getFirstStartTime().ToString(),taskId,
+
+                            loggedTimeDelta(), interruptTimeDelta(),
 							stopwatch.isRunning());
 						savedLoggedTime = logged;
 						savedInterruptTime = interrupt;

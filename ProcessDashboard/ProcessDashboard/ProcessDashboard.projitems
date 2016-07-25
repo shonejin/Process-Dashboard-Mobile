@@ -26,6 +26,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)DTO\Project.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\Task.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DTO\TimeLogEntry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exception\CancelTimeLoggingException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exception\CannotReachServerException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\EditsToEstimatedTime.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\EditToTaskCompletionDate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\ProjectModel.cs" />
@@ -35,16 +37,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Service\Interface\IApiTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\Interface\IPDashApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\Interface\IPDashServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Service\OsTimerService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Service\PDashServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CancelTimeLoggingException.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CannotReachServerException.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)OsTimerService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Stopwatch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TimeLoggingController.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Exception\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Readme.md" />

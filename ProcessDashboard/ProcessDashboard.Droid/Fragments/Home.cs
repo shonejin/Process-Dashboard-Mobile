@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Android.OS;
 using Android.Views;
@@ -33,9 +32,9 @@ namespace ProcessDashboard.Droid.Fragments
 
             TaskAdapter ta = (TaskAdapter)l.Adapter;
             Task pb = ta.GetTask(position);
-            System.Diagnostics.Debug.WriteLine("The id of the task :" + pb.id);
-            string taskId = pb.id;
-            ((MainActivity)this.Activity).passTaskDetailsInfo(taskId);
+            System.Diagnostics.Debug.WriteLine("The id of the task :" + pb.Id);
+            string taskId = pb.Id;
+            ((MainActivity)this.Activity).PassTaskDetailsInfo(taskId);
         }
 
 
@@ -48,60 +47,59 @@ namespace ProcessDashboard.Droid.Fragments
             pd.Indeterminate = true;
             pd.SetTitle("Loading");
             
-
             //ProgressBa pb = v.FindViewById<ProgressBar>(Resource.Id.progressBar1);
             //pb.Indeterminate = true;
 
-
             ListView listView = v.FindViewById<ListView>(Android.Resource.Id.List);
-
             System.Diagnostics.Debug.WriteLine("We are now assigning values to the list view");
-
             //pb.Visibility = ViewStates.Visible;
-            
-            TextView recentTask = v.FindViewById<TextView>(Resource.Id.recentTask_Home);
+            TextView recentTask = v.FindViewById<TextView>(Resource.Id.Home_RecentTask);
             recentTask.Text = "Project / Mobile App l1 / Iteration 1 / View Skeletons / Create Android Skeletons / Home Screen ";
-
             pd.Show();
-            test(pd, listView, ((MainActivity)this.Activity)._ctrl);
+            LoadData(pd, v, ((MainActivity)this.Activity).Ctrl);
            // loadDummyData(v);
-
-
             return v;
         }
-        private async void test(ProgressDialog pb, ListView listView, Controller ctrl)
+
+        private async void LoadData(ProgressDialog pb, View v, Controller ctrl)
         {
+            ListView listView = v.FindViewById<ListView>(Android.Resource.Id.List);
             List<DTO.Task> output = await ctrl.GetRecentTasks("mock");
             pb.Dismiss();
-            TaskAdapter listAdapter = new TaskAdapter(Activity, Android.Resource.Layout.SimpleListItem1, output.ToArray(), 1,this.Activity);
+
+            Task recent = output[0];
+
+            TextView rt = v.FindViewById<TextView>(Resource.Id.Home_RecentTask);
+            TextView cp = v.FindViewById<TextView>(Resource.Id.Home_CurrentProject);
+
+            rt.Text = recent.FullName;
+            cp.Text = recent.Project.Name;
+          
+            output.RemoveAt(0);
+
+            TaskAdapter listAdapter = new TaskAdapter(Activity, Android.Resource.Layout.SimpleListItem1, output.ToArray());
             this.ListAdapter = listAdapter;
             //SetListShown(true);
-
         }
 
-        private void loadDummyData(View v)
+        private void LoadDummyData(View v)
         {
 
             ListView lv = v.FindViewById<ListView>(Android.Resource.Id.List);
             string[] items = new string[] { "Vegetables", "Fruits", "Flower Buds", "Legumes", "Bulbs", "Tubers" };
-            ArrayAdapter ListAdapter = new ArrayAdapter<String>(this.Activity, Android.Resource.Layout.SimpleListItem1, items);
-            this.ListAdapter = ListAdapter;
-            
+            ArrayAdapter listAdapter = new ArrayAdapter<String>(this.Activity, Android.Resource.Layout.SimpleListItem1, items);
+            this.ListAdapter = listAdapter;
             //lv.ItemClick += Lv_ItemClick;
-
             // Set the recent task 
-            TextView recentTask = v.FindViewById<TextView>(Resource.Id.recentTask_Home);
+            TextView recentTask = v.FindViewById<TextView>(Resource.Id.Home_RecentTask);
             recentTask.Text = "Project / Mobile App l1 / Iteration 1 / View Skeletons / Create Android Skeletons / Home Screen ";
-
-
+            
         }
 
         private void Lv_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
-
             // Use the item clicked.
-
-            ((MainActivity)Activity).switchToFragment(MainActivity.fragmentTypes.listoftasks);
+            ((MainActivity)Activity).SwitchToFragment(MainActivity.FragmentTypes.Listoftasks);
 
         }
     }

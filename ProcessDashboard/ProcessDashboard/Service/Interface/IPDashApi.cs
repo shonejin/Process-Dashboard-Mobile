@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ProcessDashboard.APIRoot;
 using ProcessDashboard.DTO;
@@ -52,7 +53,7 @@ namespace ProcessDashboard.Service.Interface
         // Sample URL : https://pdes.tuma-solutions.com/api/v1/datasets/mock/time-log/
         // Optional Parameters: maxResults, startDateFrom, startDateTo, taskId, projectId
         [Get("/datasets/{dataset}/time-log/")]
-        Task<TimeLogsRoot> GetTimeLogs(string dataset,int maxResults, string startDateFrom, string startDateTo, string taskId, string projectId, [Header("Authorization")] string authorization);
+        Task<TimeLogsRoot> GetTimeLogs(string dataset,int? maxResults, DateTime? startDateFrom, DateTime? startDateTo, string taskId, string projectId, [Header("Authorization")] string authorization);
 
         //Add a new time-log entry
        [Post("/datasets/{dataset}/time-log/")]

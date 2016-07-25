@@ -12,10 +12,10 @@ using Android.Widget;
 
 namespace ProcessDashboard.Droid.Fragments.Interfaces
 {
-    interface ListOfTaksInterface
+    interface IListOfProjectsInterface
     {
 
-        void passTaskDetailsInfo(string taskID);
+        void ListOfProjectsCallback(string projectid);
 
     }
 }
