@@ -20,36 +20,21 @@ namespace ProcessDashboard.iOS
 		public TaskTimeLogViewController DelegateforTasktimelog { get; set; } // will be used to Save, Delete later
 		public TaskTimeLogViewController DelegateforAddingTimelog { get; set;}
 		UILabel TaskNameLabel, ProjectNameLabel, StartTimeLabel, DeltaLabel, IntLabel, CommentLabel;
-		UIButton StartTimeText;
-		UITextField DeltaText, IntText;
+		UITextField StartTimeText, DeltaText, IntText;
 		UIButton CommentText;
 		UIBarButtonItem delete;
-		UIBarButtonItem doneButton;
-		private DateTime[] _customDates;
-		UIPickerView DeltaPicker;
-		UIPickerView IntPicker;
+		UIBarButtonItem saveButton, cancelButton;
+		UIPickerView DeltaPicker, IntPicker;
+		UIDatePicker  StartTimePicker;
 		string deltaSelectedHour, deltaSelectedMinute;
 		string intSelectedHour, intSelectedMinute;
+		DateTime startTimeSelectedDate;
 		UIToolbar toolbar;
 
 		public TimelogDetailViewController(IntPtr handle) : base(handle)
 		{
-			Initialize();
+			
 		}
-
-
-		private void Initialize()
-		{
-			_customDates = new DateTime[]
-			{
-				DateTime.Now, DateTime.Now.AddDays(7), DateTime.Now.AddDays(7*2),
-				DateTime.Now.AddDays(7*3), DateTime.Now.AddDays(7*4), DateTime.Now.AddDays(7*5),
-				DateTime.Now.AddDays(7*6), DateTime.Now.AddDays(7*7), DateTime.Now.AddDays(7*8),
-				DateTime.Now.AddDays(7*9), DateTime.Now.AddDays(7*10), DateTime.Now.AddDays(7*11),
-				DateTime.Now.AddDays(7*12), DateTime.Now.AddDays(7*13), DateTime.Now.AddDays(7*14)
-			};
-		}
-
 
 		public override void ViewDidLoad()
 		{
@@ -121,23 +106,60 @@ namespace ProcessDashboard.iOS
 
 			StartTimeLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
-			StartTimeText = new UIButton(UIButtonType.RoundedRect);
+			//
+			StartTimeText = new UITextField(new CGRect(30, 240, 300, 20));
+			StartTimeText.Text = currentTask.StartDate.ToShortDateString() + " " + currentTask.StartDate.ToShortTimeString();
+			StartTimeText.TextAlignment = UITextAlignment.Center;
+			StartTimeText.TextColor = UIColor.Blue;
+			StartTimeText.Font = UIFont.SystemFontOfSize(14);
+			StartTimeText.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
-			StartTimeText.SetTitle(currentTask.StartDate.ToShortDateString()  + " " + currentTask.StartDate.ToShortTimeString(), UIControlState.Normal);
+			// set up start time customized UIpicker
 
-			StartTimeText.Frame = new CGRect(30, 240, 300, 20);
+			StartTimePicker = new UIDatePicker(new CoreGraphics.CGRect(10f, this.View.Frame.Height - 250, this.View.Frame.Width - 20, 200f));
+			StartTimePicker.BackgroundColor = UIColor.FromRGB(220, 220, 220);
 
-			StartTimeText.SetTitleColor(UIColor.Blue, UIControlState.Normal);
+			StartTimePicker.UserInteractionEnabled = true;
+			StartTimePicker.Mode = UIDatePickerMode.DateAndTime;
 
-			StartTimeText.TitleLabel.SizeToFit();
+			startTimeSelectedDate = currentTask.StartDate;
 
-			StartTimeText.TouchUpInside += (sender, e) =>
+			StartTimePicker.ValueChanged += (Object sender, EventArgs e) =>
 			{
-
-				DatePickerButtonTapped(sender, e);
+				startTimeSelectedDate  = ConvertNSDateToDateTime((sender as UIDatePicker).Date);
 			};
 
-			StartTimeText.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
+			StartTimePicker.BackgroundColor = UIColor.White;
+			StartTimePicker.SetDate(ConvertDateTimeToNSDate(currentTask.StartDate), true);
+
+			//Setup the toolbar
+			toolbar = new UIToolbar();
+			toolbar.BarStyle = UIBarStyle.Default;
+			toolbar.BackgroundColor = UIColor.FromRGB(220, 220, 220);
+			toolbar.Translucent = true;
+			toolbar.SizeToFit();
+
+			// Create a 'done' button for the toolbar and add it to the toolbar
+
+			saveButton = new UIBarButtonItem("Save", UIBarButtonItemStyle.Bordered,
+			(s, e) =>
+			{
+				this.StartTimeText.Text = startTimeSelectedDate.ToString();
+				this.StartTimeText.ResignFirstResponder();
+			});
+
+			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
+
+			cancelButton = new UIBarButtonItem("Cancel", UIBarButtonItemStyle.Bordered,
+			(s, e) =>
+			{
+				this.StartTimeText.ResignFirstResponder();
+			});
+
+			toolbar.SetItems(new UIBarButtonItem[] { cancelButton, spacer, saveButton }, true);
+
+			this.StartTimeText.InputView = StartTimePicker;
+			this.StartTimeText.InputAccessoryView = toolbar;
 
 			// 
 			DeltaLabel = new UILabel(new CGRect(30, 270, 300, 20))
@@ -297,18 +319,20 @@ namespace ProcessDashboard.iOS
 			};
 
 			DeltaPicker.Model = deltaModel;
-
+			DeltaPicker.BackgroundColor = UIColor.White;
 			DeltaPicker.Select(h, 0, true);
 			DeltaPicker.Select(m, 1, true);
 
 			 //Setup the toolbar
 			toolbar = new UIToolbar();
-			toolbar.BarStyle = UIBarStyle.BlackTranslucent;
+			toolbar.BarStyle = UIBarStyle.Default;
+			toolbar.BackgroundColor = UIColor.FromRGB(220, 220, 220);
 			toolbar.Translucent = true;
 			toolbar.SizeToFit();
 
 			// Create a 'done' button for the toolbar and add it to the toolbar
-			doneButton = new UIBarButtonItem("Done", UIBarButtonItemStyle.Done,
+
+			saveButton = new UIBarButtonItem("Save", UIBarButtonItemStyle.Bordered,
 			(s, e) =>
 			{
 				
@@ -316,7 +340,16 @@ namespace ProcessDashboard.iOS
 				this.DeltaText.ResignFirstResponder();
 			});
 
-			toolbar.SetItems(new UIBarButtonItem[] { doneButton }, true);
+			//var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
+
+			cancelButton = new UIBarButtonItem("Cancel", UIBarButtonItemStyle.Bordered,
+			(s, e) =>
+			{
+				this.DeltaText.ResignFirstResponder();
+			});
+
+	
+			toolbar.SetItems(new UIBarButtonItem[] { cancelButton, spacer, saveButton}, true);
 
 			this.DeltaText.InputView = DeltaPicker;
 			this.DeltaText.InputAccessoryView = toolbar;
@@ -329,6 +362,7 @@ namespace ProcessDashboard.iOS
 
 			IntPicker.UserInteractionEnabled = true;
 			IntPicker.ShowSelectionIndicator = true;
+			IntPicker.BackgroundColor = UIColor.White;
 
 			IntPicker.Select(0, 0, true);
 
@@ -354,22 +388,30 @@ namespace ProcessDashboard.iOS
 
 			//Setup the toolbar
 			toolbar = new UIToolbar();
-			toolbar.BarStyle = UIBarStyle.BlackTranslucent;
+			toolbar.BarStyle = UIBarStyle.Default;
+			toolbar.BackgroundColor = UIColor.FromRGB(220, 220, 220);
 			toolbar.Translucent = true;
 			toolbar.SizeToFit();
 
-			// Create a 'done' button for the toolbar and add it to the toolbar
-			doneButton = new UIBarButtonItem("Done", UIBarButtonItemStyle.Done,
+
+			saveButton = new UIBarButtonItem("Save", UIBarButtonItemStyle.Bordered,
 			(s, e) =>
 			{
 				this.IntText.Text = this.intSelectedHour + ":" + this.intSelectedMinute;
 				this.IntText.ResignFirstResponder();
 			});
 
-			toolbar.SetItems(new UIBarButtonItem[] { doneButton }, true);
+			cancelButton = new UIBarButtonItem("Cancel", UIBarButtonItemStyle.Bordered,
+			(s, e) =>
+			{
+				this.IntText.ResignFirstResponder();
+			});
+
+			toolbar.SetItems(new UIBarButtonItem[] { cancelButton, spacer, saveButton }, true);
 
 			this.IntText.InputView = IntPicker;
 			this.IntText.InputAccessoryView = toolbar;
+
 
 			View.AddSubview(ProjectNameLabel);
 			View.AddSubview(TaskNameLabel);
@@ -389,7 +431,7 @@ namespace ProcessDashboard.iOS
 			base.ViewWillAppear(animated);
 
 			TaskNameLabel.Text = currentTask.Task.FullName;
-			StartTimeText.TitleLabel.Text = currentTask.StartDate.ToLongTimeString();
+			StartTimeText.Text = currentTask.StartDate.ToShortDateString() + " " + currentTask.StartDate.ToShortTimeString();
 		    int newHour = (int)currentTask.LoggedTime / 60;
 			int newMin = (int)currentTask.LoggedTime % 60;
 			string newH = null, newM = null;
@@ -412,13 +454,6 @@ namespace ProcessDashboard.iOS
 
 		}
 
-		//public override void ViewDidDisappear(bool animated)
-		//{
-		//	base.ViewDidDisappear(animated);
-		//	this.NavigationController.PopToRootViewController(true);
-		//}
-
-
 		// this will be called before the view is displayed
 		public void SetTask(TimeLogPageViewController d, TimeLogEntry task)
 		{
@@ -438,57 +473,7 @@ namespace ProcessDashboard.iOS
 			currentTask = task;
 		}
 
-		//public void DeltaButtonClicked(object sender, UIButtonEventArgs e)
-		//{
-		//	UIAlertView parent_alert = (UIAlertView)sender;
-
-		//	if (e.ButtonIndex == 1)
-		//	{
-
-		//		Console.Out.WriteLine("haha: "+ DeltaText.Text);
-		//		DeltaText.Text = parent_alert.GetTextField(0).Text;
-		//		//SaveDeltaTimeChanged(parent_alert.GetTextField(0).Text);
-		//		TimeLogEntry newTask = new TimeLogEntry();
-		//		// TODO: fix the type
-		//		//newTask.Heading = currentTask.Heading;
-		//		//newTask.SubHeading = currentTask.SubHeading;
-		//		//newTask.StartTime = currentTask.StartTime;
-		//		//newTask.Delta = parent_alert.GetTextField(0).Text;
-		//		//newTask.Int = currentTask.Int;
-		//		//newTask.Comment = currentTask.Comment;
-
-		//		//Delegate.SaveTask(currentTask, newTask);
-
-		//		Console.Out.WriteLine(parent_alert.GetTextField(0).Text);
-
-		//	}
-
-		//}
-
-		//public void IntButtonClicked(object sender, UIButtonEventArgs e)
-		//{
-		//	UIAlertView parent_alert = (UIAlertView)sender;
-
-		//	if (e.ButtonIndex == 1)
-		//	{
-		//		IntText.TitleLabel.Text = parent_alert.GetTextField(0).Text;
-		//		// TODO: fix the type
-		//		//TimelogTableItem newTask = new TimelogTableItem();
-		//		//newTask.Heading = currentTask.Heading;
-		//		//newTask.SubHeading = currentTask.SubHeading;
-		//		//newTask.StartTime = currentTask.StartTime;
-		//		//newTask.Delta = currentTask.Delta;
-		//		//newTask.Int = parent_alert.GetTextField(0).Text;
-		//		//newTask.Comment = currentTask.Comment;
-
-		//		//Delegate.SaveTask(currentTask, newTask);
-
-
-		//	}
-
-		//}
-
-
+	
 		public void CommentButtonClicked(object sender, UIButtonEventArgs e)
 		{
 			UIAlertView parent_alert = (UIAlertView)sender;
@@ -511,53 +496,21 @@ namespace ProcessDashboard.iOS
 
 		}
 
-		async void DatePickerButtonTapped(object sender, EventArgs e)
+
+		public static DateTime ConvertNSDateToDateTime(NSDate date)
 		{
-			var modalPicker = new ModalPickerViewController(ModalPickerType.Date, " ", this)
-			{
-				HeaderBackgroundColor = UIColor.FromRGB(220, 220, 220),
-				HeaderTextColor = UIColor.Black,
-				DoneButtonText = "Save", // it will save the time to the DB
-				CancelButtonText = "Cancel", // the icon needs to change
-
-				TransitioningDelegate = new ModalPickerTransitionDelegate(),
-				ModalPresentationStyle = UIModalPresentationStyle.Custom
-			};
-
-			//modalPicker.Select(StartTimeText.TitleLabel.Text.ToString());
-
-			modalPicker.DatePicker.Mode = UIDatePickerMode.DateAndTime;
-
-			modalPicker.OnModalPickerDismissed += (s, ea) =>
-			{
-				var dateFormatter = new NSDateFormatter()
-				{
-					DateFormat = "MM/dd/yyyy hh:mm a"
-				};
-
-				StartTimeText.SetTitle(dateFormatter.ToString(modalPicker.DatePicker.Date), UIControlState.Normal);
-				SaveStartTimeChanged(dateFormatter.ToString(modalPicker.DatePicker.Date));
-
-			};
-
-			// When user clicks Cancel and the task has been mark as completed
-
-			await PresentViewControllerAsync(modalPicker, true);
+			DateTime reference = new DateTime(2001, 1, 1, 0, 0, 0);
+			DateTime currentDate = reference.AddSeconds(date.SecondsSinceReferenceDate);
+			DateTime localDate = currentDate.ToLocalTime();
+			return localDate;
 		}
 
-		public void SaveStartTimeChanged(String time)
+		public static NSDate ConvertDateTimeToNSDate(DateTime date)
 		{
-			// TODO: fix the type
-			//TimelogTableItem newTask = new TimelogTableItem();
-			//String[] strs = time.Split(' ');
-			//newTask.Heading = currentTask.Heading;
-			//newTask.SubHeading = strs[0];
-			//newTask.StartTime = strs[1] + " " + strs[2];
-			//newTask.Delta = DeltaText.TitleLabel.Text;
-			//newTask.Int = currentTask.Int;
-			//newTask.Comment = currentTask.Comment;
-
-			//Delegate.SaveTask(currentTask, newTask);
+			DateTime newDate = TimeZone.CurrentTimeZone.ToLocalTime(
+				new DateTime(2001, 1, 1, 0, 0, 0));
+			return NSDate.FromTimeIntervalSinceReferenceDate(
+				(date - newDate).TotalSeconds);
 		}
 
 

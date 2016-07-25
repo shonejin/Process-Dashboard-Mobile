@@ -264,6 +264,7 @@
     </Compile>
     <Compile Include="TimeLogs\StatusPickerViewModel.cs" />
     <Compile Include="Tasks\TaskDetailTableSource.cs" />
+    <Compile Include="TimeLogs\DateTimePickerViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="TimeLogs\" />

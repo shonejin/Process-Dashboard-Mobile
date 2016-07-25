@@ -18,8 +18,8 @@ using CoreGraphics;
 
 namespace ProcessDashboard.iOS
 {
-    public partial class TasksTableViewController : UITableViewController
-    {
+	public partial class TasksTableViewController : UITableViewController
+	{
 		public string projectId;
 		public string projectName;
 		List<Task> tasksCache;
@@ -99,7 +99,7 @@ namespace ProcessDashboard.iOS
 					pos = i;
 					break;
 				}
-					
+
 			}
 			String refreshTime = DateTime.Now.ToString("g");
 			String subTitle = "Last refresh: " + refreshTime;
@@ -123,7 +123,7 @@ namespace ProcessDashboard.iOS
 			var apiService = new ApiTypes(null);
 			var service = new PDashServices(apiService);
 			Controller c = new Controller(service);
-			List<Task> tasksList = await c.GetTasks("mock", projectId);
+			List<Task> tasksList = await c.GetTasks(Settings.GetInstance().Dataset, projectId);
 			tasksCache = tasksList;
 
 
@@ -135,7 +135,7 @@ namespace ProcessDashboard.iOS
 				foreach (var task in tasksList)  //.Select(x => x.estimatedTime)
 				{
 					System.Diagnostics.Debug.WriteLine(task.FullName);
-		
+
 				}
 
 			}
@@ -146,5 +146,5 @@ namespace ProcessDashboard.iOS
 
 			return 0;
 		}
-    }
+	}
 }

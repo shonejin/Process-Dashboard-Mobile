@@ -15,7 +15,7 @@ namespace ProcessDashboard.iOS
 
 		UILabel ProjectNameLabel, TaskNameLabel, TimelogsLabel;
 		List<TimeLogEntry> timeLogCache;
-		UITableView TaskTimeLogTable;
+		//UITableView TaskTimeLogTable;
 
 		// This ID is used to fetch the time logs. It is set by the previous view controller
 		public string taskId;
@@ -117,9 +117,9 @@ namespace ProcessDashboard.iOS
 				//LineBreakMode = UILineBreakMode.WordWrap,
 			};
 
-			TaskTimeLogTable = new UITableView(new CGRect(0, 200, View.Bounds.Width, View.Bounds.Height));
+			//TaskTimeLogTable = new UITableView(new CGRect(0, 200, View.Bounds.Width, View.Bounds.Height));
 
-			Add(TaskTimeLogTable);
+			//Add(TaskTimeLogTable);
 			this.Add(ProjectNameLabel);
 			this.Add(TaskNameLabel);
 			this.Add(TimelogsLabel);

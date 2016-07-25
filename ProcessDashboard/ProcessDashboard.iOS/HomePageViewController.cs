@@ -28,26 +28,10 @@ namespace ProcessDashboard.iOS
 		List<DTO.Task> RecentTaskItems;
 		TimeLoggingController timeLoggingController;
 
-
-		private DateTime[] _customDates;
-
 		public HomePageViewController(IntPtr handle) : base(handle)
 		{
-			Initialize();
+			
 		}
-
-		private void Initialize()
-		{
-			_customDates = new DateTime[]
-			{
-				DateTime.Now, DateTime.Now.AddDays(7), DateTime.Now.AddDays(7*2),
-				DateTime.Now.AddDays(7*3), DateTime.Now.AddDays(7*4), DateTime.Now.AddDays(7*5),
-				DateTime.Now.AddDays(7*6), DateTime.Now.AddDays(7*7), DateTime.Now.AddDays(7*8),
-				DateTime.Now.AddDays(7*9), DateTime.Now.AddDays(7*10), DateTime.Now.AddDays(7*11),
-				DateTime.Now.AddDays(7*12), DateTime.Now.AddDays(7*13), DateTime.Now.AddDays(7*14)
-			};
-		}
-
 
 		public void ProjectLabelOnClick(object sender, EventArgs ea)
 		{
