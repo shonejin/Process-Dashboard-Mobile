@@ -52,8 +52,8 @@ namespace ProcessDashboard.Service.Interface
         Task<List<DTO.Task>> GetRecentTasksRemote(Priority priority, string dataset);
         Task<List<TimeLogEntry>> GetTimeLogsRemote(Priority priority, string dataset, int? maxResults, DateTime? startDateFrom, DateTime? startDateTo, string taskId, string projectId);
 
-        Task<EditATimeLogRoot> AddTimeLog(Priority priority, string dataset, string comment, string startDate, string taskId, double loggedTime);
-        Task<EditATimeLogRoot> UpdateTimeLog(Priority priority, string dataset, string timeLogId, string comment, string startDate, string taskId, double loggedTime);
+        Task<EditATimeLogRoot> AddTimeLog(Priority priority, string dataset, string comment, string startDate, string taskId, double loggedTime,double interruptTime,bool open);
+        Task<EditATimeLogRoot> UpdateTimeLog(Priority priority, string dataset, string timeLogId, string comment, string startDate, string taskId, double interruptTimeDelta , double loggedTimeDelta,bool open);
         Task<DeleteRoot> DeleteTimeLog(Priority priority, string dataset, string timelogId);
     }
 }

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Fusillade;
+using Plugin.Connectivity;
+using Plugin.Connectivity.Abstractions;
 using ProcessDashboard.APIRoot;
 using ProcessDashboard.DBWrapper;
 using ProcessDashboard.DTO;
@@ -11,6 +14,7 @@ using ProcessDashboard.Model;
 using ProcessDashboard.Service.Interface;
 using Refit;
 using Task = ProcessDashboard.DTO.Task;
+using ProcessDashboard;
 
 //using Plugin.Connectivity;
 //using Polly;
@@ -48,6 +52,32 @@ namespace ProcessDashboard.Service_Access_Layer
         }
 
         /*
+         * Check Wifi
+         */
+
+        public bool isWifiConnected()
+        {
+            checkConnection();
+
+            ConnectionType ct = ConnectionType.WiFi;
+
+            return CrossConnectivity.Current.ConnectionTypes.Contains(ct);
+
+        }
+
+         /*
+          * Check Network Connectivity
+          */
+
+        public void checkConnection()
+        {
+            if (!CrossConnectivity.Current.IsConnected)
+            {
+                throw new CannotReachServerException();
+            }
+        }
+
+        /*
          * List of projects 
          * 
          */ 
@@ -73,9 +103,15 @@ namespace ProcessDashboard.Service_Access_Layer
             return output;
         }
 
-        public async Task<List<Project>> GetProjectsListRemote(Priority priority, string dataset)
+        public async Task<List<Project>> GetProjectsListRemote(Priority priority, string dataset) 
         {
             Debug.WriteLine("ProjectModel Service : " + " Going for remote task");
+            if(Settings.GetInstance().CheckWifi)
+            isWifiConnected();
+            else
+            {
+                checkConnection();
+            }
 
             Task<ProjectsListRoot> getTaskDtoTask;
 
@@ -157,6 +193,12 @@ namespace ProcessDashboard.Service_Access_Layer
         public async Task<List<Task>> GetTasksListRemote(Priority priority, string dataset, string projectId)
         {
             Debug.WriteLine("Task Service : " + " Going for remote task");
+            if (Settings.GetInstance().CheckWifi)
+                isWifiConnected();
+            else
+            {
+                checkConnection();
+            }
 
             TaskListRoot tasks = null;
             Task<TaskListRoot> getTaskDtoTask;
@@ -239,6 +281,12 @@ namespace ProcessDashboard.Service_Access_Layer
         public async Task<Task> GetTaskDetailsRemote(Priority priority, string dataset, string projecttaskId)
         {
             Debug.WriteLine("Task Service : " + " Going for remote task");
+            if (Settings.GetInstance().CheckWifi)
+                isWifiConnected();
+            else
+            {
+                checkConnection();
+            }
 
             TaskRoot task = null;
             Task<TaskRoot> getTaskDtoTask;
@@ -321,6 +369,12 @@ namespace ProcessDashboard.Service_Access_Layer
         public async Task<List<Task>> GetRecentTasksRemote(Priority priority, string dataset)
         {
             Debug.WriteLine("Task Service : " + " Going for remote task");
+            if (Settings.GetInstance().CheckWifi)
+                isWifiConnected();
+            else
+            {
+                checkConnection();
+            }
 
             RecentTasksRoot task = null;
             Task<RecentTasksRoot> getTaskDtoTask;
@@ -400,6 +454,13 @@ namespace ProcessDashboard.Service_Access_Layer
         public async Task<List<TimeLogEntry>> GetTimeLogsRemote(Priority priority, string dataset, int? maxResults, DateTime? startDateFrom, DateTime? startDateTo, string taskId, string projectId)
         {
             Debug.WriteLine("Task Service : " + " Going for remote task");
+            if (Settings.GetInstance().CheckWifi)
+                isWifiConnected();
+            else
+            {
+                checkConnection();
+            }
+
             Task<TimeLogsRoot> getTaskDtoTask;
             Debug.WriteLine("Task Service : " + " Setting priority");
             switch (priority)
@@ -439,20 +500,28 @@ namespace ProcessDashboard.Service_Access_Layer
             return task.TimeLogEntries;
         }
 
+      
+    
         /*
          * Adding/Updating/Deleting Time Log entries
          */ 
         
-        public async Task<EditATimeLogRoot> AddTimeLog(Priority priority, string dataset, string comment,string startDate, string taskId,double loggedTime)
+        public async Task<EditATimeLogRoot> AddTimeLog(Priority priority, string dataset, string comment, string startDate, string taskId, double loggedTime,double interruptTime, bool open)
         {
-            
-
+            if (Settings.GetInstance().CheckWifi)
+                isWifiConnected();
+            else
+            {
+                checkConnection();
+            }
             Dictionary<string, object> value = new Dictionary<string, object>();
             value.Add("comment", comment);
             value.Add("startDate", DateTime.Parse(startDate).ToString(_pattern));
             value.Add("taskId", taskId);
             value.Add("loggedTime", loggedTime);
             value.Add("editTimestamp", DateTime.Now.ToString(_pattern));
+            value.Add("open",open);
+            value.Add("interruptTime",interruptTime);
 
             EditATimeLogRoot task = null;
             Task<EditATimeLogRoot> addTimeLog;
@@ -476,15 +545,24 @@ namespace ProcessDashboard.Service_Access_Layer
             return timelogged;
         }
 
-        public async Task<EditATimeLogRoot> UpdateTimeLog(Priority priority,string dataset, string timeLogId, string comment, string startDate, string taskId, double loggedTime)
-        {           
-            
+        public async Task<EditATimeLogRoot> UpdateTimeLog(Priority priority, string dataset, string timeLogId, string comment, string startDate, string taskId,
+            double interruptTimeDelta, double loggedTimeDelta, bool open)
+    {
+            if (Settings.GetInstance().CheckWifi)
+                isWifiConnected();
+            else
+            {
+                checkConnection();
+            }
+
 
             Dictionary<string, object> value = new Dictionary<string, object>();
             value.Add("comment", comment);
             value.Add("startDate", startDate);
             value.Add("taskId", taskId);
-            value.Add("loggedTime", loggedTime);
+            value.Add("loggedTime", loggedTimeDelta);
+            value.Add("open", open);
+            value.Add("interruptTime", interruptTimeDelta);
             value.Add("editTimestamp", DateTime.Now.ToString(_pattern));
             System.Diagnostics.Debug.WriteLine("Data set is :"+dataset+" Time Log is :"+timeLogId+" EditTime stamp:"+value["editTimestamp"]);
             EditATimeLogRoot task = null;
@@ -516,7 +594,13 @@ namespace ProcessDashboard.Service_Access_Layer
         public async Task<DeleteRoot> DeleteTimeLog(Priority priority,string dataset, string timelogId)
         {
 
-            
+            if (Settings.GetInstance().CheckWifi)
+                isWifiConnected();
+            else
+            {
+                checkConnection();
+            }
+
             string value = DateTime.Now.ToString(_pattern);
 
             DeleteRoot task = null;

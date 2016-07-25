@@ -187,10 +187,10 @@ namespace ProcessDashboard.SyncLogic
             return remoteTasks;
         }
 
-        public async Task<EditATimeLogRoot> AddATimeLog(string dataset, string comment, string startDate, string taskId, double loggedTime)
+        public async Task<EditATimeLogRoot> AddATimeLog(string dataset, string comment, string startDate, string taskId, double loggedTime,double interruptTime, bool open)
         {
 
-            EditATimeLogRoot tro = await _pDashServices.AddTimeLog(Priority.UserInitiated, dataset, comment, startDate, taskId, loggedTime);
+            EditATimeLogRoot tro = await _pDashServices.AddTimeLog(Priority.UserInitiated, dataset, comment, startDate, taskId, loggedTime,interruptTime,open);
 
             System.Diagnostics.Debug.WriteLine("Add Stat :" + tro.Stat);
             if (tro.Stat.Equals("ok"))
@@ -203,16 +203,24 @@ namespace ProcessDashboard.SyncLogic
             {
                 System.Diagnostics.Debug.WriteLine("Id :" + tro.Err.Code);
                 System.Diagnostics.Debug.WriteLine("Id :" + tro.Err.Msg);
+
+                if (tro.Err.Equals("stopTimeLogging"))
+                {
+                    
+                    throw new CancelTimeLoggingException(tro.Err.stopTime);
+
+                }
+
             }
             return tro;
 
         }
 
-        public async Task<EditATimeLogRoot> UpdateTimeLog(string dataset, string timeLogId, string comment, string startDate, string taskId, double loggedTime)
+        public async Task<EditATimeLogRoot> UpdateTimeLog(string dataset, string timeLogId, string comment, string startDate, string taskId, double loggedTime,double interruptTime,bool open)
         {
 
 
-            EditATimeLogRoot tro = await _pDashServices.UpdateTimeLog(Priority.UserInitiated, dataset,timeLogId, comment, startDate, taskId, loggedTime);
+            EditATimeLogRoot tro = await _pDashServices.UpdateTimeLog(Priority.UserInitiated, dataset,timeLogId, comment, startDate, taskId, loggedTime,interruptTime,open);
 
             System.Diagnostics.Debug.WriteLine("Update Stat :" + tro.Stat);
             if (tro.Stat.Equals("ok"))
@@ -224,6 +232,12 @@ namespace ProcessDashboard.SyncLogic
             {
                 System.Diagnostics.Debug.WriteLine("Id :" + tro.Err.Code);
                 System.Diagnostics.Debug.WriteLine("Id :" + tro.Err.Msg);
+                if (tro.Err.Equals("stopTimeLogging"))
+                {
+
+                    throw new CancelTimeLoggingException(tro.Err.stopTime);
+
+                }
             }
             return tro;
 
@@ -399,7 +413,7 @@ namespace ProcessDashboard.SyncLogic
 
         public async Task<int> TestAddATimeLog()
         {
-            EditATimeLogRoot tr = await AddATimeLog("INST-szewf0", "Testing a comment", DateTime.Now.ToString(), "305", 2);
+            EditATimeLogRoot tr = await AddATimeLog("INST-szewf0", "Testing a comment", DateTime.Now.ToString(), "305", 2,0,true);
             try
             {
                 System.Diagnostics.Debug.WriteLine("** Added a new Time Log entry **");
@@ -420,7 +434,7 @@ namespace ProcessDashboard.SyncLogic
 
             string timeLogId = ""+await TestAddATimeLog();
 
-            EditATimeLogRoot tr = await UpdateTimeLog("INST-szewf0",timeLogId, "Testing a comment", DateTime.Now.ToString(Settings.GetInstance().DateTimePattern), "305", 24);
+            EditATimeLogRoot tr = await UpdateTimeLog("INST-szewf0",timeLogId, "Testing a comment", DateTime.Now.ToString(Settings.GetInstance().DateTimePattern), "305", 24,2,true);
             try
             {
                 System.Diagnostics.Debug.WriteLine("** Updated the new Time Log entry **");

@@ -10,6 +10,8 @@ namespace ProcessDashboard
 
         private string _baseurl;
 
+        public bool CheckWifi { get; set; }
+
         public string Dataset {
             get { return "mock"; }
         }
@@ -29,7 +31,7 @@ namespace ProcessDashboard
 
         private Settings()
         {
-
+            CheckWifi = false;
         }
 
 
