@@ -57,7 +57,9 @@ namespace ProcessDashboard.iOS
 
 			base.ViewDidLoad();
 
-			string[] tableItems = new string[]{task.estimatedTime.ToString(), task.actualTime.ToString(), task.completionDate.ToString("MM/dd/yyyy") };
+			var estimated = TimeSpan.FromMinutes(task.estimatedTime);
+			var actual = TimeSpan.FromMinutes(task.actualTime);
+			string[] tableItems = new string[]{estimated.ToString("hh\\:mm"), actual.ToString("hh\\:mm"), task.completionDate.ToString("MM/dd/yyyy") };
 
 			Console.WriteLine("estimated time: " + task.estimatedTime);
 			Console.WriteLine("actual time: " + task.actualTime);

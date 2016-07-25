@@ -14,7 +14,8 @@ namespace ProcessDashboard.iOS
 		UIScrollView scrollView;
 		UIButton startButton, stopButton;
 		private DateTime[] _customDates;
-		UILabel ProjectNameLabel, CurrentTaskLabel, CurrentTaskNameLabel;
+		UILabel CurrentTaskLabel;
+		UIButton ProjectNameBtnLabel, CurrentTaskNameBtnLabel;
 		//Boolean isClicked = true;
 
 		public HomePageViewController (IntPtr handle) : base (handle)
@@ -34,6 +35,22 @@ namespace ProcessDashboard.iOS
 			};
 		}
 
+		public void ProjectLabelOnClick(object sender, EventArgs ea)
+		{
+			UIAlertController okAlertController = UIAlertController.Create("Oops", "not implemented", UIAlertControllerStyle.Alert);
+			okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
+			PresentViewController(okAlertController, true, null);
+			return;
+		}
+
+		public void TaskLabelOnClick(object sender, EventArgs ea)
+		{ 
+			UIAlertController okAlertController = UIAlertController.Create("Oops", "not implemented", UIAlertControllerStyle.Alert);
+			okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
+			PresentViewController(okAlertController, true, null);
+			return;
+		}
+
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
@@ -44,20 +61,14 @@ namespace ProcessDashboard.iOS
 
 			scrollView.ContentSize = View.Frame.Size;
 
-			ProjectNameLabel = new UILabel(new CGRect(10, 80, View.Bounds.Width-20, 40))
-			{
-				Text = "/ Project / Mobile App I1",
-				Font = UIFont.SystemFontOfSize(16),
-				TextColor = UIColor.Black,
-				TextAlignment = UITextAlignment.Center,
-				BackgroundColor = UIColor.FromRGB(220, 220, 220),
-				Lines = 0,
-				LineBreakMode = UILineBreakMode.WordWrap,
-			};
+			ProjectNameBtnLabel = new UIButton();
+			ProjectNameBtnLabel.Frame = new CGRect(10, 80, View.Bounds.Width - 20, 40);
+			ProjectNameBtnLabel.SetTitle("/ Project / Mobile App I1", UIControlState.Normal);
+			ProjectNameBtnLabel.BackgroundColor = UIColor.Gray;            
+			ProjectNameBtnLabel.AutoresizingMask = UIViewAutoresizing.All;
+			ProjectNameBtnLabel.TouchUpInside += ProjectLabelOnClick;
 
-			ProjectNameLabel.AutoresizingMask = UIViewAutoresizing.All;
-			// 
-			 CurrentTaskLabel = new UILabel(new CGRect(10, 130, 100, 20))
+			CurrentTaskLabel = new UILabel(new CGRect(10, 130, 100, 20))
 			{
 				Text = "Current Task:",
 				Font = UIFont.SystemFontOfSize(12),
@@ -68,18 +79,16 @@ namespace ProcessDashboard.iOS
 
 			CurrentTaskLabel.AutoresizingMask = UIViewAutoresizing.All;
 
-			CurrentTaskNameLabel = new UILabel(new CGRect(10, 160, View.Bounds.Width - 20, 60))
-			{
-				Text = "/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Team Walkthrough",
-				Font = UIFont.SystemFontOfSize(13),
-				TextColor = UIColor.Black,
-				TextAlignment = UITextAlignment.Center,
-				BackgroundColor = UIColor.FromRGB(220, 220, 220),
-				Lines = 0,
-				LineBreakMode = UILineBreakMode.WordWrap,
-			};
+			CurrentTaskNameBtnLabel = new UIButton();
+			CurrentTaskNameBtnLabel.Frame = new CGRect(10, 160, View.Bounds.Width - 20, 60);
+			CurrentTaskNameBtnLabel.SetTitle("/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Team Walkthrough", UIControlState.Normal);
+			CurrentTaskNameBtnLabel.TitleLabel.Lines = 2;
+			CurrentTaskNameBtnLabel.TitleLabel.AdjustsFontSizeToFitWidth = true;
+			CurrentTaskNameBtnLabel.TitleLabel.TextAlignment = UITextAlignment.Center;
+			CurrentTaskNameBtnLabel.BackgroundColor = UIColor.LightGray;
+			CurrentTaskNameBtnLabel.TouchUpInside += TaskLabelOnClick;
 
-			CurrentTaskNameLabel.AutoresizingMask = UIViewAutoresizing.All;
+			CurrentTaskNameBtnLabel.AutoresizingMask = UIViewAutoresizing.All;
 
 			stopButton = UIButton.FromType(UIButtonType.RoundedRect);
 			stopButton.SetImage(UIImage.FromFile("stop.png"), UIControlState.Normal);
@@ -152,11 +161,11 @@ namespace ProcessDashboard.iOS
 			scrollView.AddSubview(startButton);
 			scrollView.AddSubview(stopButton);
 			scrollView.AddSubview(checkButton);
-			scrollView.AddSubview(ProjectNameLabel);
+			scrollView.AddSubview(ProjectNameBtnLabel);
 			scrollView.AddSubview(CurrentTaskLabel);
 			scrollView.AddSubview(RecentTaskTable);
 			scrollView.AddSubview(RecentTasksLabel);
-			scrollView.AddSubview(CurrentTaskNameLabel);
+			scrollView.AddSubview(CurrentTaskNameBtnLabel);
 
 		}
 

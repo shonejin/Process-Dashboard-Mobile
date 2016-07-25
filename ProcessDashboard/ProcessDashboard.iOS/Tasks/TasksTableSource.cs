@@ -60,7 +60,14 @@ namespace ProcessDashboard.iOS
 			if (cell == null)
 				cell = new UITableViewCell(UITableViewCellStyle.Default, cellIdentifier);
 
-			cell.TextLabel.Text = tableItems[indexPath.Row].fullName;
+			if (true)
+			{
+				var attriStr = new NSAttributedString(tableItems[indexPath.Row].fullName, strikethroughStyle: NSUnderlineStyle.Single);
+				cell.TextLabel.AttributedText = attriStr;
+			}
+			else {
+				cell.TextLabel.Text = tableItems[indexPath.Row].fullName;
+			}
 
 			return cell;
 		}

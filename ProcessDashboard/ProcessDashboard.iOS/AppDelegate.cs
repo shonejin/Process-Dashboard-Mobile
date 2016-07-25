@@ -48,7 +48,7 @@ namespace ProcessDashboard.iOS
 
 		public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
 		{
-			if (isAuthenticated)
+			if (!isAuthenticated)
 			{
 				//We are already authenticated, so go to the main tab bar controller;
 				var tabBarController = GetViewController(MainStoryboard, "rootTabBarViewController");
