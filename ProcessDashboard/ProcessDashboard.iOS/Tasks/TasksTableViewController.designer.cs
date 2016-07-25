@@ -11,20 +11,19 @@ using UIKit;
 
 namespace ProcessDashboard.iOS
 {
-	[Register("TasksTableViewController")]
-	partial class TasksTableViewController
-	{
-		[Outlet]
-		[GeneratedCode("iOS Designer", "1.0")]
-		UIKit.UITableView tasksTableView { get; set; }
+    [Register ("TasksTableViewController")]
+    partial class TasksTableViewController
+    {
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UITableView tasksTableView { get; set; }
 
-		void ReleaseDesignerOutlets()
-		{
-			if (tasksTableView != null)
-			{
-				tasksTableView.Dispose();
-				tasksTableView = null;
-			}
-		}
-	}
+        void ReleaseDesignerOutlets ()
+        {
+            if (tasksTableView != null) {
+                tasksTableView.Dispose ();
+                tasksTableView = null;
+            }
+        }
+    }
 }

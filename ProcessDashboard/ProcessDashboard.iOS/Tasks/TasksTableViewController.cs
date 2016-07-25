@@ -18,12 +18,13 @@ using CoreGraphics;
 
 namespace ProcessDashboard.iOS
 {
-	public partial class TasksTableViewController : UITableViewController
+	public partial class TasksTableViewController : UIViewController
 	{
 		public string projectId;
 		public string projectName;
 		List<Task> tasksCache;
 		UILabel StaticLabel;
+		UIRefreshControl RefreshControl;
 
 		public TasksTableViewController(IntPtr handle) : base(handle)
 		{
@@ -33,7 +34,7 @@ namespace ProcessDashboard.iOS
 		{
 			base.ViewDidLoad();
 
-			StaticLabel = new UILabel(new CGRect(0, 0, View.Bounds.Width, 40))
+			StaticLabel = new UILabel(new CGRect(0, 60, View.Bounds.Width, 42))
 			{
 				Text = " ",
 				Font = UIFont.SystemFontOfSize(12),
@@ -45,13 +46,12 @@ namespace ProcessDashboard.iOS
 			};
 
 			StaticLabel.AutoresizingMask = UIViewAutoresizing.All;
-
-			tasksTableView.TableHeaderView = new UIView(new CGRect(0, 0, View.Bounds.Width, 40));
-			tasksTableView.TableHeaderView.AddSubview(StaticLabel);
-
-			this.RefreshControl = new UIRefreshControl();
-			this.RefreshControl.ValueChanged += (sender, e) => { refreshData(); };
+			View.AddSubview(StaticLabel);
+			RefreshControl = new UIRefreshControl();
+			tasksTableView.Add(RefreshControl);
+			RefreshControl.ValueChanged += (sender, e) => { refreshData(); };
 			refreshData();
+
 		}
 
 		public override void ViewDidAppear(bool animated)
@@ -59,12 +59,6 @@ namespace ProcessDashboard.iOS
 			base.ViewDidAppear(animated);
 			//refreshData();
 		}
-
-		//public override void ViewWillDisappear( bool animated)
-		//{
-		//	base.ViewWillDisappear(animated);
-		//	this.NavigationController.PopToRootViewController(true);
-		//}
 
 		public override void PrepareForSegue(UIKit.UIStoryboardSegue segue, Foundation.NSObject sender)
 		{
@@ -79,9 +73,9 @@ namespace ProcessDashboard.iOS
 
 		public async void refreshData()
 		{
-			if (!this.RefreshControl.Refreshing)
+			if (!RefreshControl.Refreshing)
 			{
-				this.RefreshControl.BeginRefreshing();
+				RefreshControl.BeginRefreshing();
 			}
 
 			await getDataOfTask();
@@ -103,7 +97,7 @@ namespace ProcessDashboard.iOS
 			}
 			String refreshTime = DateTime.Now.ToString("g");
 			String subTitle = "Last refresh: " + refreshTime;
-			this.RefreshControl.AttributedTitle = new Foundation.NSAttributedString(subTitle);
+			RefreshControl.AttributedTitle = new Foundation.NSAttributedString(subTitle);
 
 			tasksTableView.ReloadData();
 			// The scroll bar should be scrolled so that the first incomplete task is the first task in the screen.
