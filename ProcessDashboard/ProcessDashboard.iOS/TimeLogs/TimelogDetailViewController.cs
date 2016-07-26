@@ -248,8 +248,10 @@ namespace ProcessDashboard.iOS
 
 			//////
 			CommentText = new UIButton(UIButtonType.RoundedRect);
-			CommentText.SetTitle(currentTask.Task.TaskNote, UIControlState.Normal);
+			CommentText.SetTitle(currentTask.Comment ?? "No Comment", UIControlState.Normal);
 			CommentText.Frame = new CGRect(30, 430, 300, 30);
+			CommentText.SetTitleColor(UIColor.Blue, UIControlState.Normal);
+			CommentText.TitleLabel.TextAlignment = UITextAlignment.Center;
 			CommentText.TitleLabel.SizeToFit();
 
 			CommentText.TouchUpInside += (sender, e) =>
@@ -261,6 +263,8 @@ namespace ProcessDashboard.iOS
 				alert.AddButton("Save");
 				alert.Message = "Please enter new Comment";
 				alert.AlertViewStyle = UIAlertViewStyle.PlainTextInput;
+				UITextField textField = alert.GetTextField(0);
+				textField.Placeholder = currentTask.Comment ?? "No Comment"; 
 				alert.Clicked += CommentButtonClicked;
 				alert.Show();
 			};
