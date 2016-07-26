@@ -62,16 +62,21 @@ namespace ProcessDashboard.iOS
 			if (cell == null)
 				cell = new UITableViewCell(UITableViewCellStyle.Default, cellIdentifier);
 
-/*
-			if (true)
+
+			if (!tableItems[indexPath.Row].CompletionDate.ToShortDateString().Equals("1/1/0001"))
 			{
-				var attriStr = new NSAttributedString(tableItems[indexPath.Row].fullName, strikethroughStyle: NSUnderlineStyle.Single);
+				var attriStr = new NSAttributedString(tableItems[indexPath.Row].FullName, strikethroughStyle: NSUnderlineStyle.Single);
 				cell.TextLabel.AttributedText = attriStr;
 			}
 			else {
-				cell.TextLabel.Text = tableItems[indexPath.Row].fullName;
+				cell.TextLabel.Text = tableItems[indexPath.Row].FullName;
 			}
-*/
+			cell.TextLabel.Font = UIFont.SystemFontOfSize(13);
+			cell.TextLabel.Lines = 0;
+			cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
+			cell.TextLabel.TextColor = UIColor.Black;
+			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
+
 			//if (isFirst && tableItems[indexPath.Row].completionDate.ToShortDateString().Equals("1/1/0001"))
 			//{
 			//	firstIncompleteTaskPos = indexPath.Row;
@@ -79,12 +84,12 @@ namespace ProcessDashboard.iOS
 			//	isFirst = false;
 			//}
 			//Console.WriteLine(isFirst + "Outside Line:" + indexPath.Row);
-			cell.TextLabel.Text = tableItems[indexPath.Row].FullName;
-			cell.TextLabel.Font = UIFont.SystemFontOfSize(13);
-			cell.TextLabel.Lines = 0;
-			cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
-			cell.TextLabel.TextColor = UIColor.Black;
-			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
+			//cell.TextLabel.Text = tableItems[indexPath.Row].FullName;
+			//cell.TextLabel.Font = UIFont.SystemFontOfSize(13);
+			//cell.TextLabel.Lines = 0;
+			//cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
+			//cell.TextLabel.TextColor = UIColor.Black;
+			//cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
 
 
 			return cell;

@@ -352,13 +352,10 @@ namespace ProcessDashboard.iOS
 				this.DeltaText.ResignFirstResponder();
 			});
 
-	
 			toolbar.SetItems(new UIBarButtonItem[] { cancelButton, spacer, saveButton}, true);
 
 			this.DeltaText.InputView = DeltaPicker;
 			this.DeltaText.InputAccessoryView = toolbar;
-
-
 
 			////// Int Picker
 			IntPicker = new UIPickerView(new CoreGraphics.CGRect(10f, this.View.Frame.Height - 200, this.View.Frame.Width - 20, 200f));

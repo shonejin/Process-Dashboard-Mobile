@@ -24,7 +24,8 @@ namespace ProcessDashboard.iOS
 		public string projectName;
 		List<Task> tasksCache;
 		UILabel StaticLabel;
-		UIRefreshControl RefreshControl;
+		// TODO: Fixed the Refreshcontrol, refreshing the list of tasks.
+		//UIRefreshControl RefreshControl;
 
 		public TasksTableViewController(IntPtr handle) : base(handle)
 		{
@@ -44,12 +45,13 @@ namespace ProcessDashboard.iOS
 				Lines = 0,
 				LineBreakMode = UILineBreakMode.WordWrap,
 			};
-
+			tasksTableView.Frame = new CGRect(0, 42, View.Bounds.Width, View.Bounds.Height - 42);
 			StaticLabel.AutoresizingMask = UIViewAutoresizing.All;
 			View.AddSubview(StaticLabel);
-			RefreshControl = new UIRefreshControl();
-			tasksTableView.Add(RefreshControl);
-			RefreshControl.ValueChanged += (sender, e) => { refreshData(); };
+			// TODO: Fixed the Refreshcontrol, refreshing the list of tasks.
+			//RefreshControl = new UIRefreshControl();
+			//tasksTableView.Add(RefreshControl);
+			//RefreshControl.ValueChanged += (sender, e) => { refreshData(); };
 			refreshData();
 
 		}
@@ -73,10 +75,11 @@ namespace ProcessDashboard.iOS
 
 		public async void refreshData()
 		{
-			if (!RefreshControl.Refreshing)
-			{
-				RefreshControl.BeginRefreshing();
-			}
+			// TODO: Fixed the Refreshcontrol, refreshing the list of tasks.
+			//if (!RefreshControl.Refreshing)
+			//{
+			//	RefreshControl.BeginRefreshing();
+			//}
 
 			await getDataOfTask();
 
@@ -90,14 +93,21 @@ namespace ProcessDashboard.iOS
 			{
 				if (tasksCache[i].CompletionDate.ToShortDateString().Equals("1/1/0001"))
 				{
-					pos = i;
+					if (i <= 4)
+					{
+						pos = i;
+					}
+					else {
+						pos = i - 4;
+					}
 					break;
 				}
 
 			}
 			String refreshTime = DateTime.Now.ToString("g");
 			String subTitle = "Last refresh: " + refreshTime;
-			RefreshControl.AttributedTitle = new Foundation.NSAttributedString(subTitle);
+			// TODO: Fixed the Refreshcontrol, refreshing the list of tasks.
+			//RefreshControl.AttributedTitle = new Foundation.NSAttributedString(subTitle);
 
 			tasksTableView.ReloadData();
 			// The scroll bar should be scrolled so that the first incomplete task is the first task in the screen.
@@ -105,10 +115,11 @@ namespace ProcessDashboard.iOS
 			{
 				tasksTableView.ScrollToRow(NSIndexPath.FromRowSection(pos, 0), UITableViewScrollPosition.Top, true);
 			}
-			if (this.RefreshControl.Refreshing)
-			{
-				this.RefreshControl.EndRefreshing();
-			}
+			// TODO: Fixed the Refreshcontrol, refreshing the list of tasks.
+			//if (this.RefreshControl.Refreshing)
+			//{
+			//	this.RefreshControl.EndRefreshing();
+			//}
 		}
 
 
