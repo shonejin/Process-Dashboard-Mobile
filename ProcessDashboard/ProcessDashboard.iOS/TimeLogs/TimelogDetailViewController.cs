@@ -211,16 +211,15 @@ namespace ProcessDashboard.iOS
 			int newH = (int)currentTask.InterruptTime / 60;
 			int newM = (int)currentTask.InterruptTime % 60;
 			string tempH = null, tempM = null;
-			if (newH < 10)
-			{
-				tempH = "0" + newH.ToString();
-			}
+
+			tempH = newH.ToString();
+
 			if (newM < 10)
 			{
 				tempM = "0" + newM.ToString();
 			}
 			else {
-				tempH = newH.ToString();
+				
 				tempM = newM.ToString();
 			}
 
@@ -282,14 +281,7 @@ namespace ProcessDashboard.iOS
 
 			for (int i = 0; i < hours.Length; i++)
 			{
-				if (i < 10)
-				{
-					hours[i] = "0" + i.ToString();
-				}
-				else
-				{
-					hours[i] = i.ToString();
-				}
+	            hours[i] = i.ToString();
 
 			}
 			for (int i = 0; i < minutes.Length; i++)
@@ -307,9 +299,17 @@ namespace ProcessDashboard.iOS
 
 			int h = (int)currentTask.LoggedTime / 60;
 			int m = (int)currentTask.LoggedTime % 60;
-
 			this.deltaSelectedHour = h.ToString();
-			this.deltaSelectedMinute = m.ToString();
+
+			if (m < 10)
+			{
+				this.deltaSelectedMinute = "0" + m.ToString();
+			}
+			else {
+				this.deltaSelectedMinute = m.ToString();
+			}
+
+
 
 			deltaModel.NumberSelected += (Object sender,EventArgs e) =>
 			{
@@ -373,7 +373,14 @@ namespace ProcessDashboard.iOS
 			int mm = (int)currentTask.InterruptTime % 60;
 
 			this.intSelectedHour = hh.ToString();
-			this.intSelectedMinute = mm.ToString();
+
+			if (mm < 10)
+			{
+				this.intSelectedMinute = "0" + mm.ToString();
+			}
+			else {
+				this.intSelectedMinute = mm.ToString();
+			}
 
 			intModel.NumberSelected += (Object sender, EventArgs e) =>
 			{
@@ -398,6 +405,9 @@ namespace ProcessDashboard.iOS
 			(s, e) =>
 			{
 				this.IntText.Text = this.intSelectedHour + ":" + this.intSelectedMinute;
+				Console.WriteLine("haha" + this.intSelectedHour);
+				Console.WriteLine("hehe" + this.intSelectedMinute);
+
 				this.IntText.ResignFirstResponder();
 			});
 
@@ -435,16 +445,15 @@ namespace ProcessDashboard.iOS
 		    int newHour = (int)currentTask.LoggedTime / 60;
 			int newMin = (int)currentTask.LoggedTime % 60;
 			string newH = null, newM = null;
-			if (newHour < 10)
-			{
-				newH = "0" + newHour.ToString();
-			}
+
+			newH = newHour.ToString();
+
 			if (newMin < 10)
 			{
 				newM = "0" + newMin.ToString();
 			}
 			else {
-				newH = newHour.ToString();
+				
 				newM = newMin.ToString();
 			}
 				
