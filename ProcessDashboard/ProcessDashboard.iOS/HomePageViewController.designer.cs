@@ -16,35 +16,76 @@ namespace ProcessDashboard.iOS
     {
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UIButton checkButton { get; set; }
+        UIKit.UIButton completeBtn { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UITableView RecentTaskTable { get; set; }
+        UIKit.UILabel currentTaskLabel { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UIScrollView ScrollView { get; set; }
+        UIKit.UIButton pauseBtn { get; set; }
 
-        [Action ("CheckButton_TouchUpInside:")]
+        [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        partial void CheckButton_TouchUpInside (UIKit.UIButton sender);
+        UIKit.UIButton playBtn { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIButton projectNameBtn { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UILabel recentTasksLabel { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UITableView recentTaskTableView { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIButton taskNameBtn { get; set; }
 
         void ReleaseDesignerOutlets ()
         {
-            if (checkButton != null) {
-                checkButton.Dispose ();
-                checkButton = null;
+            if (completeBtn != null) {
+                completeBtn.Dispose ();
+                completeBtn = null;
             }
 
-            if (RecentTaskTable != null) {
-                RecentTaskTable.Dispose ();
-                RecentTaskTable = null;
+            if (currentTaskLabel != null) {
+                currentTaskLabel.Dispose ();
+                currentTaskLabel = null;
             }
 
-            if (ScrollView != null) {
-                ScrollView.Dispose ();
-                ScrollView = null;
+            if (pauseBtn != null) {
+                pauseBtn.Dispose ();
+                pauseBtn = null;
+            }
+
+            if (playBtn != null) {
+                playBtn.Dispose ();
+                playBtn = null;
+            }
+
+            if (projectNameBtn != null) {
+                projectNameBtn.Dispose ();
+                projectNameBtn = null;
+            }
+
+            if (recentTasksLabel != null) {
+                recentTasksLabel.Dispose ();
+                recentTasksLabel = null;
+            }
+
+            if (recentTaskTableView != null) {
+                recentTaskTableView.Dispose ();
+                recentTaskTableView = null;
+            }
+
+            if (taskNameBtn != null) {
+                taskNameBtn.Dispose ();
+                taskNameBtn = null;
             }
         }
     }

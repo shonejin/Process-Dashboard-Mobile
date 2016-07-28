@@ -3,9 +3,9 @@ namespace ProcessDashboard
 {
 	public class Stopwatch
 	{
-		private DateTime firstStartTime = new DateTime(0);
-		private DateTime startTime = new DateTime(0);
-		private DateTime stopTime = new DateTime(0);
+		private DateTime firstStartTime = new DateTime(0, DateTimeKind.Utc);
+		private DateTime startTime = new DateTime(0, DateTimeKind.Utc);
+		private DateTime stopTime = new DateTime(0, DateTimeKind.Utc);
 		private long loggedMillis = 0;
 		private long interruptMillis = 0;
 		private const double MINUTES = 60000.0;
@@ -19,7 +19,7 @@ namespace ProcessDashboard
 		{
 			if (startTime.Ticks == 0)
 			{
-				startTime = DateTime.Now;
+				startTime = DateTime.UtcNow;
 				if (firstStartTime.Ticks == 0)
 				{
 					firstStartTime = startTime;
@@ -33,7 +33,7 @@ namespace ProcessDashboard
 
 		public void stop()
 		{
-			stopAsOf(DateTime.Now);
+			stopAsOf(DateTime.UtcNow);
 		}
 
 		private void stopAsOf(DateTime when)
@@ -42,7 +42,7 @@ namespace ProcessDashboard
 			{
 				stopTime = when;
 				loggedMillis += (long)(stopTime - startTime).TotalMilliseconds;
-				startTime = new DateTime(0);
+				startTime = new DateTime(0, DateTimeKind.Utc);
 			}
 		}
 
@@ -58,9 +58,9 @@ namespace ProcessDashboard
 
 		public void reset()
 		{
-			firstStartTime = new DateTime(0);
-			startTime = new DateTime(0);
-			stopTime = new DateTime(0);
+			firstStartTime = new DateTime(0, DateTimeKind.Utc);
+			startTime = new DateTime(0, DateTimeKind.Utc);
+			stopTime = new DateTime(0, DateTimeKind.Utc);
 			loggedMillis = 0;
 			interruptMillis = 0;
 		}
@@ -85,7 +85,7 @@ namespace ProcessDashboard
 			long time = (long)(loggedMillis / MINUTES);
 			if (isRunning())
 			{
-				time += (long)(DateTime.Now - startTime).TotalMinutes;
+				time += (long)(DateTime.UtcNow - startTime).TotalMinutes;
 			}
 			Console.WriteLine("return: " + time);
 			return time;
@@ -105,8 +105,8 @@ namespace ProcessDashboard
 		{
 			if (isRunning())
 			{
-				Console.WriteLine("getTrailingLoggedMinutes: from " + startTime.ToString() + " has minutes: " + (DateTime.Now - startTime).TotalMinutes);
-				return (DateTime.Now - startTime).TotalMinutes;
+				Console.WriteLine("getTrailingLoggedMinutes: from " + startTime.ToString() + " has minutes: " + (DateTime.UtcNow - startTime).TotalMinutes);
+				return (DateTime.UtcNow - startTime).TotalMinutes;
 			}
 			else
 			{
@@ -119,7 +119,7 @@ namespace ProcessDashboard
 		{
 			if (isPaused() && stopTime.Ticks != 0)
 			{
-				return (DateTime.Now - stopTime).TotalMinutes;
+				return (DateTime.UtcNow - stopTime).TotalMinutes;
 			}
 			else
 			{
@@ -136,13 +136,13 @@ namespace ProcessDashboard
 			}
 			double minutesToCancel = trailingLoggedMinutes - maxTrailingLoggedMinutes;
 			long millisToCancel = (long)(minutesToCancel * MINUTES);
-			DateTime cancelTime = DateTime.Now.AddMilliseconds(-millisToCancel);
+			DateTime cancelTime = DateTime.UtcNow.AddMilliseconds(-millisToCancel);
 			cancelTimingAsOf(cancelTime);
 		}
 
 		public void cancelTimingAsOf(DateTime cancellationTime)
 		{
-			DateTime now = DateTime.Now;
+			DateTime now = DateTime.UtcNow;
 			if (cancellationTime > now)
 			{
 				cancellationTime = now;
@@ -166,7 +166,7 @@ namespace ProcessDashboard
 							interruptMillis = 0;
 						}
 					}
-					startTime = new DateTime(0);
+					startTime = new DateTime(0, DateTimeKind.Utc);
 				}
 			}
 

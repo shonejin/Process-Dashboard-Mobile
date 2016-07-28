@@ -21,90 +21,70 @@ namespace ProcessDashboard.iOS
 {
     public partial class HomePageViewController : UIViewController
     {
-		UIScrollView scrollView;
-		UIButton playButton, pauseButton;
-		UIButton ProjectNameBtn, CurrentTaskNameBtn;
-		UILabel CurrentTaskLabel;
+		Project currentProject;
+		DTO.Task currentTask;
 		List<DTO.Task> RecentTaskItems;
 		TimeLoggingController timeLoggingController;
+		Controller c;
+		UIActivityIndicatorView activityView;
 
 		public HomePageViewController(IntPtr handle) : base(handle)
+		{}
+
+		public void ProjectNameBtnOnClick(object sender, EventArgs ea)
 		{
-			
+			if (currentProject != null)
+			{
+				PerformSegue("home2TasksSegue", this);
+			}
 		}
 
-		public void ProjectLabelOnClick(object sender, EventArgs ea)
+		public void TaskNameBtnOnClick(object sender, EventArgs ea)
 		{
-			UIAlertController okAlertController = UIAlertController.Create("Oops", "not implemented", UIAlertControllerStyle.Alert);
-			okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
-			PresentViewController(okAlertController, true, null);
-			return;
-		}
-
-		public void TaskLabelOnClick(object sender, EventArgs ea)
-		{ 
-			UIAlertController okAlertController = UIAlertController.Create("Oops", "not implemented", UIAlertControllerStyle.Alert);
-			okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
-			PresentViewController(okAlertController, true, null);
-			return;
+			if (currentTask != null)
+			{
+				PerformSegue("homeTask2TaskDetails", this);
+			}
 		}
 
 		public void PauseBtnOnClick(object sender, EventArgs ea)
 		{
-			try
-			{
-				timeLoggingController.stopTiming();
-				pauseButton.Enabled = false;
-				playButton.Enabled = true;
-			}
-
-			// TODO: we can't received this exception here
-			// all exceptions are handled before here
-			// if we pass back exceptions, we can't guarentee that we can handle all of them, because some are not called by UI
-			// the controller automatically retry saving to the server. If so, what do we show in the UI?
-			catch (CannotReachServerException e)
-			{
-				UIAlertController okAlertController = UIAlertController.Create("Cannot Reach Server", "Please check network connection and server availability and try again", UIAlertControllerStyle.Alert);
-				okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
-				PresentViewController(okAlertController, true, null);
-			}
-
-			return;
+			timeLoggingController.stopTiming();
+			pauseBtn.SetImage(UIImage.FromBundle("pause-activated"), UIControlState.Normal);
+			pauseBtn.Enabled = false;
+			playBtn.SetImage(UIImage.FromBundle("play-deactivated"), UIControlState.Normal);
+			playBtn.Enabled = true;
 		}
 
 		public void PlayBtnOnClick(object sender, EventArgs ea)
 		{
-			try
+			if (timeLoggingController.wasNetworkAvailable)
 			{
-				timeLoggingController.startTiming(RecentTaskItems[0].Id);
-				playButton.Enabled = false;
-				pauseButton.Enabled = true;
-			}
-			catch (CannotReachServerException e)
-			{
-				UIAlertController okAlertController = UIAlertController.Create("Cannot Reach Server", "Please check network connection and server availability and try again", UIAlertControllerStyle.Alert);
-				okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
-				PresentViewController(okAlertController, true, null);
-			}
-
-			return;
-		}
-
-		public void CheckboxBtnOnClick(object sender, EventArgs ea)
-		{
-			
-			DatePickerButtonTapped(sender, ea);
-		}
-
-		public void CheckBtnShowIcon(bool completed)
-		{
-			if (completed)
-			{
-				checkButton.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Selected);
+				timeLoggingController.startTiming(currentTask.Id);
+				pauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
+				pauseBtn.Enabled = true;
+				playBtn.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Normal);
+				playBtn.Enabled = false;
 			}
 			else
 			{
-				checkButton.SetImage(UIImage.FromBundle("checkbox-empty"), UIControlState.Normal);
+				UIAlertController okAlertController = UIAlertController.Create("Oops", "The previous time log is not yet updated to the server. Please try again later.", UIAlertControllerStyle.Alert);
+				okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
+				PresentViewController(okAlertController, true, null);
+				return;
+			}
+		}
+
+		public void CompleteBtnOnClick(object sender, EventArgs ea)
+		{
+			DatePickerButtonTapped(sender, ea);
+		}
+
+		private void timeLoggingStateChanged(object sender, StateChangedEventArgs ea)
+		{
+			if (ea.NewState.Equals(TimeLoggingControllerStates.TimeLogCanceled))
+			{
+				refreshControlButtons();
 			}
 		}
 
@@ -112,88 +92,38 @@ namespace ProcessDashboard.iOS
 		{
 			base.ViewDidLoad();
 
-			timeLoggingController = new TimeLoggingController();
+			timeLoggingController = TimeLoggingController.GetInstance();
+			timeLoggingController.TimeLoggingStateChanged += new StateChangedEventHandler(timeLoggingStateChanged);
 
-			scrollView = new UIScrollView(
-			new CGRect(0, 0, View.Frame.Width, View.Frame.Height));
-						View.AddSubview(scrollView);
+			var apiService = new ApiTypes(null);
+			var service = new PDashServices(apiService);
+			c = new Controller(service);
 
-			scrollView.ContentSize = View.Frame.Size;
+			activityView = new UIActivityIndicatorView(UIActivityIndicatorViewStyle.WhiteLarge);
+			activityView.Center = View.Center;
 
+			pauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
+			pauseBtn.Enabled = true;
+			pauseBtn.TouchUpInside += PauseBtnOnClick;
 
-			ProjectNameBtn = new UIButton();
-			ProjectNameBtn.Frame = new CGRect(10, 80, View.Bounds.Width - 20, 40);
-			ProjectNameBtn.SetTitle("/ Project / Mobile App I1", UIControlState.Normal);
-			ProjectNameBtn.BackgroundColor = UIColor.Gray;            
-			ProjectNameBtn.AutoresizingMask = UIViewAutoresizing.All;
-			ProjectNameBtn.TouchUpInside += ProjectLabelOnClick;
+			playBtn.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Normal);
+			playBtn.Enabled = false;
+			playBtn.TouchUpInside += PlayBtnOnClick;
 
-			CurrentTaskLabel = new UILabel(new CGRect(10, 130, 100, 20))
-			{
-				Text = "Current Task:",
-				Font = UIFont.SystemFontOfSize(12),
-				TextColor = UIColor.Black,
-				TextAlignment = UITextAlignment.Left,
-				//BackgroundColor = UIColor.LightGray,
-			};
-			CurrentTaskLabel.AutoresizingMask = UIViewAutoresizing.All;
+			completeBtn.TouchUpInside += CompleteBtnOnClick;
 
-			CurrentTaskNameBtn = new UIButton();
-			CurrentTaskNameBtn.Frame = new CGRect(10, 160, View.Bounds.Width - 20, 60);
-			CurrentTaskNameBtn.SetTitle("/ Project / Mobile App I1 / High Level Design Document / View Logic / UI experiment / Team Walkthrough", UIControlState.Normal);
-			CurrentTaskNameBtn.TitleLabel.Lines = 2;
-			CurrentTaskNameBtn.TitleLabel.AdjustsFontSizeToFitWidth = true;
-			CurrentTaskNameBtn.TitleLabel.TextAlignment = UITextAlignment.Center;
-			CurrentTaskNameBtn.BackgroundColor = UIColor.LightGray;
-			CurrentTaskNameBtn.TouchUpInside += TaskLabelOnClick;
+			projectNameBtn.TitleLabel.TextAlignment = UITextAlignment.Center;
+			projectNameBtn.TitleLabel.Lines = 2;
+			projectNameBtn.TitleLabel.AdjustsFontSizeToFitWidth = true;
 
-			CurrentTaskNameBtn.AutoresizingMask = UIViewAutoresizing.All;
+			taskNameBtn.TitleLabel.TextAlignment = UITextAlignment.Center;
+			taskNameBtn.TitleLabel.Lines = 3;
+			taskNameBtn.TitleLabel.AdjustsFontSizeToFitWidth = true;
 
-			pauseButton = UIButton.FromType(UIButtonType.RoundedRect);
-			pauseButton.ImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
-			pauseButton.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
-			pauseButton.SetImage(UIImage.FromBundle("pause-activated"), UIControlState.Disabled);
-			pauseButton.Enabled = false; // init state: not started. pause is activated
-			pauseButton.Frame = new CGRect(50, 230, 60, 60);
+			projectNameBtn.TouchUpInside += ProjectNameBtnOnClick;
+			taskNameBtn.TouchUpInside += TaskNameBtnOnClick;
 
-			pauseButton.TouchUpInside += PauseBtnOnClick;
-
-			playButton = UIButton.FromType(UIButtonType.RoundedRect);
-			playButton.ImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
-			playButton.SetImage(UIImage.FromBundle("play-deactivated"), UIControlState.Normal);
-			playButton.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Disabled);
-			playButton.Enabled = true;	// init state: not started. play can be clicked
-			playButton.Frame = new CGRect(120, 230, 60, 60);
-			playButton.TouchUpInside += PlayBtnOnClick;
-	
-			checkButton = UIButton.FromType(UIButtonType.Custom);
-			checkButton.Frame = new CGRect(310, 230, 60, 60);
-			checkButton.TouchUpInside += CheckboxBtnOnClick;
-
-			var RecentTasksLabel = new UILabel(new CGRect(10, 280, 100, 20))
-			{
-				Text = "Recent Tasks:",
-				Font = UIFont.SystemFontOfSize(12),
-				TextColor = UIColor.Black,
-				TextAlignment = UITextAlignment.Left
-			};
-
-			RecentTasksLabel.AutoresizingMask = UIViewAutoresizing.All;
-
-			RecentTaskTable = new UITableView(new CGRect(0, 310, View.Bounds.Width, View.Bounds.Height - 310 ));
 			refreshData();
-			RecentTaskTable.AutoresizingMask = UIViewAutoresizing.All;
-
-			scrollView.AddSubview(RecentTaskTable);
-			scrollView.AddSubview(playButton);
-			scrollView.AddSubview(pauseButton);
-			scrollView.AddSubview(checkButton);
-			scrollView.AddSubview(ProjectNameBtn);
-			scrollView.AddSubview(CurrentTaskLabel);
-			scrollView.AddSubview(RecentTaskTable);
-			scrollView.AddSubview(RecentTasksLabel);
-			scrollView.AddSubview(CurrentTaskNameBtn);
-
 		}
 
 		public override void ViewDidAppear(bool animated)
@@ -202,43 +132,85 @@ namespace ProcessDashboard.iOS
 			refreshData();
 		}
 
-		public async void refreshData()
+		private void refreshControlButtons()
 		{
-			await GetRecentTasksData();
+			if (currentTask == null)
+			{
+				pauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
+				playBtn.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Normal);
+				completeBtn.SetImage(UIImage.FromBundle("checkbox-empty"), UIControlState.Normal);
+				pauseBtn.Enabled = false;
+				playBtn.Enabled = false;
+				completeBtn.Enabled = false;
+			}
+			else
+			{
+				if (currentTask.CompletionDate.Ticks > 0)
+				{
+					completeBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
+				}
+				else
+				{
+					completeBtn.SetImage(UIImage.FromBundle("checkbox-empty"), UIControlState.Normal);
+				}
+				completeBtn.Enabled = true;
 
-			ProjectNameBtn.TitleLabel.Text = RecentTaskItems[0].Project.Name;
-			CurrentTaskNameBtn.TitleLabel.Text = RecentTaskItems[0].FullName;
-
-			RecentTaskTable.Source = new TaskTableSource(RecentTaskItems.GetRange(1,RecentTaskItems.Count-1), this);
-			RecentTaskTable.ReloadData();
+				if (timeLoggingController.isTimerRunning())
+				{
+					pauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
+					playBtn.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Normal);
+					pauseBtn.Enabled = true;
+					playBtn.Enabled = false;
+				}
+				else
+				{ 
+					pauseBtn.SetImage(UIImage.FromBundle("pause-activated"), UIControlState.Normal);
+					playBtn.SetImage(UIImage.FromBundle("play-deactivated"), UIControlState.Normal);
+					pauseBtn.Enabled = false;
+					playBtn.Enabled = true;
+				}
+			}
 		}
 
-		public async System.Threading.Tasks.Task<int> GetRecentTasksData()
+		public async void refreshData()
 		{
-			var apiService = new ApiTypes(null);
-			var service = new PDashServices(apiService);
-			Controller c = new Controller(service);
-			List<DTO.Task> projectsList = await c.GetRecentTasks(Settings.GetInstance().Dataset);
-			RecentTaskItems = projectsList;
+			activityView.StartAnimating();
+			activityView.Hidden = false;
+
+			projectNameBtn.SetTitle("loading current project ...", UIControlState.Normal);
+			taskNameBtn.SetTitle("loading current task ...", UIControlState.Normal);
 
 			try
 			{
-				System.Diagnostics.Debug.WriteLine("** LIST OF RECENT TASKS **");
-				System.Diagnostics.Debug.WriteLine("Length is " + projectsList.Count);
+				await GetRecentTasksData();
 
-				foreach (var proj in projectsList.Select(x => x.FullName))
-				{
-					System.Diagnostics.Debug.WriteLine(proj);
+				currentProject = RecentTaskItems[0].Project;
+				currentTask = RecentTaskItems[0];
 
-				}
+				projectNameBtn.SetTitle(currentProject.Name, UIControlState.Normal);
+				taskNameBtn.SetTitle(currentTask.FullName, UIControlState.Normal);
 
+				refreshControlButtons();
+
+				recentTaskTableView.Source = new TaskTableSource(RecentTaskItems.GetRange(1, RecentTaskItems.Count - 1), this);
+				recentTaskTableView.ReloadData();
 			}
 			catch (Exception e)
 			{
 				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
 			}
-			return 0;
+			finally
+			{
+				activityView.StopAnimating();
+				activityView.Hidden = true;
+			}
+		}
 
+		public async System.Threading.Tasks.Task<int> GetRecentTasksData()
+		{
+			List<DTO.Task> projectsList = await c.GetRecentTasks(Settings.GetInstance().Dataset);
+			RecentTaskItems = projectsList;
+			return 0;
 		}
 
 		async void DatePickerButtonTapped(object sender, EventArgs e)
@@ -252,7 +224,7 @@ namespace ProcessDashboard.iOS
 				ModalPresentationStyle = UIModalPresentationStyle.Custom
 			};
 
-			if (checkButton.Selected == true)
+			if (completeBtn.Selected == true)
 			{
 				modalPicker.DoneButtonText = "Mark Complete";  // it will save the time to the DB
 				modalPicker.CancelButtonText = "Mark Incomplete"; // the icon needs to change
@@ -272,45 +244,40 @@ namespace ProcessDashboard.iOS
 					DateFormat = "MMMM dd, HH mm"
 				};
 
-				if (checkButton.Selected == false)
+				if (completeBtn.Selected == false)
 				{
-					checkButton.Selected = !checkButton.Selected;
-					var apiService = new ApiTypes(null);
-					var service = new PDashServices(apiService);
-					Controller c = new Controller(service);
-					//List<DTO.Task> projectsList = await //GetRecentTasks(Settings.GetInstance().Dataset);
 				}
-				//Console.WriteLine("after" + checkBtnStatus);
-				CurrentTaskLabel.Text = dateFormatter.ToString(modalPicker.DatePicker.Date);
-
-
-
 			};
 
 			// When user clicks Cancel and the task has been mark as completed
-			if (checkButton.Selected == true)
+			if (completeBtn.Selected == true)
 			{
-				checkButton.Selected = !checkButton.Selected;
+				completeBtn.Selected = !completeBtn.Selected;
 			}
 				
 			await PresentViewControllerAsync(modalPicker, true);
 		}
 
-
+			
 		public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)
 		{
 			base.PrepareForSegue(segue, sender);
-
-			// set the View Controller that’s powering the screen we’re
-			// transitioning to task detail screen
 			if (segue.Identifier == "home2taskDetailsSegue")
 			{
 				TaskDetailsViewController controller = (TaskDetailsViewController)segue.DestinationViewController;
-				controller.task = ((TaskTableSource)RecentTaskTable.Source).selectedTask;
+				controller.task = ((TaskTableSource)recentTaskTableView.Source).selectedTask;
 			}
-
+			else if (segue.Identifier.Equals("home2TasksSegue"))
+			{
+				TasksTableViewController controller = (TasksTableViewController)segue.DestinationViewController;
+				controller.projectId = currentProject.Id;
+				controller.projectName = currentProject.Name;
+			}
+			else if (segue.Identifier.Equals("homeTask2TaskDetails"))
+			{ 
+				TaskDetailsViewController controller = (TaskDetailsViewController)segue.DestinationViewController;
+				controller.task = currentTask;
+			}
 		}
-
-
     }
 }

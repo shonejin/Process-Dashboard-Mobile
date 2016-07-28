@@ -178,12 +178,33 @@
     <ImageAsset Include="Resources\Images.xcassets\pause-deactivated.imageset\Contents.json" />
     <ImageAsset Include="Resources\Images.xcassets\play-activated.imageset\play-activated.png" />
     <ImageAsset Include="Resources\Images.xcassets\play-deactivated.imageset\play-deactivated.png" />
-    <ImageAsset Include="Resources\Images.xcassets\pause-deactivated.imageset\pause-deactivated.png" />
     <ImageAsset Include="Resources\Images.xcassets\checkbox-checked.imageset\Contents.json" />
     <ImageAsset Include="Resources\Images.xcassets\checkbox-empty.imageset\Contents.json" />
-    <ImageAsset Include="Resources\Images.xcassets\checkbox-empty.imageset\checkbox-empty.png" />
     <ImageAsset Include="Resources\Images.xcassets\play-deactivated.imageset\play-activated copy.png" />
     <ImageAsset Include="Resources\Images.xcassets\pause-activated.imageset\stop.png" />
+    <ImageAsset Include="Resources\Images.xcassets\checkbox-checked.imageset\checkbox-checked.png" />
+    <ImageAsset Include="Resources\Images.xcassets\checkbox-unchecked.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\checkbox-unchecked.imageset\checkbox-unchecked.png" />
+    <ImageAsset Include="Resources\Images.xcassets\pause-activated.imageset\pause-activated.png" />
+    <ImageAsset Include="Resources\Images.xcassets\pause-deactivated.imageset\pause-deactivated.png" />
+    <ImageAsset Include="Resources\Images.xcassets\play-activated.imageset\play-deactivated copy.png" />
+    <ImageAsset Include="Resources\Images.xcassets\home_tab_icon.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\home_tab_icon.imageset\tab_home.png" />
+    <ImageAsset Include="Resources\Images.xcassets\list_tab_icon.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\list_tab_icon.imageset\tab-list.png" />
+    <ImageAsset Include="Resources\Images.xcassets\log_tab_icon.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\log_tab_icon.imageset\tab-timelogs2.png" />
+    <ImageAsset Include="Resources\Images.xcassets\log_tab_icon_2.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\log_tab_icon_2.imageset\tab-timelogs.png" />
+    <ImageAsset Include="Resources\Images.xcassets\home_tab_icon.imageset\tab_home-3x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\home_tab_icon.imageset\tab_home-2x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\list_tab_icon.imageset\tab-list-3x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\list_tab_icon.imageset\tab-list-2x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\log_tab_icon.imageset\tab-timelogs2-3x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\log_tab_icon.imageset\tab-timelogs2-2x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\log_tab_icon_2.imageset\tab-timelogs-3x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\log_tab_icon_2.imageset\tab-timelogs-2x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\checkbox-empty.imageset\checkbox-empty.png" />
   </ItemGroup>
   <ItemGroup>
     <ITunesArtwork Include="Resources\ITunesArtwork" />
@@ -276,6 +297,11 @@
     <Folder Include="Resources\Images.xcassets\pause-deactivated.imageset\" />
     <Folder Include="Resources\Images.xcassets\checkbox-checked.imageset\" />
     <Folder Include="Resources\Images.xcassets\checkbox-empty.imageset\" />
+    <Folder Include="Resources\Images.xcassets\checkbox-unchecked.imageset\" />
+    <Folder Include="Resources\Images.xcassets\home_tab_icon.imageset\" />
+    <Folder Include="Resources\Images.xcassets\list_tab_icon.imageset\" />
+    <Folder Include="Resources\Images.xcassets\log_tab_icon.imageset\" />
+    <Folder Include="Resources\Images.xcassets\log_tab_icon_2.imageset\" />
   </ItemGroup>
   <Import Project="..\ProcessDashboard\ProcessDashboard.projitems" Label="Shared" Condition="Exists('..\ProcessDashboard\ProcessDashboard.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

@@ -10,7 +10,10 @@ namespace ProcessDashboard.iOS
 	{
 
 		List<Task> TableItems;
-		string CellIdentifier = "TableCell";
+		List<Task> TasksSorted;
+		List<string> ProjectNames;
+		List<string> ProjectIDs;
+		string CellIdentifier = "RecentTaskCell";
 		HomePageViewController tvcontroller;
 		public Task selectedTask;
 
@@ -18,12 +21,43 @@ namespace ProcessDashboard.iOS
 		{
 			this.tvcontroller = tvcontroller;
 			TableItems = items;
+
+			ProjectNames = new List<string>();
+			ProjectIDs = new List<string>();
+			foreach (Task t in TableItems)
+			{
+				if (ProjectIDs.IndexOf(t.Project.Id) < 0)
+				{
+					ProjectIDs.Add(t.Project.Id);
+					ProjectNames.Add(t.Project.Name);
+				}
+			}
+
+			TasksSorted = new List<Task>();
+			foreach (string id in ProjectIDs)
+			{
+				foreach (Task t in TableItems)
+				{
+					if (t.Project.Id.Equals(id))
+					{
+						TasksSorted.Add(t);
+					}
+				}
+			}
 		}
 
 		public override nint RowsInSection(UITableView tableview, nint section)
 		{
-
-			return TableItems == null ? 0 : TableItems.Count;
+			string projectId = ProjectIDs[(int)section];
+			int i = 0;
+			foreach (Task t in TableItems)
+			{
+				if (t.Project.Id.Equals(projectId))
+				{
+					i++;
+				}
+			}
+			return i;
 		}
 
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
@@ -37,26 +71,40 @@ namespace ProcessDashboard.iOS
 		{
 			tvcontroller.PerformSegue("home2taskDetailsSegue", indexPath);
 			tableView.DeselectRow(indexPath, true);
-		
 		}
+
 		public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
 		{
 
 			var cell = tableView.DequeueReusableCell(CellIdentifier);
-			string item = TableItems[indexPath.Row].FullName;
+			string item = TasksSorted[indexPath.Row].FullName;
+
 			if (cell == null)
 				cell = new UITableViewCell(UITableViewCellStyle.Default, CellIdentifier);
 
-			//populate the cell with the appropriate data based on the indexPath
 			cell.TextLabel.Text = item;
-			cell.TextLabel.Font = UIFont.SystemFontOfSize(12);
-			cell.TextLabel.Lines = 2;
-			cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
-			cell.TextLabel.TextColor = UIColor.Black;
-			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
 			return cell;
+		}
 
+		public override nint NumberOfSections(UITableView tableView)
+		{
+			return ProjectIDs.Count;
+		}
 
+		public override string TitleForHeader(UITableView tableView, nint section)
+		{
+			return ProjectNames[(int)section];
+		}
+
+		public override void WillDisplayHeaderView(UITableView tableView, UIView headerView, nint section)
+		{
+			UITableViewHeaderFooterView header = (UITableViewHeaderFooterView)headerView;
+			header.TextLabel.Font = UIFont.BoldSystemFontOfSize(13);
+		}
+
+		public override nfloat GetHeightForHeader(UITableView tableView, nint section)
+		{
+			return 18;
 		}
 	}
 }
