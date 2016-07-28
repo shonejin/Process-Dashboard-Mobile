@@ -15,7 +15,7 @@ namespace ProcessDashboard.Droid.Fragments.Interfaces
     interface IListOfTaksInterface
     {
 
-        void PassTaskDetailsInfo(string taskId);
+        void PassTaskDetailsInfo(string id, string taskName, string projectName, DateTime? completionDate, double? estimatedTime, double? actualTime);
 
     }
 }

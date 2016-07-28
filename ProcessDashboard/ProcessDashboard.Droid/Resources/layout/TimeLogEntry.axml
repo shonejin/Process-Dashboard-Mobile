@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+  <TextView
+    android:id="@+id/TimeLogEdit_ProjectName"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    
+    />
+
+
+  <TextView
+    android:id="@+id/TimeLogEdit_TaskName"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    
+    /> 
+
+
+  <TextView
+    android:id="@+id/TimeLogEdit_StartTimeText"
+    android:text="Start Time"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    
+    />
+
+  <EditText
+    android:id="@+id/TimeLogEdit_StartTime"
+    android:text=""
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    
+    />
+  <TextView
+    android:id="@+id/TimeLogEdit_DeltaTimeText"
+    android:text="Delta Time"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    
+    />
+
+  <EditText
+    android:id="@+id/TimeLogEdit_DeltaTime"
+    android:text=""
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    
+    />
+  <TextView
+    android:id="@+id/TimeLogEdit_InterruptTimeText"
+    android:text="Interrupt Time"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    
+    />
+
+  <EditText
+   android:id="@+id/TimeLogEdit_InterruptTime"
+   android:text=""
+   android:layout_width="match_parent"
+   android:layout_height="wrap_content"
+    
+    />
+  <TextView
+   android:id="@+id/TimeLogEdit_CommentText"
+   android:text="Comment"
+   android:layout_width="match_parent"
+   android:layout_height="wrap_content"
+    
+    />
+  <EditText
+   
+   android:id="@+id/TimeLogEdit_Comment"
+   android:text=""
+   android:layout_width="match_parent"
+   android:layout_height="wrap_content"
+    
+    />
+</LinearLayout>

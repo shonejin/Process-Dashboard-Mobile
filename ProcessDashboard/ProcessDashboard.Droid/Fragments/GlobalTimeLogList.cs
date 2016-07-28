@@ -13,7 +13,7 @@ using ProcessDashboard.SyncLogic;
 
 namespace ProcessDashboard.Droid.Fragments
 {
-    public class GlobalTimeLog : Fragment
+    public class GlobalTimeLogList : Fragment
     {
         Dictionary<string, List<TimeLogEntry>> _headings = new Dictionary<string, List<TimeLogEntry>>();
         List<string> _timelogs = new List<string>();
@@ -54,7 +54,7 @@ namespace ProcessDashboard.Droid.Fragments
         {
             Controller ctrl = ((MainActivity)(this.Activity)).Ctrl;
 
-            var timelogEntries = await ctrl.GetTimeLog("mock", 0,null,null, null, null);
+            var timelogEntries = await ctrl.GetTimeLog(Settings.GetInstance().Dataset, 0,null,null, null, null);
 
             System.Diagnostics.Debug.WriteLine("Got the values : "+timelogEntries.Count);
             int count = 0;
@@ -109,12 +109,11 @@ namespace ProcessDashboard.Droid.Fragments
             var ctlExListBox = v.FindViewById<ExpandableListView>(Resource.Id.myExpandableListview);
             ctlExListBox.SetAdapter(new GlobalTimeLogAdapter(this.Activity, _headings));
 
-            ctlExListBox.ChildClick += delegate (object sender, ExpandableListView.ChildClickEventArgs e) {
+            ctlExListBox.ChildClick += delegate (object sender, ExpandableListView.ChildClickEventArgs e)
+            {
                 var itmGroup = _timelogs[e.GroupPosition];
                 var itmChild = _headings[itmGroup][e.ChildPosition];
-
-                Toast.MakeText(this.Activity, string.Format("You Click on Group {0} with child {1}", itmGroup, itmChild),
-                                ToastLength.Long).Show();
+                ((MainActivity)this.Activity).TimeLogEditCallBack(itmChild.Task.Project.Name, itmChild.Task.FullName,itmChild.Task.Id, itmChild);
             };
             return 0;
         }

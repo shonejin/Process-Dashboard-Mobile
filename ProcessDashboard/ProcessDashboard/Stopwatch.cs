@@ -3,107 +3,107 @@ namespace ProcessDashboard
 {
 	public class Stopwatch
 	{
-		private DateTime firstStartTime = new DateTime(0);
-		private DateTime startTime = new DateTime(0);
-		private DateTime stopTime = new DateTime(0);
-		private long loggedMillis = 0;
-		private long interruptMillis = 0;
-		private const double MINUTES = 60000.0;
+		private DateTime _firstStartTime = new DateTime(0);
+		private DateTime _startTime = new DateTime(0);
+		private DateTime _stopTime = new DateTime(0);
+		private long _loggedMillis = 0;
+		private long _interruptMillis = 0;
+		private const double Minutes = 60000.0;
 
-		public DateTime getFirstStartTime()
+		public DateTime GetFirstStartTime()
 		{
-			return firstStartTime;
+			return _firstStartTime;
 		}
 
-		public void start()
+		public void Start()
 		{
-			if (startTime.Ticks == 0)
+			if (_startTime.Ticks == 0)
 			{
-				startTime = DateTime.Now;
-				if (firstStartTime.Ticks == 0)
+				_startTime = DateTime.Now;
+				if (_firstStartTime.Ticks == 0)
 				{
-					firstStartTime = startTime;
+					_firstStartTime = _startTime;
 				}
-				if (stopTime.Ticks != 0)
+				if (_stopTime.Ticks != 0)
 				{
-					interruptMillis += (long)(startTime - stopTime).TotalMilliseconds;
+					_interruptMillis += (long)(_startTime - _stopTime).TotalMilliseconds;
 				}
 			}
 		}
 
-		public void stop()
+		public void Stop()
 		{
-			stopAsOf(DateTime.Now);
+			StopAsOf(DateTime.Now);
 		}
 
-		private void stopAsOf(DateTime when)
+		private void StopAsOf(DateTime when)
 		{
-			if (startTime.Ticks != 0)
+			if (_startTime.Ticks != 0)
 			{
-				stopTime = when;
-				loggedMillis += (long)(stopTime - startTime).TotalMilliseconds;
-				startTime = new DateTime(0);
+				_stopTime = when;
+				_loggedMillis += (long)(_stopTime - _startTime).TotalMilliseconds;
+				_startTime = new DateTime(0);
 			}
 		}
 
-		public bool isRunning()
+		public bool IsRunning()
 		{
-			return startTime.Ticks != 0;
+			return _startTime.Ticks != 0;
 		}
 
-		public bool isPaused()
+		public bool IsPaused()
 		{
-			return startTime.Ticks == 0;
+			return _startTime.Ticks == 0;
 		}
 
-		public void reset()
+		public void Reset()
 		{
-			firstStartTime = new DateTime(0);
-			startTime = new DateTime(0);
-			stopTime = new DateTime(0);
-			loggedMillis = 0;
-			interruptMillis = 0;
+			_firstStartTime = new DateTime(0);
+			_startTime = new DateTime(0);
+			_stopTime = new DateTime(0);
+			_loggedMillis = 0;
+			_interruptMillis = 0;
 		}
 
-		public void setLoggedMinutes(double minutes)
+		public void SetLoggedMinutes(double minutes)
 		{
-			if (isRunning())
+			if (IsRunning())
 			{
-				stop();
-				loggedMillis = (long)(minutes * MINUTES);
-				start();
+				Stop();
+				_loggedMillis = (long)(minutes * Minutes);
+				Start();
 			}
 			else
 			{
-				loggedMillis = (long)(minutes * MINUTES);
+				_loggedMillis = (long)(minutes * Minutes);
 			}
 		}
 
-		public double getLoggedMinutes()
+		public double GetLoggedMinutes()
 		{
-			long time = (long)(loggedMillis / MINUTES);
-			if (isRunning())
+			long time = (long)(_loggedMillis / Minutes);
+			if (IsRunning())
 			{
-				time += (long)(DateTime.Now - startTime).TotalMinutes;
+				time += (long)(DateTime.Now - _startTime).TotalMinutes;
 			}
 			return time;
 		}
 
-		public void setInterruptMinutes(double minutes)
+		public void SetInterruptMinutes(double minutes)
 		{
-			interruptMillis = (long)(minutes * MINUTES);
+			_interruptMillis = (long)(minutes * Minutes);
 		}
 
-		public double getInterruptMinutes()
+		public double GetInterruptMinutes()
 		{
-			return interruptMillis / MINUTES;
+			return _interruptMillis / Minutes;
 		}
 
-		public double getTrailingLoggedMinutes()
+		public double GetTrailingLoggedMinutes()
 		{
-			if (isRunning())
+			if (IsRunning())
 			{
-				return (DateTime.Now - startTime).TotalMinutes;
+				return (DateTime.Now - _startTime).TotalMinutes;
 			}
 			else
 			{
@@ -111,11 +111,11 @@ namespace ProcessDashboard
 			}
 		}
 
-		public double getTrailingInterruptMinutes()
+		public double GetTrailingInterruptMinutes()
 		{
-			if (isPaused() && stopTime.Ticks != 0)
+			if (IsPaused() && _stopTime.Ticks != 0)
 			{
-				return (DateTime.Now - stopTime).TotalMinutes;
+				return (DateTime.Now - _stopTime).TotalMinutes;
 			}
 			else
 			{
@@ -123,20 +123,20 @@ namespace ProcessDashboard
 			}
 		}
 
-		public void maybeCancelRunawayTimer(double maxTrailingLoggedMinutes)
+		public void MaybeCancelRunawayTimer(double maxTrailingLoggedMinutes)
 		{
-			double trailingLoggedMinutes = getTrailingLoggedMinutes();
+			double trailingLoggedMinutes = GetTrailingLoggedMinutes();
 			if (trailingLoggedMinutes < maxTrailingLoggedMinutes)
 			{
 				return;
 			}
 			double minutesToCancel = trailingLoggedMinutes - maxTrailingLoggedMinutes;
-			long millisToCancel = (long)(minutesToCancel * MINUTES);
+			long millisToCancel = (long)(minutesToCancel * Minutes);
 			DateTime cancelTime = DateTime.Now.AddMilliseconds(-millisToCancel);
-			cancelTimingAsOf(cancelTime);
+			CancelTimingAsOf(cancelTime);
 		}
 
-		public void cancelTimingAsOf(DateTime cancellationTime)
+		public void CancelTimingAsOf(DateTime cancellationTime)
 		{
 			DateTime now = DateTime.Now;
 			if (cancellationTime > now)
@@ -144,39 +144,39 @@ namespace ProcessDashboard
 				cancellationTime = now;
 			}
 
-			if (startTime.Ticks != 0)
+			if (_startTime.Ticks != 0)
 			{
-				if (startTime < cancellationTime)
+				if (_startTime < cancellationTime)
 				{
-					stopAsOf(cancellationTime);
+					StopAsOf(cancellationTime);
 					return;
 				}
 				else
 				{
-					if (stopTime.Ticks != 0)
+					if (_stopTime.Ticks != 0)
 					{
-						long interrupToDiscard = (long)(startTime - stopTime).TotalMilliseconds;
-						interruptMillis -= interrupToDiscard;
-						if (interruptMillis < 0)
+						long interrupToDiscard = (long)(_startTime - _stopTime).TotalMilliseconds;
+						_interruptMillis -= interrupToDiscard;
+						if (_interruptMillis < 0)
 						{
-							interruptMillis = 0;
+							_interruptMillis = 0;
 						}
 					}
-					startTime = new DateTime(0);
+					_startTime = new DateTime(0);
 				}
 			}
 
-			if (stopTime.Ticks != 0 && cancellationTime < stopTime)
+			if (_stopTime.Ticks != 0 && cancellationTime < _stopTime)
 			{
-				long overlapMillis = (long)(stopTime - cancellationTime).TotalMilliseconds;
-				if (overlapMillis > loggedMillis)
+				long overlapMillis = (long)(_stopTime - cancellationTime).TotalMilliseconds;
+				if (overlapMillis > _loggedMillis)
 				{
-					reset();
+					Reset();
 				}
 				else
 				{
-					loggedMillis = loggedMillis - overlapMillis;
-					stopTime = cancellationTime;
+					_loggedMillis = _loggedMillis - overlapMillis;
+					_stopTime = cancellationTime;
 				}
 			}
 		}

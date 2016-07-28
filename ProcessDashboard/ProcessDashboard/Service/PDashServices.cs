@@ -55,9 +55,9 @@ namespace ProcessDashboard.Service_Access_Layer
          * Check Wifi
          */
 
-        public bool isWifiConnected()
+        public bool IsWifiConnected()
         {
-            checkConnection();
+            CheckConnection();
 
             ConnectionType ct = ConnectionType.WiFi;
 
@@ -69,7 +69,7 @@ namespace ProcessDashboard.Service_Access_Layer
           * Check Network Connectivity
           */
 
-        public void checkConnection()
+        public void CheckConnection()
         {
             if (!CrossConnectivity.Current.IsConnected)
             {
@@ -107,10 +107,10 @@ namespace ProcessDashboard.Service_Access_Layer
         {
             Debug.WriteLine("ProjectModel Service : " + " Going for remote task");
             if(Settings.GetInstance().CheckWifi)
-            isWifiConnected();
+            IsWifiConnected();
             else
             {
-                checkConnection();
+                CheckConnection();
             }
 
             Task<ProjectsListRoot> getTaskDtoTask;
@@ -194,10 +194,10 @@ namespace ProcessDashboard.Service_Access_Layer
         {
             Debug.WriteLine("Task Service : " + " Going for remote task");
             if (Settings.GetInstance().CheckWifi)
-                isWifiConnected();
+                IsWifiConnected();
             else
             {
-                checkConnection();
+                CheckConnection();
             }
 
             TaskListRoot tasks = null;
@@ -282,10 +282,10 @@ namespace ProcessDashboard.Service_Access_Layer
         {
             Debug.WriteLine("Task Service : " + " Going for remote task");
             if (Settings.GetInstance().CheckWifi)
-                isWifiConnected();
+                IsWifiConnected();
             else
             {
-                checkConnection();
+                CheckConnection();
             }
 
             TaskRoot task = null;
@@ -370,10 +370,10 @@ namespace ProcessDashboard.Service_Access_Layer
         {
             Debug.WriteLine("Task Service : " + " Going for remote task");
             if (Settings.GetInstance().CheckWifi)
-                isWifiConnected();
+                IsWifiConnected();
             else
             {
-                checkConnection();
+                CheckConnection();
             }
 
             RecentTasksRoot task = null;
@@ -401,7 +401,7 @@ namespace ProcessDashboard.Service_Access_Layer
             // Convert to model and store in DB
 
             var output = Mapper.GetInstance().ToTaskModelList(task.RecentTasks);
-
+            Debug.WriteLine("Task Service : " + "Done with the mapping");
             // TODO: UPdate Recent Ordinal
             /*
             if (CrossConnectivity.Current.IsConnected)
@@ -453,16 +453,16 @@ namespace ProcessDashboard.Service_Access_Layer
 
         public async Task<List<TimeLogEntry>> GetTimeLogsRemote(Priority priority, string dataset, int? maxResults, DateTime? startDateFrom, DateTime? startDateTo, string taskId, string projectId)
         {
-            Debug.WriteLine("Task Service : " + " Going for remote task");
+            Debug.WriteLine("Time Logs Service : " + " Going for remote time logs");
             if (Settings.GetInstance().CheckWifi)
-                isWifiConnected();
+                IsWifiConnected();
             else
             {
-                checkConnection();
+                CheckConnection();
             }
 
             Task<TimeLogsRoot> getTaskDtoTask;
-            Debug.WriteLine("Task Service : " + " Setting priority");
+            Debug.WriteLine("Time Logs Service : " + " Setting priority");
             switch (priority)
             {
                 case Priority.Background:
@@ -480,8 +480,8 @@ namespace ProcessDashboard.Service_Access_Layer
             }
 
             var task = await getTaskDtoTask;
-            Debug.WriteLine("Task Service : " + "Got the content I guess");
-
+            Debug.WriteLine("Time Logs Service: " + "Got the content I guess");
+            System.Diagnostics.Debug.WriteLine(task);
             // Convert to model and store in DB
 
             //List<TimeLogEntryModel> output = Mapper.GetInstance().toTimeLogEntryModelList(task.timeLogEntries);
@@ -500,8 +500,100 @@ namespace ProcessDashboard.Service_Access_Layer
             return task.TimeLogEntries;
         }
 
-      
-    
+        public async Task<TimeLogEntry> GetATimeLogRemote(Priority priority, string dataset, string timelogId)
+        {
+            // throw new NotImplementedException();
+            Debug.WriteLine("Time Logs Service : " + " Going for remote time logs");
+            if (Settings.GetInstance().CheckWifi)
+                IsWifiConnected();
+            else
+            {
+                CheckConnection();
+            }
+
+            Task<TimeLogRoot> getTaskDtoTask;
+            Debug.WriteLine("Time Logs Service : " + " Setting priority");
+            switch (priority)
+            {
+                case Priority.Background:
+                    getTaskDtoTask = _apiService.Background.GetTimeLog(dataset,timelogId, _settings.AuthHeader);
+                    break;
+                case Priority.UserInitiated:
+                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLog(dataset, timelogId, _settings.AuthHeader);
+                    break;
+                case Priority.Speculative:
+                    getTaskDtoTask = _apiService.Speculative.GetTimeLog(dataset, timelogId, _settings.AuthHeader);
+                    break;
+                default:
+                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLog(dataset, timelogId, _settings.AuthHeader);
+                    break;
+            }
+
+            var task = await getTaskDtoTask;
+            Debug.WriteLine("Time Logs Service: " + "Got the content I guess");
+            return task.timeLogEntry;
+
+        }
+
+        public async Task<TaskRoot> UpdateTaskDetails(Priority priority,string dataset, string projecttaskId, DateTime editTimeStamp, double? estimatedTime,
+            DateTime? completionDate)
+        {
+            Debug.WriteLine("Time Logs Service : " + " Going for remote time logs");
+            if (Settings.GetInstance().CheckWifi)
+                IsWifiConnected();
+            else
+            {
+                CheckConnection();
+            }
+
+            Task<TaskRoot> getTaskDtoTask;
+            Debug.WriteLine("Time Logs Service : " + " Setting priority");
+            switch (priority)
+            {
+                case Priority.Background:
+                    getTaskDtoTask = _apiService.Background.UpdateTaskDetails(dataset, projecttaskId, editTimeStamp,
+                        estimatedTime.GetValueOrDefault(), completionDate.GetValueOrDefault(),_settings.AuthHeader);
+
+                    break;
+                case Priority.UserInitiated:
+                    getTaskDtoTask = _apiService.UserInitiated.UpdateTaskDetails(dataset, projecttaskId, editTimeStamp,
+                        estimatedTime.GetValueOrDefault(), completionDate.GetValueOrDefault(), _settings.AuthHeader);
+                    break;
+                case Priority.Speculative:
+                    getTaskDtoTask = _apiService.Speculative.UpdateTaskDetails(dataset, projecttaskId, editTimeStamp,
+                        estimatedTime.GetValueOrDefault(), completionDate.GetValueOrDefault(), _settings.AuthHeader);
+                    break;
+                default:
+                    getTaskDtoTask = _apiService.UserInitiated.UpdateTaskDetails(dataset, projecttaskId, editTimeStamp,
+                        estimatedTime.GetValueOrDefault(), completionDate.GetValueOrDefault(), _settings.AuthHeader);
+                    break;
+            }
+
+            var task = await getTaskDtoTask;
+            Debug.WriteLine("Time Logs Service: " + "Got the content I guess");
+            System.Diagnostics.Debug.WriteLine(task);
+            // Convert to model and store in DB
+
+            //List<TimeLogEntryModel> output = Mapper.GetInstance().toTimeLogEntryModelList(task.timeLogEntries);
+            //_dbm.tlw.insertMultipleRecords(output);
+
+            /*
+            if (CrossConnectivity.Current.IsConnected)
+            {
+                System.Diagnostics.Debug.WriteLine("TaskModel Service : " + " Setting connection policy");
+                task = await Policy
+                    .Handle<Exception>()
+                    .RetryAsync(retryCount: 5)
+                    .ExecuteAsync(async () => await getTaskDtoTask);
+            }
+            */
+            return task;
+
+
+
+        }
+
+
         /*
          * Adding/Updating/Deleting Time Log entries
          */ 
@@ -509,10 +601,10 @@ namespace ProcessDashboard.Service_Access_Layer
         public async Task<EditATimeLogRoot> AddTimeLog(Priority priority, string dataset, string comment, string startDate, string taskId, double loggedTime,double interruptTime, bool open)
         {
             if (Settings.GetInstance().CheckWifi)
-                isWifiConnected();
+                IsWifiConnected();
             else
             {
-                checkConnection();
+                CheckConnection();
             }
             Dictionary<string, object> value = new Dictionary<string, object>();
             value.Add("comment", comment);
@@ -549,10 +641,10 @@ namespace ProcessDashboard.Service_Access_Layer
             double interruptTimeDelta, double loggedTimeDelta, bool open)
     {
             if (Settings.GetInstance().CheckWifi)
-                isWifiConnected();
+                IsWifiConnected();
             else
             {
-                checkConnection();
+                CheckConnection();
             }
 
 
@@ -595,10 +687,10 @@ namespace ProcessDashboard.Service_Access_Layer
         {
 
             if (Settings.GetInstance().CheckWifi)
-                isWifiConnected();
+                IsWifiConnected();
             else
             {
-                checkConnection();
+                CheckConnection();
             }
 
             string value = DateTime.Now.ToString(_pattern);

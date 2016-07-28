@@ -4,6 +4,8 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using Android.App;
+using Android.Content;
+using Android.Media;
 using ProcessDashboard.DTO;
 using ProcessDashboard.SyncLogic;
 
@@ -11,18 +13,44 @@ namespace ProcessDashboard.Droid.Fragments
 {
     public class Home : ListFragment
     {
+        private MainActivity _mActivity;
+        
+        public override void OnAttach(Context activity)
+        {
+            base.OnAttach(activity);
+            System.Diagnostics.Debug.WriteLine("On Attach 1");
+            _mActivity = (MainActivity)activity;
+           // mActivity.setTitle("Process Dasboard");
+        }
+
+        public override void OnAttach(Activity activity)
+        {
+            base.OnAttach(activity);
+            System.Diagnostics.Debug.WriteLine("On Attach 2");
+            _mActivity = (MainActivity)activity;
+            //
+        }
+
+        public override void OnDetach()
+        {
+            base.OnDetach();
+            _mActivity = null;
+            System.Diagnostics.Debug.WriteLine("On Detach");
+        }
+
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            System.Diagnostics.Debug.WriteLine("On Create");
             RetainInstance = true;
-            ((MainActivity)(this.Activity)).setTitle("Process Dasboard");
+            _mActivity.setTitle("Process Dasboard");
             // Create your fragment here
         }
 
         public override void OnResume()
         {
             base.OnResume();
-            ((MainActivity)(this.Activity)).setTitle("Process Dasboard");
+            _mActivity.setTitle("Process Dasboard");
         }
 
         public override void OnListItemClick(ListView l, View v, int position, long id)
@@ -34,16 +62,17 @@ namespace ProcessDashboard.Droid.Fragments
             Task pb = ta.GetTask(position);
             System.Diagnostics.Debug.WriteLine("The id of the task :" + pb.Id);
             string taskId = pb.Id;
-            ((MainActivity)this.Activity).PassTaskDetailsInfo(taskId);
+            _mActivity.PassTaskDetailsInfo(taskId,null,null,null,null,null);
         }
 
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             // Use this to return your custom view for this Fragment
+            System.Diagnostics.Debug.WriteLine("On Create View");
             View v = inflater.Inflate(Resource.Layout.Home, container, false);
 
-            ProgressDialog pd = new ProgressDialog(this.Activity);
+            ProgressDialog pd = new ProgressDialog(_mActivity);
             pd.Indeterminate = true;
             pd.SetTitle("Loading");
             
@@ -56,7 +85,7 @@ namespace ProcessDashboard.Droid.Fragments
             TextView recentTask = v.FindViewById<TextView>(Resource.Id.Home_RecentTask);
             recentTask.Text = "Project / Mobile App l1 / Iteration 1 / View Skeletons / Create Android Skeletons / Home Screen ";
             pd.Show();
-            LoadData(pd, v, ((MainActivity)this.Activity).Ctrl);
+            LoadData(pd, v, _mActivity.Ctrl);
            // loadDummyData(v);
             return v;
         }
@@ -64,21 +93,35 @@ namespace ProcessDashboard.Droid.Fragments
         private async void LoadData(ProgressDialog pb, View v, Controller ctrl)
         {
             ListView listView = v.FindViewById<ListView>(Android.Resource.Id.List);
-            List<DTO.Task> output = await ctrl.GetRecentTasks("mock");
+            List<DTO.Task> output = await ctrl.GetRecentTasks(Settings.GetInstance().Dataset);
+            System.Diagnostics.Debug.WriteLine("Got the data back");
             pb.Dismiss();
-
+            System.Diagnostics.Debug.WriteLine("Dialog has been dismissed");
             Task recent = output[0];
-
+            System.Diagnostics.Debug.WriteLine("BFE : 1");
             TextView rt = v.FindViewById<TextView>(Resource.Id.Home_RecentTask);
+            System.Diagnostics.Debug.WriteLine("BFE : 2");
             TextView cp = v.FindViewById<TextView>(Resource.Id.Home_CurrentProject);
+            System.Diagnostics.Debug.WriteLine("BFE : 3");
 
             rt.Text = recent.FullName;
+            System.Diagnostics.Debug.WriteLine("BFE : 4");
             cp.Text = recent.Project.Name;
-          
+            System.Diagnostics.Debug.WriteLine("BFE : 5");
+
             output.RemoveAt(0);
 
-            TaskAdapter listAdapter = new TaskAdapter(Activity, Android.Resource.Layout.SimpleListItem1, output.ToArray());
+            System.Diagnostics.Debug.WriteLine("BFE : 6");
+
+            if (_mActivity == null)
+            {
+                System.Diagnostics.Debug.WriteLine("Activity is null");
+            }
+           
+            TaskAdapter listAdapter = new TaskAdapter(_mActivity, Android.Resource.Layout.SimpleListItem1, output.ToArray());
+            System.Diagnostics.Debug.WriteLine("BFE : 7");
             this.ListAdapter = listAdapter;
+            System.Diagnostics.Debug.WriteLine("BFE : 8");
             //SetListShown(true);
         }
 
@@ -87,7 +130,7 @@ namespace ProcessDashboard.Droid.Fragments
 
             ListView lv = v.FindViewById<ListView>(Android.Resource.Id.List);
             string[] items = new string[] { "Vegetables", "Fruits", "Flower Buds", "Legumes", "Bulbs", "Tubers" };
-            ArrayAdapter listAdapter = new ArrayAdapter<String>(this.Activity, Android.Resource.Layout.SimpleListItem1, items);
+            ArrayAdapter listAdapter = new ArrayAdapter<String>(_mActivity, Android.Resource.Layout.SimpleListItem1, items);
             this.ListAdapter = listAdapter;
             //lv.ItemClick += Lv_ItemClick;
             // Set the recent task 
@@ -99,7 +142,7 @@ namespace ProcessDashboard.Droid.Fragments
         private void Lv_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
             // Use the item clicked.
-            ((MainActivity)Activity).SwitchToFragment(MainActivity.FragmentTypes.Listoftasks);
+            _mActivity.SwitchToFragment(MainActivity.FragmentTypes.Listoftasks);
 
         }
     }

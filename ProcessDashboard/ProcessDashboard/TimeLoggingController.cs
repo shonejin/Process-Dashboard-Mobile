@@ -8,196 +8,198 @@ namespace ProcessDashboard
 {
 	public class TimeLoggingController
 	{
-		private const int maxContinuousInterruptTime = 10; // minutes
-		private const int runawayTimerTime = 60; // one hour
-		private String taskId;
-		private Stopwatch stopwatch = new Stopwatch();
-		private String timeLogEntryId;
-		private int savedLoggedTime;
-		private int savedInterruptTime;
-		private Controller controller;
+		private const int MaxContinuousInterruptTime = 10; // minutes
+		private const int RunawayTimerTime = 60; // one hour
+		private String _taskId;
+		private Stopwatch _stopwatch = new Stopwatch();
+		private String _timeLogEntryId;
+		private int _savedLoggedTime;
+		private int _savedInterruptTime;
+		private Controller _controller;
 
-		private OsTimerService osTimerService;
+		private OsTimerService _osTimerService;
 
 		public TimeLoggingController()
 		{
 			var apiService = new ApiTypes(null);
 			var service = new PDashServices(apiService);
-			controller = new Controller(service);
-			osTimerService = new OsTimerService(this);
+			_controller = new Controller(service);
+			_osTimerService = new OsTimerService(this);
 		}
 
 		// TODO: throws CannotReachServerException
-		public void startTiming(String taskId)
+		public void StartTiming(String taskId)
 		{
-			setTaskId(taskId);
-			if (stopwatch.getTrailingLoggedMinutes() > maxContinuousInterruptTime)
+			SetTaskId(taskId);
+			if (_stopwatch.GetTrailingLoggedMinutes() > MaxContinuousInterruptTime)
 			{
-				saveIfNeeded();
-				releaseTimeLogEntry(true);
+				SaveIfNeeded();
+				ReleaseTimeLogEntry(true);
 			}
-			stopwatch.start();
-			save();
+			_stopwatch.Start();
+			Save();
 
-			if (stopwatch.isPaused())
+			if (_stopwatch.IsPaused())
 			{
-				stopwatch.start();
-				save();
+				_stopwatch.Start();
+				Save();
 			}
 		}
 
 		// TODO: throws CannotReachServerException
-		private void setTaskId(String newTaskId)
+		private void SetTaskId(String newTaskId)
 		{
-			if (newTaskId.Equals(this.taskId))
+			if (newTaskId.Equals(this._taskId))
 			{
 				return;
 			}
-			stopwatch.stop();
-			saveIfNeeded();
+			_stopwatch.Stop();
+			SaveIfNeeded();
 
-			this.taskId = newTaskId;
-			releaseTimeLogEntry(true);
+			this._taskId = newTaskId;
+			ReleaseTimeLogEntry(true);
 		}
 
-		public void stopTiming()
+		public void StopTiming()
 		{
-			stopwatch.stop();
-			save();
+			_stopwatch.Stop();
+			Save();
 		}
 
-		public String getTimingTaskId()
+		public String GetTimingTaskId()
 		{
-			return isTimerRunning() ? taskId : null;
+			return IsTimerRunning() ? _taskId : null;
 		}
 
-		public Boolean isTimerRunning()
+		public Boolean IsTimerRunning()
 		{
-			return stopwatch.isRunning();
+			return _stopwatch.IsRunning();
 		}
 
-		public String getActiveTimeLogEntryId()
+		public String GetActiveTimeLogEntryId()
 		{
-			return timeLogEntryId;
+			return _timeLogEntryId;
 		}
 
-		public void setLoggedTime(int minutes)
+		public void SetLoggedTime(int minutes)
 		{
-			stopwatch.setLoggedMinutes(minutes);
-			save();
+			_stopwatch.SetLoggedMinutes(minutes);
+			Save();
 		}
 
-		public void setInterruptTime(int minutes)
+		public void SetInterruptTime(int minutes)
 		{
-			stopwatch.setInterruptMinutes(minutes);
-			save();
+			_stopwatch.SetInterruptMinutes(minutes);
+			Save();
 		}
 
-		public void ping(Object stateInfo)
+		public void Ping(Object stateInfo)
 		{
-			stopwatch.maybeCancelRunawayTimer(runawayTimerTime);
-			save();
+			_stopwatch.MaybeCancelRunawayTimer(RunawayTimerTime);
+			Save();
 		}
 
-		private void save()
+		private void Save()
 		{
 			try
 			{
-				saveIfNeeded();
-				osTimerService.setBackgroundPingsEnabled(stopwatch.isRunning());
+				SaveIfNeeded();
+				_osTimerService.SetBackgroundPingsEnabled(_stopwatch.IsRunning());
 			}
 			catch (CannotReachServerException e)
 			{
-				osTimerService.setBackgroundPingsEnabled(true);
+				_osTimerService.SetBackgroundPingsEnabled(true);
 			}
 		}
 
 		// TODO: throws CannotReachServerException
-		private async void saveIfNeeded()
+		private async void SaveIfNeeded()
 		{
-			if (timeLogEntryId == null)
+			if (_timeLogEntryId == null)
 			{
-				if (stopwatch.isRunning() || timeIsDiscrepant())
+				if (_stopwatch.IsRunning() || TimeIsDiscrepant())
 				{
 					try
 					{
-						int logged = round(stopwatch.getLoggedMinutes());
-						int interrupt = round(stopwatch.getInterruptMinutes());
-						timeLogEntryId = ""+controller.AddATimeLog(Settings.GetInstance().Dataset,"", ""+stopwatch.getFirstStartTime(), taskId, logged, interrupt, stopwatch.isRunning()).Id;
+						int logged = Round(_stopwatch.GetLoggedMinutes());
+						int interrupt = Round(_stopwatch.GetInterruptMinutes());
+					    
+					    var value = await _controller.AddATimeLog(Settings.GetInstance().Dataset, "",
+					                             "" + _stopwatch.GetFirstStartTime(), _taskId, logged, interrupt, _stopwatch.IsRunning());
+                        _timeLogEntryId = ""+ value.TimeLogEntry.Id;
 
-                       
-                        savedLoggedTime = logged;
-						savedInterruptTime = interrupt;
+                        _savedLoggedTime = logged;
+						_savedInterruptTime = interrupt;
 					}
 					catch (CancelTimeLoggingException e)
 					{
-						handleCancelTimeLoggingException(e);
+						HandleCancelTimeLoggingException(e);
 					}
 				}
 			}
 			else
 			{
-				if (stopwatch.isPaused() && stopwatch.getTrailingLoggedMinutes() < 0.5)
+				if (_stopwatch.IsPaused() && _stopwatch.GetTrailingLoggedMinutes() < 0.5)
 				{
-					await controller.DeleteTimeLog(Settings.GetInstance().Dataset,timeLogEntryId);
-					releaseTimeLogEntry(false);
+					await _controller.DeleteTimeLog(Settings.GetInstance().Dataset,_timeLogEntryId);
+					ReleaseTimeLogEntry(false);
 				}
-				else if (timeIsDiscrepant())
+				else if (TimeIsDiscrepant())
 				{
 					try
 					{
-						int logged = round(stopwatch.getLoggedMinutes());
-						int interrupt = round(stopwatch.getInterruptMinutes());
-						await controller.UpdateTimeLog(Settings.GetInstance().Dataset,timeLogEntryId,"", stopwatch.getFirstStartTime().ToString(),taskId,
+						int logged = Round(_stopwatch.GetLoggedMinutes());
+						int interrupt = Round(_stopwatch.GetInterruptMinutes());
+						await _controller.UpdateTimeLog(Settings.GetInstance().Dataset,_timeLogEntryId,"", _stopwatch.GetFirstStartTime().ToString(),_taskId,
 
-                            loggedTimeDelta(), interruptTimeDelta(),
-							stopwatch.isRunning());
-						savedLoggedTime = logged;
-						savedInterruptTime = interrupt;
+                            LoggedTimeDelta(), InterruptTimeDelta(),
+							_stopwatch.IsRunning());
+						_savedLoggedTime = logged;
+						_savedInterruptTime = interrupt;
 					}
 					catch (CancelTimeLoggingException e)
 					{
-						handleCancelTimeLoggingException(e);
+						HandleCancelTimeLoggingException(e);
 					}
 				}
 			}
 		}
 
 		// TODO: CannotReachServerException
-		private void handleCancelTimeLoggingException(CancelTimeLoggingException e)
+		private void HandleCancelTimeLoggingException(CancelTimeLoggingException e)
 		{
-			stopwatch.cancelTimingAsOf(e.getStopTime());
-			saveIfNeeded();
-			releaseTimeLogEntry(true);
+			_stopwatch.CancelTimingAsOf(e.GetStopTime());
+			SaveIfNeeded();
+			ReleaseTimeLogEntry(true);
 		}
 
-		private void releaseTimeLogEntry(Boolean resetStopwatch)
+		private void ReleaseTimeLogEntry(Boolean resetStopwatch)
 		{
-			timeLogEntryId = null;
-			savedLoggedTime = 0;
-			savedInterruptTime = 0;
+			_timeLogEntryId = null;
+			_savedLoggedTime = 0;
+			_savedInterruptTime = 0;
 			if (resetStopwatch)
 			{
-				stopwatch.reset();
+				_stopwatch.Reset();
 			}
 		}
 
-		private Boolean timeIsDiscrepant()
+		private Boolean TimeIsDiscrepant()
 		{
-			return loggedTimeDelta() != 0 || interruptTimeDelta() != 0;
+			return LoggedTimeDelta() != 0 || InterruptTimeDelta() != 0;
 		}
 
-		private int loggedTimeDelta()
+		private int LoggedTimeDelta()
 		{
-			return round(stopwatch.getLoggedMinutes() - savedLoggedTime);
+			return Round(_stopwatch.GetLoggedMinutes() - _savedLoggedTime);
 		}
 
-		private int interruptTimeDelta()
+		private int InterruptTimeDelta()
 		{
-			return round(stopwatch.getInterruptMinutes() - savedInterruptTime);
+			return Round(_stopwatch.GetInterruptMinutes() - _savedInterruptTime);
 		}
 
-		private int round(double d)
+		private int Round(double d)
 		{
 			return (int)Math.Round(d);
 		}				

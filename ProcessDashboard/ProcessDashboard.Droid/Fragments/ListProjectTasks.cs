@@ -51,7 +51,7 @@ namespace ProcessDashboard.Droid.Fragments
                 Task p = ta.GetTask(e.Position);
                 string taskId = p.Id;
                 //  ((MainActivity)this.Activity).switchToFragment(MainActivity.fragmentTypes.taskdetails);
-                ((MainActivity)this.Activity).PassTaskDetailsInfo(taskId);
+                ((MainActivity)this.Activity).PassTaskDetailsInfo(taskId,p.FullName,p.Project.Name,p.CompletionDate,p.EstimatedTime,p.ActualTime);
                 //Project p = listView.GetItemAtPosition(e.Position);
 
             };
@@ -70,7 +70,7 @@ namespace ProcessDashboard.Droid.Fragments
 
         private async void AddData(Controller ctrl,string projectId)
         {
-            List<Task> output = await ctrl.GetTasks("mock",projectId);
+            List<Task> output = await ctrl.GetTasks(Settings.GetInstance().Dataset,projectId);
             TaskAdapter listAdapter = new TaskAdapter(Activity, Android.Resource.Layout.SimpleListItem1,output.ToArray());
             ListView.Adapter = listAdapter;
             SetListShown(true);

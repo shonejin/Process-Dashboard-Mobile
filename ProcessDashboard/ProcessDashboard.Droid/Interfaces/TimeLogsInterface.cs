@@ -2,7 +2,7 @@
 {
     interface ITimeLogsInterface
     {
-        void PassTimeLogInfo(string timelogId);
+        void PassTimeLogInfo(string timelogId, string projectName, string taskName);
 
 
     }

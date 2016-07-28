@@ -7,12 +7,12 @@ namespace ProcessDashboard
     [Serializable]
     public class CancelTimeLoggingException : System.Exception
     {
-        private DateTime stopTime;
+        private DateTime _stopTime;
         public CancelTimeLoggingException(string message)
         : base(message)
         { }
 
-        public CancelTimeLoggingException(string message, Exception innerException)
+        public CancelTimeLoggingException(string message, System.Exception innerException)
         : base(message, innerException)
         { }
 
@@ -26,12 +26,12 @@ namespace ProcessDashboard
         }
         public CancelTimeLoggingException(DateTime stopTime)
         {
-            this.stopTime = stopTime;
+            this._stopTime = stopTime;
         }
 
-        public DateTime getStopTime()
+        public DateTime GetStopTime()
         {
-            return stopTime;
+            return _stopTime;
         }
     }
 }
