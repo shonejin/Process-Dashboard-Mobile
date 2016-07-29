@@ -15,12 +15,14 @@ namespace ProcessDashboard.iOS
 		Task TaskItem;
 		protected string cellIdentifier = "Cell";
 		UIViewController owner;
-		UITextField completeDateText;
+		UITextField completeDateText, planTimeText;
 		DateTime completeTimeSelectedDate;
 		UIToolbar toolbar;
 		UIBarButtonItem saveButton, cancelButton;
 		UIDatePicker CompleteTimePicker;
+		UIPickerView PlanTimePicker;
 		String saveButtonLabel = "Save";
+		string planSelectedHour, planSelectedMinute;
 
 		public TaskDetailTableSource(Task items, UIViewController owner)
 		{
@@ -74,6 +76,11 @@ namespace ProcessDashboard.iOS
 			if (indexPath.Row == 0)
 			{
 				cell.TextLabel.Text = "Planned Time";
+				planTimeText = new UITextField(new CGRect(0, 300, 150, 30));
+				cell.AccessoryView = planTimeText;
+				planTimeText.TextColor = UIColor.LightGray;
+				planTimeText.TextAlignment = UITextAlignment.Right;
+				newPlanTimePicker();
 
 				int newHour = (int)TaskItem.EstimatedTime / 60;
 				int newMin = (int)TaskItem.EstimatedTime % 60;
@@ -89,7 +96,8 @@ namespace ProcessDashboard.iOS
 
 				string newEstimatedTime = newHour + ":" + newM;
 
-				cell.DetailTextLabel.Text = newEstimatedTime;
+				planTimeText.Text = newEstimatedTime;
+
 			}
 			else if (indexPath.Row == 1)
 			{
@@ -129,6 +137,92 @@ namespace ProcessDashboard.iOS
 			}
 
 			return cell;
+		}
+
+		public void newPlanTimePicker()
+		{
+			PlanTimePicker = new UIPickerView(new CoreGraphics.CGRect(0, 300, 400, 200f));
+			PlanTimePicker.BackgroundColor = UIColor.FromRGB(220, 220, 220);
+
+			PlanTimePicker.UserInteractionEnabled = true;
+			PlanTimePicker.ShowSelectionIndicator = true;
+
+			string[] hours = new string[24];
+			string[] minutes = new string[60];
+
+			for (int i = 0; i < hours.Length; i++)
+			{
+				hours[i] = i.ToString();
+
+			}
+			for (int i = 0; i < minutes.Length; i++)
+			{
+				if (i < 10)
+				{
+					minutes[i] = "0" + i.ToString();
+				}
+				else {
+					minutes[i] = i.ToString();
+				}
+			}
+
+			StatusPickerViewModel planModel = new StatusPickerViewModel(hours, minutes);
+
+			int h = (int)TaskItem.EstimatedTime / 60;
+			int m = (int)TaskItem.EstimatedTime % 60;
+			this.planSelectedHour = h.ToString();
+
+			if (m < 10)
+			{
+				this.planSelectedMinute = "0" + m.ToString();
+			}
+			else {
+				this.planSelectedMinute = m.ToString();
+			}
+
+
+
+			planModel.NumberSelected += (Object sender, EventArgs e) =>
+			{
+				this.planSelectedHour = planModel.selectedHour;
+				this.planSelectedMinute = planModel.selectedMinute;
+
+			};
+
+			PlanTimePicker.Model = planModel;
+			PlanTimePicker.BackgroundColor = UIColor.White;
+			PlanTimePicker.Select(h, 0, true);
+			PlanTimePicker.Select(m, 1, true);
+
+			//Setup the toolbar
+			toolbar = new UIToolbar();
+			toolbar.BarStyle = UIBarStyle.Default;
+			toolbar.BackgroundColor = UIColor.FromRGB(220, 220, 220);
+			toolbar.Translucent = true;
+			toolbar.SizeToFit();
+
+			// Create a 'done' button for the toolbar and add it to the toolbar
+
+			saveButton = new UIBarButtonItem("Save", UIBarButtonItemStyle.Bordered,
+			(s, e) =>
+			{
+
+				this.planTimeText.Text = this.planSelectedHour + ":" + this.planSelectedMinute;
+				this.planTimeText.ResignFirstResponder();
+			});
+
+			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
+
+			cancelButton = new UIBarButtonItem("Cancel", UIBarButtonItemStyle.Bordered,
+			(s, e) =>
+			{
+				this.planTimeText.ResignFirstResponder();
+			});
+
+			toolbar.SetItems(new UIBarButtonItem[] { cancelButton, spacer, saveButton }, true);
+
+			this.planTimeText.InputView = PlanTimePicker;
+			this.planTimeText.InputAccessoryView = toolbar;
 		}
 
 
