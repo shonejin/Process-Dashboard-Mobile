@@ -68,5 +68,12 @@ namespace ProcessDashboard.Service.Interface
         Task<DeleteRoot> DeleteTimeLog([Header("Authorization")] string authorization, string dataset, string timelogId, string editTimestamp);
 
 
+      [Get("/datasets/{dataset}/time-log/{timelogid}/")]
+      Task<TimeLogRoot> GetTimeLog(string dataset, string timelogid, [Header("Authorization")] string authorization);
+
+        [Put("/datasets/{dataset}/tasks/{projecttaskId}/")]
+        Task<TaskRoot> UpdateTaskDetails (string dataset, string projecttaskId, DateTime editTimeStamp, double? estimatedTime, DateTime? completionDate, [Header("Authorization")] string authorization);
+
+
     }
 }

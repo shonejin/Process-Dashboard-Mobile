@@ -100,6 +100,7 @@ namespace ProcessDashboard.iOS
 			c = new Controller(service);
 
 			activityView = new UIActivityIndicatorView(UIActivityIndicatorViewStyle.WhiteLarge);
+			activityView.Frame = View.Frame;
 			activityView.Center = View.Center;
 
 			pauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);

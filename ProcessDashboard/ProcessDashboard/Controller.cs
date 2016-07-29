@@ -8,6 +8,9 @@ using ProcessDashboard.APIRoot;
 using ProcessDashboard.DBWrapper;
 using ProcessDashboard.DTO;
 using ProcessDashboard.Service;
+using Exception=System.Exception;
+using Task = ProcessDashboard.DTO.Task;
+
 namespace ProcessDashboard.SyncLogic
 {
     public class Controller
@@ -188,8 +191,8 @@ namespace ProcessDashboard.SyncLogic
         }
 
         public async Task<EditATimeLogRoot> AddATimeLog(string dataset, string comment, string startDate, string taskId, double loggedTime,double interruptTime, bool open)
-        {
 
+        { 
             EditATimeLogRoot tro = await _pDashServices.AddTimeLog(Priority.UserInitiated, dataset, comment, startDate, taskId, loggedTime,interruptTime,open);
 
             System.Diagnostics.Debug.WriteLine("Add Stat :" + tro.Stat);
@@ -207,7 +210,7 @@ namespace ProcessDashboard.SyncLogic
                 if (tro.Err.Equals("stopTimeLogging"))
                 {
                     
-                    throw new CancelTimeLoggingException(tro.Err.stopTime);
+                    throw new CancelTimeLoggingException(tro.Err.StopTime);
 
                 }
 
@@ -235,7 +238,7 @@ namespace ProcessDashboard.SyncLogic
                 if (tro.Err.Equals("stopTimeLogging"))
                 {
 
-                    throw new CancelTimeLoggingException(tro.Err.stopTime);
+                    throw new CancelTimeLoggingException(tro.Err.StopTime);
 
                 }
             }
@@ -248,6 +251,20 @@ namespace ProcessDashboard.SyncLogic
             var dro = await _pDashServices.DeleteTimeLog(Priority.UserInitiated, dataset, timeLogId);
             System.Diagnostics.Debug.WriteLine("Delete status :" + dro.Stat);
             return dro;
+        }
+
+        public async Task<TimeLogEntry> GetSingleTimeLog(string dataset, string timeLogId)
+        {
+            var dro = await _pDashServices.GetATimeLogRemote(Priority.UserInitiated, dataset, timeLogId);
+            System.Diagnostics.Debug.WriteLine("Get status :" + dro.Id);
+            return dro;
+        }
+
+        public async Task<Task> UpdateATask(string dataset, string taskId,DateTime editTimeStamp,double? estimatedTime,DateTime? completionDate )
+        {
+            var dro = await _pDashServices.UpdateTaskDetails(Priority.UserInitiated, dataset, taskId,editTimeStamp,estimatedTime,completionDate);
+            System.Diagnostics.Debug.WriteLine("Get status :" + dro.Stat);
+            return dro.Task;
         }
 
 
@@ -268,7 +285,7 @@ namespace ProcessDashboard.SyncLogic
                     //  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
                 }
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
             }
@@ -292,7 +309,7 @@ namespace ProcessDashboard.SyncLogic
                 }
 
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
             }
@@ -317,7 +334,7 @@ namespace ProcessDashboard.SyncLogic
                 }
 
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
             }
@@ -342,7 +359,7 @@ namespace ProcessDashboard.SyncLogic
                     //  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
                 }
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
             }
@@ -365,7 +382,7 @@ namespace ProcessDashboard.SyncLogic
                     //  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
                 }
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
             }
@@ -386,7 +403,7 @@ namespace ProcessDashboard.SyncLogic
                 }
 
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
             }
@@ -403,7 +420,7 @@ namespace ProcessDashboard.SyncLogic
                 System.Diagnostics.Debug.WriteLine(taskItem.FullName + " : " + taskItem.Id);
                 System.Diagnostics.Debug.WriteLine(taskItem.EstimatedTime + " & " + taskItem.ActualTime);
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
             }
@@ -420,7 +437,7 @@ namespace ProcessDashboard.SyncLogic
 
                 System.Diagnostics.Debug.WriteLine(tr.TimeLogEntry.Id);
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
             }
@@ -441,16 +458,22 @@ namespace ProcessDashboard.SyncLogic
                 System.Diagnostics.Debug.WriteLine("Updated Logged Time :"+tr.TimeLogEntry.LoggedTime);
                 
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
             }
 
         }
 
-        public async void TestDeleteATimeLog()
+        public async void TestDeleteATimeLog(int? val)
         {
-            string timeLogId = "" + await TestAddATimeLog();
+            string timeLogId;
+            if (!val.HasValue)
+            {
+                timeLogId = "" + await TestAddATimeLog();
+            }
+            else
+                timeLogId = "" + val.Value;
 
             DeleteRoot tr = await DeleteTimeLog("INST-szewf0", timeLogId);
             try
@@ -459,7 +482,7 @@ namespace ProcessDashboard.SyncLogic
                 System.Diagnostics.Debug.WriteLine("Status :" + tr.Stat);
 
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
             }

@@ -54,7 +54,7 @@ namespace ProcessDashboard.Droid.Fragments
 
         private async void GetData(ListView listView, Controller ctrl)
         {
-            List<Project> output = await ctrl.GetProjects("mock");
+            List<Project> output = await ctrl.GetProjects(Settings.GetInstance().Dataset);
             ArrayList al = new ArrayList();
             ProjectsAdapter listAdapter = new ProjectsAdapter(Activity, Android.Resource.Layout.SimpleListItem1, output.ToArray(),1);
          

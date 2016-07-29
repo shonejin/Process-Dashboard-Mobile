@@ -12,7 +12,7 @@ namespace ProcessDashboard
 
 	public class TimeLoggingController
 	{
-		
+
 		// Events --------------------------------------------------------------------------------------------------------------------
 
 		// Fired when network connection to the PDES changed from available to unavailable, or from unavailable to available
@@ -191,12 +191,12 @@ namespace ProcessDashboard
 						int interrupt = round(stopwatch.getInterruptMinutes());
 
 
-						var value = await controller.AddATimeLog(Settings.GetInstance().Dataset, "",
-												 "" + stopwatch.getFirstStartTime(), taskId, logged, interrupt, stopwatch.isRunning());
+						var value = await controller.AddATimeLog(Settings.GetInstance().Dataset, "", "" + stopwatch.getFirstStartTime(), taskId, logged, interrupt, stopwatch.isRunning());
+
 						timeLogEntryId = "" + value.TimeLogEntry.Id;
 
 						Console.WriteLine("timelogentryid: " + timeLogEntryId);
-                        savedLoggedTime = logged;
+						savedLoggedTime = logged;
 						savedInterruptTime = interrupt;
 
 						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogCreated, String.Empty);
@@ -214,7 +214,7 @@ namespace ProcessDashboard
 				{
 					Console.WriteLine("Calling DeleteTimeLog(). Minutes: " + stopwatch.getTrailingLoggedMinutes());
 
-					await controller.DeleteTimeLog(Settings.GetInstance().Dataset,timeLogEntryId);
+					await controller.DeleteTimeLog(Settings.GetInstance().Dataset, timeLogEntryId);
 					releaseTimeLogEntry(false);
 
 					OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogUpdated, "Time log deleted because it is too short.");
@@ -227,8 +227,9 @@ namespace ProcessDashboard
 						int interrupt = round(stopwatch.getInterruptMinutes());
 
 						Console.WriteLine("Calling UpdateTimeLog()");
-						await controller.UpdateTimeLog(Settings.GetInstance().Dataset,timeLogEntryId,"comment", stopwatch.getFirstStartTime().ToString(Settings.GetInstance().DateTimePattern),taskId,
-                            loggedTimeDelta(), interruptTimeDelta(), stopwatch.isRunning());
+
+						await controller.UpdateTimeLog(Settings.GetInstance().Dataset, timeLogEntryId, "comment", stopwatch.getFirstStartTime().ToString(Settings.GetInstance().DateTimePattern), taskId,
+						                               loggedTimeDelta(), interruptTimeDelta(), stopwatch.isRunning());
 
 						Console.WriteLine(">>>> timelog update: delta: " + logged + ", int: " + interrupt);
 
@@ -251,7 +252,7 @@ namespace ProcessDashboard
 		{
 			Console.WriteLine("handleCancelTimeLoggingException() called");
 
-			stopwatch.cancelTimingAsOf(e.getStopTime());
+			stopwatch.cancelTimingAsOf(e.GetStopTime());
 			await saveIfNeeded();
 			releaseTimeLogEntry(true);
 		}
@@ -287,7 +288,6 @@ namespace ProcessDashboard
 		private int round(double d)
 		{
 			return (int)Math.Round(d);
-		}				
+		}
 	}
 }
-

@@ -9,6 +9,12 @@ namespace ProcessDashboard.APIRoot
         public string Code { get; set; }
         public string Msg { get; set; }
 
-        public DateTime stopTime { get; set; }
+        public DateTime StopTime { get; set; }
+
+        public override string ToString()
+        {
+            return "Code : " + Code + " Msg :" + Msg;
+
+        }
     }
 }

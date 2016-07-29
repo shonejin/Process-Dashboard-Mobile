@@ -1,36 +1,42 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Android.App;
-using Android.Widget;
 using Android.OS;
-
+using Android.Runtime;
 using Android.Support.V4.Widget;
 using Android.Support.V7.App;
-using Android.Support.V7.Widget;
 using Android.Support.Design.Widget;
-using Android.Views;
+using HockeyApp.Android;
 using ProcessDashboard.Droid.Fragments;
 using ProcessDashboard.Droid.Fragments.Interfaces;
-using ProcessDashboard.Model;
+using ProcessDashboard.Droid.Interfaces;
+using ProcessDashboard.DTO;
 using ProcessDashboard.Service;
 using ProcessDashboard.Service_Access_Layer;
 using ProcessDashboard.SyncLogic;
+using ActionBarDrawerToggle = Android.Support.V7.App.ActionBarDrawerToggle;
+using Fragment = Android.App.Fragment;
+using FragmentTransaction = Android.App.FragmentTransaction;
 
 namespace ProcessDashboard.Droid
 {
-	[Activity (Label = "ProcessDashboard.Droid", MainLauncher = true, Icon = "@drawable/icon")]
-	public class MainActivity : AppCompatActivity,IListOfProjectsInterface,IListOfTaksInterface,ITimeLogsInterface
+	[Activity (Label = "ProcessDashboard.Droid", MainLauncher = true, Icon = "@drawable/icon", ConfigurationChanges=Android.Content.PM.ConfigChanges.Orientation | Android.Content.PM.ConfigChanges.ScreenSize)]
+	public class MainActivity : AppCompatActivity,IListOfProjectsInterface,IListOfTaksInterface,ITimeLogsInterface,ITimeLogEditInterface
+        //,IOnBackStackChangedListener
     {
         DrawerLayout _drawerLayout;
+
+	    private string APP_ID = "168ed05dd48a4d32b8bbcc25fec3d3a9";
 
         public enum FragmentTypes { Login, Home, Settings, Listofprojects, Listoftasks, Taskdetails, Tasktimelogdetails, Globaltimelog, Globaltimelogdetails };
         private Home _homeFragment;
         private Login _loginFragment;
         private SettingsPage _settingsFragment;
-        private GlobalTimeLog _globalTimeLogFragment;
-        private GlobalTimeLogDetail _globalTimeLogDetailFragment;
+        private GlobalTimeLogList _globalTimeLogFragment;
+        private TimeLogDetail _TimeLogDetailFragment;
         private ListOfProjects _listOfProjectFragment;
         private TaskDetails _taskDetailFragment;
-        private TaskTimeLogDetail _taskTimeLogDetailFragment;
+        private TaskTimeLogList _taskTimeLogDetailFragment;
         private ListProjectTasks _listOfTasksFragment;
 
 	    private TestFragment _testFragment;
@@ -39,7 +45,9 @@ namespace ProcessDashboard.Droid
 
 	    private Android.Support.V7.Widget.Toolbar _toolbar;
 
-	    public Controller Ctrl;
+        private static bool _CrashHandlerRegistered = false;
+
+        public Controller Ctrl;
 
         protected override void OnCreate (Bundle bundle)
 		{
@@ -58,6 +66,9 @@ namespace ProcessDashboard.Droid
             _toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
             _toolbar.Title = "Process Dashboard";
             SetSupportActionBar(_toolbar);
+            SupportActionBar.SetDisplayHomeAsUpEnabled(true);
+            SupportActionBar.SetHomeButtonEnabled(true);
+            //_toolbar.
 
             // Attach item selected handler to navigation view
             var navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
@@ -69,17 +80,18 @@ namespace ProcessDashboard.Droid
             // Create ActionBarDrawerToggle button and add it to the toolbar
             var drawerToggle = new ActionBarDrawerToggle(this, _drawerLayout, _toolbar, Resource.String.open_drawer, Resource.String.close_drawer);
             _drawerLayout.SetDrawerListener(drawerToggle);
+          //  drawerToggle.SetHomeAsUpIndicator(null);
             drawerToggle.SyncState();
 
 
             _loginFragment = new Login();
             _homeFragment = new Home();
             _settingsFragment = new SettingsPage();
-            _globalTimeLogFragment = new GlobalTimeLog();
-            _globalTimeLogDetailFragment = new GlobalTimeLogDetail();
+            _globalTimeLogFragment = new GlobalTimeLogList();
+            _TimeLogDetailFragment = new TimeLogDetail();
             _listOfProjectFragment = new ListOfProjects();
             _taskDetailFragment = new TaskDetails();
-            _taskTimeLogDetailFragment = new TaskTimeLogDetail();
+            _taskTimeLogDetailFragment = new TaskTimeLogList();
             _listOfTasksFragment = new ListProjectTasks("");
             _testFragment = new TestFragment();
             
@@ -101,15 +113,25 @@ namespace ProcessDashboard.Droid
             var apiService = new ApiTypes(null);
             var service = new PDashServices(apiService);
             Ctrl = new Controller(service);
+
+            // ...
+            checkForCrashes();
+            //  checkForUpdates();
+
+
+            // FragmentManager.AddOnBackStackChangedListener(this);
+            // shouldDisplayHomeUp();
+
+
             // c.testProject();
             //_ctrl.testTasks();
             //_ctrl.testSingleTask();
             //_ctrl.testAddATimeLog();
-            //_ctrl.testUpdateATimeLog();
-           // _ctrl.testDeleteATimeLog();
-		}
+            Ctrl.TestUpdateATimeLog();
+            Ctrl.TestDeleteATimeLog(-50);
+        }
 
-	    public void setTitle(string title)
+        public void setTitle(string title)
 	    {
 	        _toolbar.Title = title;
 	    }
@@ -194,7 +216,7 @@ namespace ProcessDashboard.Droid
                     ShowFragment(_globalTimeLogFragment);
                     break;
                 case FragmentTypes.Globaltimelogdetails:
-                    ShowFragment(_globalTimeLogDetailFragment);
+                    ShowFragment(_TimeLogDetailFragment);
                     break;
                 case FragmentTypes.Listofprojects:
                     ShowFragment(_listOfProjectFragment);
@@ -210,6 +232,32 @@ namespace ProcessDashboard.Droid
             }
         }
 
+	    protected override void OnResume()
+	    {
+	        base.OnResume();
+            checkForCrashes();
+            if (!_CrashHandlerRegistered)
+            {
+                /*
+                _CrashHandlerRegistered = true;
+                CrashManager.Register(this, PlatformUtils.HockeyApplicationId);
+                //copy build properties into c# land so that the handler won't crash accessing java
+                TraceWriter.InitializeConstants();
+                //TraceWriter.Initialize(listener); // instead of InitializeConstants: if you want things like user/contact/description
+
+                AndroidEnvironment.UnhandledExceptionRaiser += (sender, args) =>
+                {
+                    TraceWriter.WriteTrace(args.Exception);
+                    args.Handled = true;
+                };
+                AppDomain.CurrentDomain.UnhandledException +=
+                    (sender, args) => TraceWriter.WriteTrace(args.ExceptionObject);
+                TaskScheduler.UnobservedTaskException += (sender, args) => TraceWriter.WriteTrace(args.Exception);
+                ExceptionSupport.UncaughtTaskExceptionHandler = TraceWriter.WriteTrace;
+                */
+            }
+        }
+
 	    public void ListOfProjectsCallback(string projectid)
 	    {
             
@@ -218,19 +266,95 @@ namespace ProcessDashboard.Droid
             
 	    }
 
-	    public void PassTaskDetailsInfo(string taskId)
-	    {
-	        
-            _taskDetailFragment.SetId(taskId);
+	    public void PassTaskDetailsInfo(string id, string taskName, string projectName, DateTime? completionDate, double? estimatedTime, double? actualTime)
+        {
+	        _taskDetailFragment.SetId(id,taskName,projectName,completionDate,estimatedTime,actualTime);
             SwitchToFragment(FragmentTypes.Taskdetails);
         }
 
-	    public void PassTimeLogInfo(string timelogId)
+	    public void PassTimeLogInfo(string timelogId,string projectName,string taskName)
 	    {
-	        _taskTimeLogDetailFragment.Id = (timelogId);
+            
+            _taskTimeLogDetailFragment.SetData(timelogId,projectName,taskName);
             SwitchToFragment(FragmentTypes.Tasktimelogdetails);
 
 	    }
+        
+	    public void TimeLogEditCallBack(string projectname, string taskName,string taskId, TimeLogEntry timelogId)
+	    {
+            //  throw new NotImplementedException();
+            _TimeLogDetailFragment = new TimeLogDetail();
+            _TimeLogDetailFragment.SetData(projectname,taskName,taskId,timelogId);
+            SwitchToFragment(FragmentTypes.Globaltimelogdetails);
+
+
+        }
+
+        /*
+	    public void OnBackStackChanged()
+	    {
+	        shouldDisplayHomeUp();
+	    }
+
+        public  void shouldDisplayHomeUp()
+        {
+            //Enable Up button only  if there are entries in the back stack
+            bool canback = FragmentManager.BackStackEntryCount > 0;
+            this.SupportActionBar?.SetDisplayHomeAsUpEnabled(canback);
+        }
+
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            switch (item.ItemId)
+            {
+                // Respond to the action bar's Up/Home button
+                case Android.Resource.Id.Home:
+                    NavUtils.NavigateUpFromSameTask(this);
+                    return true;
+            }
+            return base.OnOptionsItemSelected(item);
+        }
+        public override bool OnSupportNavigateUp()
+        {
+            //This method is called when the up button is pressed. Just the pop back stack.
+            FragmentManager.PopBackStack();
+            return true;
+        }
+        */
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            unregisterManagers();
+        }
+
+        protected override void OnPause()
+        {
+            base.OnPause();
+            unregisterManagers();
+        }
+
+        //HockeyApp
+
+
+        private void checkForCrashes()
+        {
+            CrashManager.Register(this, APP_ID);
+        }
+
+        private void checkForUpdates()
+        {
+            // Remove this for store builds!
+            UpdateManager.Register(this, APP_ID);
+        }
+
+        private void unregisterManagers()
+        {
+            UpdateManager.Unregister();
+            
+            // unregister other managers if necessary...
+        }
+
     }
 }
 

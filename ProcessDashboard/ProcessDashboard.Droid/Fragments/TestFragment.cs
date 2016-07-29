@@ -16,9 +16,27 @@ namespace ProcessDashboard.Droid.Fragments
 {
     public class TestFragment : Fragment
     {
+        private MainActivity _mActivity;
+
+        /*
+        public override void OnAttach(Context context)
+        {
+            base.OnAttach(context);
+            System.Diagnostics.Debug.WriteLine("On Attach");
+            mActivity = (MainActivity) context;
+        }
+        */
+        public override void OnAttach(Activity actvity)
+        {
+            base.OnAttach(actvity);
+            System.Diagnostics.Debug.WriteLine("On Attach 2");
+            _mActivity = (MainActivity)actvity;
+        }
+
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            System.Diagnostics.Debug.WriteLine("On Create");
             RetainInstance = true;
             Controller controller = ((MainActivity)this.Activity).Ctrl;
 
@@ -33,7 +51,7 @@ namespace ProcessDashboard.Droid.Fragments
         {
             // Use this to return your custom view for this Fragment
             // return inflater.Inflate(Resource.Layout.YourFragment, container, false);
-
+            System.Diagnostics.Debug.WriteLine("On Create View");
             return base.OnCreateView(inflater, container, savedInstanceState);
         }
 

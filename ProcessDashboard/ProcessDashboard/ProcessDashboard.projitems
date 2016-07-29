@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\RecentTasksRoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\TaskListRoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\TaskRoot.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)APIRoot\TimeLogRoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\TimeLogsRoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controller.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DBWrapper\DBRepository.cs" />
@@ -28,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DTO\TimeLogEntry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exception\CancelTimeLoggingException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exception\CannotReachServerException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exception\NoSuchTaskException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\EditsToEstimatedTime.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\EditToTaskCompletionDate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\ProjectModel.cs" />
