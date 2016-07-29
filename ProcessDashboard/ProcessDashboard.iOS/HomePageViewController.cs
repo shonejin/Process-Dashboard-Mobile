@@ -3,7 +3,6 @@ using System;
 using UIKit;
 using CoreGraphics;
 using System.Collections.Generic;
-using SharpMobileCode.ModalPicker;
 using ProcessDashboard.DTO;
 using ProcessDashboard.Model;
 using ProcessDashboard.Service;
@@ -27,6 +26,12 @@ namespace ProcessDashboard.iOS
 		TimeLoggingController timeLoggingController;
 		Controller c;
 		UIActivityIndicatorView activityView;
+		DateTime completeTimeSelectedDate ;
+		UIToolbar toolbar;
+		UIBarButtonItem saveButton, cancelButton;
+		UIDatePicker CompleteTimePicker;
+		UITextField completedDateText;
+		String saveButtonLabel = "Save";
 
 		public HomePageViewController(IntPtr handle) : base(handle)
 		{}
@@ -75,10 +80,6 @@ namespace ProcessDashboard.iOS
 			}
 		}
 
-		public void CompleteBtnOnClick(object sender, EventArgs ea)
-		{
-			DatePickerButtonTapped(sender, ea);
-		}
 
 		private void timeLoggingStateChanged(object sender, StateChangedEventArgs ea)
 		{
@@ -110,7 +111,10 @@ namespace ProcessDashboard.iOS
 			playBtn.Enabled = false;
 			playBtn.TouchUpInside += PlayBtnOnClick;
 
-			completeBtn.TouchUpInside += CompleteBtnOnClick;
+			completeBtn.TouchUpInside += delegate
+			{
+				completedDateText.BecomeFirstResponder();
+			};
 
 			projectNameBtn.TitleLabel.TextAlignment = UITextAlignment.Center;
 			projectNameBtn.TitleLabel.Lines = 2;
@@ -126,6 +130,72 @@ namespace ProcessDashboard.iOS
 			refreshData();
 		}
 
+		public void newCompleteDatePicker()
+		{
+			completedDateText = new UITextField(new CGRect(0, 0, 0, 0));
+			View.Add(completedDateText);
+
+			CompleteTimePicker = new UIDatePicker(new CoreGraphics.CGRect(0, this.View.Frame.Height - 250, this.View.Frame.Width, 200f));
+			CompleteTimePicker.BackgroundColor = UIColor.FromRGB(220, 220, 220);
+
+			CompleteTimePicker.UserInteractionEnabled = true;
+			CompleteTimePicker.Mode = UIDatePickerMode.DateAndTime;
+
+			//Setup the toolbar
+			toolbar = new UIToolbar();
+			toolbar.BarStyle = UIBarStyle.Default;
+			toolbar.BackgroundColor = UIColor.FromRGB(220, 220, 220);
+			toolbar.Translucent = true;
+			toolbar.SizeToFit();
+
+			// Create a 'done' button for the toolbar and add it to the toolbar
+			saveButton = new UIBarButtonItem(saveButtonLabel, UIBarButtonItemStyle.Bordered,
+			(s, e) =>
+			{
+				//this.StartTimeText.Text = startTimeSelectedDate.ToString();
+				this.completedDateText.ResignFirstResponder();
+			});
+
+			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
+
+			cancelButton = new UIBarButtonItem("Cancel", UIBarButtonItemStyle.Bordered,
+			(s, e) =>
+			{
+				this.completedDateText.ResignFirstResponder();
+			});
+
+			toolbar.SetItems(new UIBarButtonItem[] { cancelButton, spacer, saveButton }, true);
+
+		    completeTimeSelectedDate = currentTask.CompletionDate;
+
+			if (currentTask.CompletionDate.ToShortDateString().Equals("1/1/0001"))
+			{
+				saveButton.Title = "Mark Complete";
+				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(DateTime.Now), true);
+			}
+			else if (!currentTask.CompletionDate.ToShortDateString().Equals("1/1/0001"))
+			{
+				saveButton.Title = "Mark InComplete";
+				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(currentTask.CompletionDate), true);
+			}
+
+			CompleteTimePicker.ValueChanged += (Object s, EventArgs e) =>
+			{
+				if (!currentTask.CompletionDate.ToShortDateString().Equals("1/1/0001"))
+				{
+					saveButton.Title = "Change Completion Date";
+
+				}
+				completeTimeSelectedDate = ConvertNSDateToDateTime((s as UIDatePicker).Date);
+			};
+
+			CompleteTimePicker.BackgroundColor = UIColor.White;
+
+			this.completedDateText.InputView = CompleteTimePicker;
+			this.completedDateText.InputAccessoryView = toolbar;
+
+		}
+
 		public override void ViewDidAppear(bool animated)
 		{
 			base.ViewDidAppear(animated);
@@ -138,7 +208,7 @@ namespace ProcessDashboard.iOS
 			{
 				pauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
 				playBtn.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Normal);
-				completeBtn.SetImage(UIImage.FromBundle("checkbox-empty"), UIControlState.Normal);
+				completeBtn.SetImage(UIImage.FromBundle("checkbox-unchecked"), UIControlState.Normal);
 				pauseBtn.Enabled = false;
 				playBtn.Enabled = false;
 				completeBtn.Enabled = false;
@@ -151,9 +221,12 @@ namespace ProcessDashboard.iOS
 				}
 				else
 				{
-					completeBtn.SetImage(UIImage.FromBundle("checkbox-empty"), UIControlState.Normal);
+					completeBtn.SetImage(UIImage.FromBundle("checkbox-unchecked"), UIControlState.Normal);
 				}
 				completeBtn.Enabled = true;
+
+				// set up start time customized UIpicker
+				newCompleteDatePicker();
 
 				if (timeLoggingController.isTimerRunning())
 				{
@@ -213,52 +286,22 @@ namespace ProcessDashboard.iOS
 			return 0;
 		}
 
-		async void DatePickerButtonTapped(object sender, EventArgs e)
+		public static DateTime ConvertNSDateToDateTime(NSDate date)
 		{
-			var modalPicker = new ModalPickerViewController(ModalPickerType.Date, " ", this)
-			{
-				HeaderBackgroundColor = UIColor.FromRGB(220, 220, 220),
-				HeaderTextColor = UIColor.Black,
-
-				TransitioningDelegate = new ModalPickerTransitionDelegate(),
-				ModalPresentationStyle = UIModalPresentationStyle.Custom
-			};
-
-			if (completeBtn.Selected == true)
-			{
-				modalPicker.DoneButtonText = "Mark Complete";  // it will save the time to the DB
-				modalPicker.CancelButtonText = "Mark Incomplete"; // the icon needs to change
-			}
-			else 
-			{
-				modalPicker.DoneButtonText = "Mark Complete";
-				modalPicker.CancelButtonText = "Cancel";
-			}
-
-			modalPicker.DatePicker.Mode = UIDatePickerMode.DateAndTime;
-
-			modalPicker.OnModalPickerDismissed += (s, ea) =>
-			{
-				var dateFormatter = new NSDateFormatter()
-				{
-					DateFormat = "MMMM dd, HH mm"
-				};
-
-				if (completeBtn.Selected == false)
-				{
-				}
-			};
-
-			// When user clicks Cancel and the task has been mark as completed
-			if (completeBtn.Selected == true)
-			{
-				completeBtn.Selected = !completeBtn.Selected;
-			}
-				
-			await PresentViewControllerAsync(modalPicker, true);
+			DateTime reference = new DateTime(2001, 1, 1, 0, 0, 0);
+			DateTime currentDate = reference.AddSeconds(date.SecondsSinceReferenceDate);
+			DateTime localDate = currentDate.ToLocalTime();
+			return localDate;
 		}
 
-			
+		public static NSDate ConvertDateTimeToNSDate(DateTime date)
+		{
+			DateTime newDate = TimeZone.CurrentTimeZone.ToLocalTime(
+				new DateTime(2001, 1, 1, 0, 0, 0));
+			return NSDate.FromTimeIntervalSinceReferenceDate(
+				(date - newDate).TotalSeconds);
+		}
+
 		public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)
 		{
 			base.PrepareForSegue(segue, sender);

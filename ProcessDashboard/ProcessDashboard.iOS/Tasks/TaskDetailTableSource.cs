@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Foundation;
 using ProcessDashboard.DTO;
 using UIKit;
+using CoreGraphics;
 
 namespace ProcessDashboard.iOS
 {
@@ -14,6 +15,12 @@ namespace ProcessDashboard.iOS
 		Task TaskItem;
 		protected string cellIdentifier = "Cell";
 		UIViewController owner;
+		UITextField completeDateText;
+		DateTime completeTimeSelectedDate;
+		UIToolbar toolbar;
+		UIBarButtonItem saveButton, cancelButton;
+		UIDatePicker CompleteTimePicker;
+		String saveButtonLabel = "Save";
 
 		public TaskDetailTableSource(Task items, UIViewController owner)
 		{
@@ -104,18 +111,105 @@ namespace ProcessDashboard.iOS
 			else {
 
 				cell.TextLabel.Text = "Completed Date";
+				completeDateText = new UITextField(new CGRect(0, 400, 150, 30));
+				cell.AccessoryView = completeDateText;
+				completeDateText.TextColor = UIColor.LightGray;
+				completeDateText.TextAlignment = UITextAlignment.Right;
+				newCompleteDatePicker();
+
 				if (TaskItem.CompletionDate.ToShortDateString().Equals("1/1/0001"))
 				{
-					cell.DetailTextLabel.Text = "--";
+					completeDateText.Text = "--";
 				}
 				else 
 				{
-					cell.DetailTextLabel.Text = TaskItem.CompletionDate.ToShortDateString();
+					completeDateText.Text = TaskItem.CompletionDate.ToShortDateString();
 					//Console.WriteLine("task completion date:" + TaskItem.completionDate.ToShortDateString());
 				}
 			}
 
 			return cell;
+		}
+
+
+		public void newCompleteDatePicker()
+		{
+			
+			CompleteTimePicker = new UIDatePicker(new CoreGraphics.CGRect(0, 300, 400, 200f));
+			CompleteTimePicker.BackgroundColor = UIColor.FromRGB(220, 220, 220);
+
+			CompleteTimePicker.UserInteractionEnabled = true;
+			CompleteTimePicker.Mode = UIDatePickerMode.DateAndTime;
+
+			//Setup the toolbar
+			toolbar = new UIToolbar();
+			toolbar.BarStyle = UIBarStyle.Default;
+			toolbar.BackgroundColor = UIColor.FromRGB(220, 220, 220);
+			toolbar.Translucent = true;
+			toolbar.SizeToFit();
+
+			// Create a 'done' button for the toolbar and add it to the toolbar
+			saveButton = new UIBarButtonItem(saveButtonLabel, UIBarButtonItemStyle.Bordered,
+			(s, e) =>
+			{
+				this.completeDateText.Text = completeTimeSelectedDate.ToShortDateString();
+				this.completeDateText.ResignFirstResponder();
+			});
+
+			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
+
+			cancelButton = new UIBarButtonItem("Cancel", UIBarButtonItemStyle.Bordered,
+			(s, e) =>
+			{
+				this.completeDateText.ResignFirstResponder();
+			});
+
+			toolbar.SetItems(new UIBarButtonItem[] { cancelButton, spacer, saveButton }, true);
+
+			completeTimeSelectedDate = TaskItem.CompletionDate;
+
+			if (TaskItem.CompletionDate.ToShortDateString().Equals("1/1/0001"))
+			{
+				saveButton.Title = "Mark Complete";
+				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(DateTime.Now), true);
+			}
+			else if (!TaskItem.CompletionDate.ToShortDateString().Equals("1/1/0001"))
+			{
+				saveButton.Title = "Mark InComplete";
+				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(TaskItem.CompletionDate), true);
+			}
+
+			CompleteTimePicker.ValueChanged += (Object s, EventArgs e) =>
+			{
+				if (!TaskItem.CompletionDate.ToShortDateString().Equals("1/1/0001"))
+				{
+					saveButton.Title = "Change Completion Date";
+
+				}
+				completeTimeSelectedDate = ConvertNSDateToDateTime((s as UIDatePicker).Date);
+			};
+
+			CompleteTimePicker.BackgroundColor = UIColor.White;
+
+			this.completeDateText.InputView = CompleteTimePicker;
+			this.completeDateText.InputAccessoryView = toolbar;
+
+		}
+
+		public static DateTime ConvertNSDateToDateTime(NSDate date)
+		{
+			DateTime reference = new DateTime(2001, 1, 1, 0, 0, 0);
+			DateTime currentDate = reference.AddSeconds(date.SecondsSinceReferenceDate);
+			DateTime localDate = currentDate.ToLocalTime();
+			return localDate;
+		}
+
+		public static NSDate ConvertDateTimeToNSDate(DateTime date)
+		{
+			DateTime newDate = TimeZone.CurrentTimeZone.ToLocalTime(
+				new DateTime(2001, 1, 1, 0, 0, 0));
+			return NSDate.FromTimeIntervalSinceReferenceDate(
+				(date - newDate).TotalSeconds);
 		}
 	}
 }
