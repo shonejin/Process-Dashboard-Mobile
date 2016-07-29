@@ -14,16 +14,9 @@ using ProcessDashboard.Service.Interface;
 using Fusillade;
 using ProcessDashboard.APIRoot;
 using ProcessDashboard.DBWrapper;
-using Foundation;
-using System;
-using UIKit;
-using CoreGraphics;
 using System.Drawing;
-using SharpMobileCode.ModalPicker;
-using ProcessDashboard.Service;
-using ProcessDashboard.Service_Access_Layer;
-using ProcessDashboard.SyncLogic;
-using ProcessDashboard.DTO;
+
+
 
 namespace ProcessDashboard.iOS
 {
@@ -93,19 +86,6 @@ namespace ProcessDashboard.iOS
 			base.ViewDidAppear(animated);
 			refreshData();
 		}
-
-		//public override void ViewDidDisappear(bool animated)
-		//{
-		//	base.ViewDidDisappear(animated);
-		//	try
-		//	{
-		//		this.NavigationController.PopToRootViewController(true);
-		//	}
-		//	catch (Exception e)
-		//	{
-				
-		//	}
-		//}
 
 		public async void refreshData()
 		{
