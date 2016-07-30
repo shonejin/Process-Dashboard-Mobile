@@ -51,20 +51,20 @@ namespace ProcessDashboard.iOS
 	
 			Add(TimelogsTable);
 
-			UILabel StaticLabel = new UILabel(new CGRect(0, 60, View.Bounds.Width, 40))
-			{
-				Text = " Task name\t\t\t\t\t\t Start time \t Delta ",
-				Font = UIFont.SystemFontOfSize(12),
-				TextColor = UIColor.Black,
-				TextAlignment = UITextAlignment.Center,
-				BackgroundColor = UIColor.FromRGB(225, 225, 225),
-				Lines = 0,
-				LineBreakMode = UILineBreakMode.WordWrap,
-			};
+			//UILabel StaticLabelTaskName = new UILabel(new CGRect(0, 60, View.Bounds.Width, 40))
+			//{
+			//	Text = " Task name ",
+			//	Font = UIFont.SystemFontOfSize(12),
+			//	TextColor = UIColor.Black,
+			//	TextAlignment = UITextAlignment.Center,
+			//	BackgroundColor = UIColor.FromRGB(225, 225, 225),
+			//	Lines = 0,
+			//	LineBreakMode = UILineBreakMode.WordWrap,
+			//};
 
-			StaticLabel.AutoresizingMask = UIViewAutoresizing.All;
+			//StaticLabelTaskName.AutoresizingMask = UIViewAutoresizing.All;
 
-			this.Add(StaticLabel);
+			//this.Add(StaticLabel);
 
 		}
 

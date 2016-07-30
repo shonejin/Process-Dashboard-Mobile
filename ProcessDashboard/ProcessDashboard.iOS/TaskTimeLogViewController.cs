@@ -13,7 +13,7 @@ namespace ProcessDashboard.iOS
     public partial class TaskTimeLogViewController : UIViewController
     {
 
-		UILabel ProjectNameLabel, TaskNameLabel, TimelogsLabel;
+		//UILabel ProjectNameLabel, TaskNameLabel, TimelogsLabel;
 		List<TimeLogEntry> timeLogCache;
 		//UITableView TaskTimeLogTable;
 
@@ -30,17 +30,6 @@ namespace ProcessDashboard.iOS
 			base.ViewWillAppear(animated);
 			refreshData();
 		}
-
-		//public override void ViewDidDisappear(bool animated)
-		//{
-		//	base.ViewDidDisappear(animated);
-		//	try
-		//	{
-		//		this.NavigationController.PopToRootViewController(true);
-		//	}
-		//	catch (Exception e){}
-		//}
-
 		private async void refreshData()
 		{
 			await getTimeLogsOfTask();
@@ -83,47 +72,8 @@ namespace ProcessDashboard.iOS
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
-
-			ProjectNameLabel = new UILabel(new CGRect(30, 100, 300, 40))
-			{
-				Text = task.Project != null ? task.Project.Name : "",
-				Font = UIFont.SystemFontOfSize(16),
-				TextColor = UIColor.Black,
-				TextAlignment = UITextAlignment.Center,
-				BackgroundColor = UIColor.FromRGB(220, 220, 220),
-				Lines = 0,
-				LineBreakMode = UILineBreakMode.WordWrap,
-			};
-
-			TaskNameLabel = new UILabel(new CGRect(30, 160, 300, 60))
-			{
-				Text = task.FullName.ToString(),
-				Font = UIFont.SystemFontOfSize(13),
-				TextColor = UIColor.Black,
-				TextAlignment = UITextAlignment.Center,
-				BackgroundColor = UIColor.FromRGB(220, 220, 220),
-				Lines = 0,
-				LineBreakMode = UILineBreakMode.WordWrap,
-			};
-
-			TimelogsLabel = new UILabel(new CGRect(10, 240, 300, 20))
-			{
-				Text = "Time Logs:",
-				Font = UIFont.SystemFontOfSize(13),
-				TextColor = UIColor.Black,
-				TextAlignment = UITextAlignment.Left,
-				//BackgroundColor = UIColor.FromRGB(220, 220, 220),
-				//Lines = 0,
-				//LineBreakMode = UILineBreakMode.WordWrap,
-			};
-
-			//TaskTimeLogTable = new UITableView(new CGRect(0, 200, View.Bounds.Width, View.Bounds.Height));
-
-			//Add(TaskTimeLogTable);
-			this.Add(ProjectNameLabel);
-			this.Add(TaskNameLabel);
-			this.Add(TimelogsLabel);
-
+			ProjectNameLabel.Text = task.Project != null ? task.Project.Name : "";
+			TaskNameLabel.Text = task.FullName.ToString();
 
 		}
 

@@ -19,9 +19,6 @@ namespace ProcessDashboard.iOS
 		public TimeLogPageViewController Delegate { get; set; } // will be used to Save, Delete later
 		public TaskTimeLogViewController DelegateforTasktimelog { get; set; } // will be used to Save, Delete later
 		public TaskTimeLogViewController DelegateforAddingTimelog { get; set;}
-		UILabel TaskNameLabel, ProjectNameLabel, StartTimeLabel, DeltaLabel, IntLabel, CommentLabel;
-		UITextField StartTimeText, DeltaText, IntText;
-		UIButton CommentText;
 		UIBarButtonItem delete;
 		UIBarButtonItem saveButton, cancelButton;
 		UIPickerView DeltaPicker, IntPicker;
@@ -68,51 +65,11 @@ namespace ProcessDashboard.iOS
 
 			NavigationItem.RightBarButtonItem = delete;
 
+			ProjectNameLabel.Text = currentTask.Task.Project.Name;
 
-			ProjectNameLabel = new UILabel(new CGRect(30, 100, 300, 20))
-			{
-				Text = currentTask.Task.Project.Name,
-				Font = UIFont.SystemFontOfSize(16),
-				TextColor = UIColor.Black,
-				TextAlignment = UITextAlignment.Center,
-			//	BackgroundColor = UIColor.FromRGB(220, 220, 220),
-				Lines = 0,
-				LineBreakMode = UILineBreakMode.WordWrap,
-			};
+			TaskNameLabel.Text = currentTask.Task.FullName;
 
-			ProjectNameLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
-
-			TaskNameLabel = new UILabel(new CGRect(30, 130, 300, 60))
-			{
-				Text = currentTask.Task.FullName,
-				Font = UIFont.SystemFontOfSize(14),
-				TextColor = UIColor.Black,
-				TextAlignment = UITextAlignment.Center,
-			//	BackgroundColor = UIColor.FromRGB(220, 220, 220),
-				Lines = 0,
-				LineBreakMode = UILineBreakMode.WordWrap,
-			};
-
-			TaskNameLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
-			// 
-			StartTimeLabel = new UILabel(new CGRect(30, 210, 300, 20))
-			{
-				Text = "Start Time",
-				Font = UIFont.SystemFontOfSize(13),
-				TextColor = UIColor.Black,
-				TextAlignment = UITextAlignment.Center,
-				BackgroundColor = UIColor.FromRGB(220, 220, 220),
-			};
-
-			StartTimeLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
-
-			//
-			StartTimeText = new UITextField(new CGRect(30, 240, 300, 20));
 			StartTimeText.Text = currentTask.StartDate.ToShortDateString() + " " + currentTask.StartDate.ToShortTimeString();
-			StartTimeText.TextAlignment = UITextAlignment.Center;
-			StartTimeText.TextColor = UIColor.Blue;
-			StartTimeText.Font = UIFont.SystemFontOfSize(14);
-			StartTimeText.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
 			// set up start time customized UIpicker
 
@@ -161,23 +118,6 @@ namespace ProcessDashboard.iOS
 			this.StartTimeText.InputView = StartTimePicker;
 			this.StartTimeText.InputAccessoryView = toolbar;
 
-			// 
-			DeltaLabel = new UILabel(new CGRect(30, 270, 300, 20))
-			{
-
-				Text = "Delta",
-				Font = UIFont.SystemFontOfSize(13),
-				TextColor = UIColor.Black,
-				TextAlignment = UITextAlignment.Center,
-				BackgroundColor = UIColor.FromRGB(220, 220, 220),
-
-			};
-
-			DeltaLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
-
-
-			/// 
-			DeltaText = new UITextField(new CGRect(30, 310, 300, 20));
 
 			int newHour =  (int)currentTask.LoggedTime / 60;
 			int newMin = (int)currentTask.LoggedTime % 60;
@@ -185,28 +125,7 @@ namespace ProcessDashboard.iOS
 
 			DeltaText.Text = newLoggedTime;
 
-			DeltaText.TextAlignment = UITextAlignment.Center;
-			DeltaText.TextColor = UIColor.Blue;
-			DeltaText.Font = UIFont.SystemFontOfSize(14);
-
-			DeltaText.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
-
-
-			////
-			IntLabel = new UILabel(new CGRect(30, 340, 300, 20))
-			{
-				Text = "Int",
-				Font = UIFont.SystemFontOfSize(13),
-				TextColor = UIColor.Black,
-				TextAlignment = UITextAlignment.Center,
-				BackgroundColor = UIColor.FromRGB(220, 220, 220),
-			};
-
 			IntLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
-
-
-			/////
-			IntText = new UITextField(new CGRect(30, 370, 300, 20));
 
 			int newH = (int)currentTask.InterruptTime / 60;
 			int newM = (int)currentTask.InterruptTime % 60;
@@ -227,36 +146,11 @@ namespace ProcessDashboard.iOS
 
 			IntText.Text = newInt;
 
-			IntText.TextAlignment = UITextAlignment.Center;
-			IntText.TextColor = UIColor.Blue;
-			IntText.Font = UIFont.SystemFontOfSize(14);
-
-			IntText.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
-
-			/////
-			CommentLabel = new UILabel(new CGRect(30, 400, 300, 20))
-			{
-				Text = "Comment",
-				Font = UIFont.SystemFontOfSize(13),
-				TextColor = UIColor.Black,
-				TextAlignment = UITextAlignment.Center,
-				BackgroundColor = UIColor.FromRGB(220, 220, 220),
-
-			};
-			CommentLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
-
-
-			//////
-			CommentText = new UIButton(UIButtonType.RoundedRect);
 			CommentText.SetTitle(currentTask.Comment ?? "No Comment", UIControlState.Normal);
-			CommentText.Frame = new CGRect(30, 430, 300, 30);
-			CommentText.SetTitleColor(UIColor.Blue, UIControlState.Normal);
-			CommentText.TitleLabel.TextAlignment = UITextAlignment.Center;
-			CommentText.TitleLabel.SizeToFit();
 
 			CommentText.TouchUpInside += (sender, e) =>
 			{
-
+				
 				UIAlertView alert = new UIAlertView();
 				alert.Title = "Comment";
 				alert.AddButton("Cancel");
@@ -268,8 +162,6 @@ namespace ProcessDashboard.iOS
 				alert.Clicked += CommentButtonClicked;
 				alert.Show();
 			};
-
-			CommentText.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
 
 			/////Delta Picker 
@@ -406,8 +298,8 @@ namespace ProcessDashboard.iOS
 			(s, e) =>
 			{
 				this.IntText.Text = this.intSelectedHour + ":" + this.intSelectedMinute;
-				Console.WriteLine("haha" + this.intSelectedHour);
-				Console.WriteLine("hehe" + this.intSelectedMinute);
+				//Console.WriteLine("haha" + this.intSelectedHour);
+				//Console.WriteLine("hehe" + this.intSelectedMinute);
 
 				this.IntText.ResignFirstResponder();
 			});
@@ -422,18 +314,6 @@ namespace ProcessDashboard.iOS
 
 			this.IntText.InputView = IntPicker;
 			this.IntText.InputAccessoryView = toolbar;
-
-
-			View.AddSubview(ProjectNameLabel);
-			View.AddSubview(TaskNameLabel);
-			View.AddSubview(StartTimeLabel);
-			View.AddSubview(StartTimeText);
-			View.AddSubview(DeltaLabel);
-			View.AddSubview(DeltaText);
-			View.AddSubview(IntLabel);
-			View.AddSubview(IntText);
-			View.AddSubview(CommentLabel);
-			View.AddSubview(CommentText);
 
 		}
 
@@ -490,7 +370,7 @@ namespace ProcessDashboard.iOS
 
 			if (e.ButtonIndex == 1)
 			{
-				CommentText.TitleLabel.Text = parent_alert.GetTextField(0).Text;
+				CommentText.SetTitle(parent_alert.GetTextField(0).Text, UIControlState.Normal);
 
 				// TODO: fix the type
 				//TimelogTableItem newTask = new TimelogTableItem();
@@ -522,7 +402,5 @@ namespace ProcessDashboard.iOS
 			return NSDate.FromTimeIntervalSinceReferenceDate(
 				(date - newDate).TotalSeconds);
 		}
-
-
 	}
 }
