@@ -7,6 +7,14 @@ using ProcessDashboard.Service_Access_Layer;
 using ProcessDashboard.SyncLogic;
 using ProcessDashboard.DTO;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using ProcessDashboard.Service.Interface;
+using Fusillade;
+using ProcessDashboard.APIRoot;
+using ProcessDashboard.DBWrapper;
+using Exception = System.Exception;
+using Task = ProcessDashboard.DTO.Task;
 
 namespace ProcessDashboard.iOS
 {
@@ -102,6 +110,43 @@ namespace ProcessDashboard.iOS
 				controller.CreateTask(this, newTimeLog);
 
 			}
+
+		}
+
+		public async void DeleteTask(TimeLogEntry log)
+		{
+
+			//var oldTask = globalTimeLogCache.Find(t => t.Task.FullName.Equals(log.Task.FullName));
+			await DeleteATimeLog(log.Id);
+			NavigationController.PopViewController(true);
+		}
+
+		public async System.Threading.Tasks.Task<int> DeleteATimeLog(int? val)
+		{
+			var apiService = new ApiTypes(null);
+			var service = new PDashServices(apiService);
+			Controller c = new Controller(service);
+
+			string timeLogId;
+			if (!val.HasValue)
+			{
+				timeLogId = "" + await c.TestAddATimeLog();
+			}
+			else
+				timeLogId = "" + val.Value;
+
+			DeleteRoot tr = await c.DeleteTimeLog("INST-szewf0", timeLogId);
+			try
+			{
+				System.Diagnostics.Debug.WriteLine("** Delete the new Time Log entry **");
+				System.Diagnostics.Debug.WriteLine("Status :" + tr.Stat);
+
+			}
+			catch (System.Exception e)
+			{
+				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+			}
+			return 0;
 
 		}
     }

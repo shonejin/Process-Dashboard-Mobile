@@ -487,7 +487,6 @@ namespace ProcessDashboard.SyncLogic
                 System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
             }
 
-
         }
 }
     }

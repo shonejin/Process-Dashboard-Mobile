@@ -45,7 +45,17 @@ namespace ProcessDashboard.iOS
 				UIAlertController actionSheetAlert = UIAlertController.Create(null, "This time log will be deleted.", UIAlertControllerStyle.ActionSheet);
 
 				// Add Actions
-				actionSheetAlert.AddAction(UIAlertAction.Create("Delete", UIAlertActionStyle.Destructive, (action) => Delegate.DeleteTask(currentTask)));
+				actionSheetAlert.AddAction(UIAlertAction.Create("Delete", UIAlertActionStyle.Destructive, (action) =>
+				{
+					if (Delegate != null)
+					{
+						Delegate.DeleteTask(currentTask);
+					}
+					else if (DelegateforTasktimelog != null)
+					{
+						DelegateforTasktimelog.DeleteTask(currentTask);
+					}
+				}));
 
 				actionSheetAlert.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, (action) => Console.WriteLine("Cancel button pressed.")));
 

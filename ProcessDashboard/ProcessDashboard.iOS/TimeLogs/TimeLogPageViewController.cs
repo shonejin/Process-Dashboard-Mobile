@@ -8,6 +8,14 @@ using ProcessDashboard.Service;
 using ProcessDashboard.Service_Access_Layer;
 using ProcessDashboard.SyncLogic;
 using ProcessDashboard.DTO;
+using System.Linq;
+using System.Threading.Tasks;
+using ProcessDashboard.Service.Interface;
+using Fusillade;
+using ProcessDashboard.APIRoot;
+using ProcessDashboard.DBWrapper;
+using Exception = System.Exception;
+using Task = ProcessDashboard.DTO.Task;
 
 namespace ProcessDashboard.iOS
 {
@@ -26,7 +34,6 @@ namespace ProcessDashboard.iOS
 		{
 			base.ViewDidLoad();
 
-
 			TimelogsTable = new UITableView(new CGRect(0,100,View.Bounds.Width,View.Bounds.Height-100), UITableViewStyle.Grouped);
 
 			done = new UIBarButtonItem(UIBarButtonSystemItem.Done, (s, e) =>
@@ -39,7 +46,6 @@ namespace ProcessDashboard.iOS
 			{
 				if (TimelogsTable.Editing)
 					TimelogsTable.SetEditing(false, true); // if we've half-swiped a row
-				//tableSource.WillBeginTableEditing(table);
 				TimelogsTable.SetEditing(true, true);
 				NavigationItem.LeftBarButtonItem = null;
 				NavigationItem.RightBarButtonItem = done;
@@ -50,21 +56,6 @@ namespace ProcessDashboard.iOS
 			TimelogsTable.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 	
 			Add(TimelogsTable);
-
-			//UILabel StaticLabelTaskName = new UILabel(new CGRect(0, 60, View.Bounds.Width, 40))
-			//{
-			//	Text = " Task name ",
-			//	Font = UIFont.SystemFontOfSize(12),
-			//	TextColor = UIColor.Black,
-			//	TextAlignment = UITextAlignment.Center,
-			//	BackgroundColor = UIColor.FromRGB(225, 225, 225),
-			//	Lines = 0,
-			//	LineBreakMode = UILineBreakMode.WordWrap,
-			//};
-
-			//StaticLabelTaskName.AutoresizingMask = UIViewAutoresizing.All;
-
-			//this.Add(StaticLabel);
 
 		}
 
@@ -106,14 +97,42 @@ namespace ProcessDashboard.iOS
 			globalTimeLogCache.Add(newLog);
 		}
 
-		public void DeleteTask(TimeLogEntry log)
+		public async void DeleteTask(TimeLogEntry log)
 		{
 
-			var oldTask = globalTimeLogCache.Find(t => t.Task.FullName.Equals(log.Task.FullName));
-			globalTimeLogCache.Remove(oldTask);
+			//var oldTask = globalTimeLogCache.Find(t => t.Task.FullName.Equals(log.Task.FullName));
+			await DeleteATimeLog(log.Id);
 			NavigationController.PopViewController(true);
 		}
 
+		public async System.Threading.Tasks.Task<int> DeleteATimeLog(int? val)
+		{
+			var apiService = new ApiTypes(null);
+			var service = new PDashServices(apiService);
+			Controller c = new Controller(service);
+
+			string timeLogId;
+			if (!val.HasValue)
+			{
+				timeLogId = "" + await c.TestAddATimeLog();
+			}
+			else
+				timeLogId = "" + val.Value;
+
+			DeleteRoot tr = await c.DeleteTimeLog("INST-szewf0", timeLogId);
+			try
+			{
+				System.Diagnostics.Debug.WriteLine("** Delete the new Time Log entry **");
+				System.Diagnostics.Debug.WriteLine("Status :" + tr.Stat);
+
+			}
+			catch (System.Exception e)
+			{
+				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+			}
+			return 0;
+
+		}
 		// This ID is used to fetch the time logs. It is set by the previous view controller
 
 		public async void refreshData()
