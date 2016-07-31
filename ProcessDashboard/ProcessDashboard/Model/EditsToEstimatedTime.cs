@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿#region
+using System;
+#endregion
+// ReSharper disable UnusedMember.Local
 namespace ProcessDashboard.Model
 {
-    class EditsToEstimatedTime
+    internal class EditsToEstimatedTime
     {
-        String TaskId { get; set; }
-        long NewEstimatedTime { get; set; }
-        DateTime EditTimeStamp { get; set; }
+        private string TaskId { get; set; }
+        private long NewEstimatedTime { get; set; }
+        private DateTime EditTimeStamp { get; set; }
     }
 }

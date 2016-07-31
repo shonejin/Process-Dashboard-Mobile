@@ -1,23 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
+#region
 using ProcessDashboard.DTO;
-
+#endregion
 namespace ProcessDashboard.Droid.Interfaces
 {
-    interface ITimeLogEditInterface
+    internal interface ITimeLogEditInterface
     {
-
-        void TimeLogEditCallBack(string projectname, string taskName,string taskId, TimeLogEntry timelog);
-      
-
+        void TimeLogEditCallBack(string projectname, string taskName, string taskId, TimeLogEntry timelog);
     }
 }

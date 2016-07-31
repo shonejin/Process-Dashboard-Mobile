@@ -19,6 +19,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\TimeLogRoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\TimeLogsRoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controller.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ControllerTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DatasetLocationResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DBWrapper\DBRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DBWrapper\ProjectWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DBWrapper\TaskWrapper.cs" />
@@ -30,6 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Exception\CancelTimeLoggingException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exception\CannotReachServerException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exception\NoSuchTaskException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exception\StatusNotOkayException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\EditsToEstimatedTime.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\EditToTaskCompletionDate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\ProjectModel.cs" />
@@ -44,6 +47,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Settings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Stopwatch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TimeLoggingController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Readme.md" />

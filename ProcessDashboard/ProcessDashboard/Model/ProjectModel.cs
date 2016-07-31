@@ -1,14 +1,16 @@
-﻿using System;
+﻿#region
+using System;
 using SQLite;
-
+#endregion
+// ReSharper disable UnusedMember.Local
 namespace ProcessDashboard.Model
 {
     [Table("project")]
     public class ProjectModel
     {
-        [PrimaryKey,Column("project_id")]
+        [PrimaryKey, Column("project_id")]
         public string Id { get; set; }
-        
+
         [Column("name")]
         public string Name { get; set; }
 

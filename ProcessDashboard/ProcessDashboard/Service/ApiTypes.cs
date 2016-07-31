@@ -1,10 +1,11 @@
+#region
 using System;
 using System.Net.Http;
 using Fusillade;
 using ModernHttpClient;
 using ProcessDashboard.Service.Interface;
 using Refit;
-
+#endregion
 namespace ProcessDashboard.Service
 {
     /*
@@ -23,8 +24,17 @@ namespace ProcessDashboard.Service
 
     public class ApiTypes : IApiTypes
     {
+        // For any network requests that has to be done on the background
+        private readonly Lazy<IPDashApi> _background;
+
+        // Speculatively make requests by predicting what the user might need. This has the lowest priority.
+        // There is a 5 mb limit on how much can be speculatively retrieved.
+        private readonly Lazy<IPDashApi> _speculative;
+
+        // Any network request that is because the user initiated it. This has the highest priority
+        private readonly Lazy<IPDashApi> _userInitiated;
         //TODO: Change this to the APIBaseAddress stored in settings file.
-        public const string ApiBaseAddress = "https://pdes.tuma-solutions.com/api/v1/";
+        public string ApiBaseAddress = Settings.GetInstance().GetApiAddress();
 
         public ApiTypes(string apiBaseAddress = null)
         {
@@ -37,6 +47,18 @@ namespace ProcessDashboard.Service
 
                 // Return a concrete implementation of IPDashAPi
                 return RestService.For<IPDashApi>(client);
+
+                //TODO: Check if JSON Serialization settings is required.
+                /*, new RefitSettings
+                {
+                    JsonSerializerSettings = new JsonSerializerSettings
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                        
+
+                    }
+                });
+                */
             };
 
             // Use Native Message Handler to make use of ModernHttpClient
@@ -50,21 +72,28 @@ namespace ProcessDashboard.Service
             _speculative = new Lazy<IPDashApi>(() => createClient(
                 new RateLimitedHttpMessageHandler(new NativeMessageHandler(), Priority.Speculative)));
         }
-        
-        // For any network requests that has to be done on the background
-        private readonly Lazy<IPDashApi> _background;
-
-        // Any network request that is because the user initiated it. This has the highest priority
-        private readonly Lazy<IPDashApi> _userInitiated;
-
-        // Speculatively make requests by predicting what the user might need. This has the lowest priority.
-        // There is a 5 mb limit on how much can be speculatively retrieved.
-        private readonly Lazy<IPDashApi> _speculative;
 
         public IPDashApi Background => _background.Value;
 
         public IPDashApi UserInitiated => _userInitiated.Value;
 
         public IPDashApi Speculative => _speculative.Value;
+
+        public IPDashApi GetApi(Priority priority)
+        {
+            switch (priority)
+            {
+                case Priority.Background:
+                    return Background;
+                case Priority.UserInitiated:
+                    return UserInitiated;
+                case Priority.Speculative:
+                    return Speculative;
+                case Priority.Explicit:
+                    return UserInitiated;
+                default:
+                    return UserInitiated;
+            }
+        }
     }
 }
