@@ -17,15 +17,13 @@ namespace ProcessDashboard.iOS
 
 			//view.BringSubviewToFront = this;
 
-			string[] tableItems = new string[] { "My Account",
-				"Security",
-				"Clear Cache",
-				"Help & Feedback",
-				"About TSP",
-				"Log out Current Account",};
+			string[] tableItems = new string[] { "Logged in as",
+				"Connect only over WiFi",
+				"Max continuous interrupt time",
+				"Forgotten timer threshold"};
 
 			SettingTable = new UITableView(new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height));
-			SettingTable.Source = null;//new ProjectsTableSource(tableItems, this);
+			SettingTable.Source = new SettingTableSource(tableItems, this);
 
 			Add(SettingTable);
 

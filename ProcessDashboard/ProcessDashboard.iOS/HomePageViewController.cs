@@ -333,9 +333,13 @@ namespace ProcessDashboard.iOS
 				controller.projectName = currentProject.Name;
 			}
 			else if (segue.Identifier.Equals("homeTask2TaskDetails"))
-			{ 
+			{
 				TaskDetailsViewController controller = (TaskDetailsViewController)segue.DestinationViewController;
 				controller.task = currentTask;
+			}
+			else if (segue.Identifier.Equals("(HometoSetting"))
+			{
+				SettingsViewController controller = (SettingsViewController)segue.DestinationViewController;
 			}
 		}
     }

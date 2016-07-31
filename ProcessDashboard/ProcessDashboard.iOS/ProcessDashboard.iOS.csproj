@@ -286,6 +286,7 @@
     <Compile Include="TimeLogs\StatusPickerViewModel.cs" />
     <Compile Include="Tasks\TaskDetailTableSource.cs" />
     <Compile Include="TimeLogs\DateTimePickerViewModel.cs" />
+    <Compile Include="Tasks\SettingTableSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="TimeLogs\" />
