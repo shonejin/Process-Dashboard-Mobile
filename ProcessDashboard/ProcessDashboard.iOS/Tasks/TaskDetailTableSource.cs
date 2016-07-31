@@ -15,7 +15,7 @@ namespace ProcessDashboard.iOS
 		Task TaskItem;
 		protected string cellIdentifier = "Cell";
 		UIViewController owner;
-		UITextField completeDateText, planTimeText;
+		public UITextField completeDateText, planTimeText;
 		DateTime completeTimeSelectedDate;
 		UIToolbar toolbar;
 		UIBarButtonItem saveButton, cancelButton;
@@ -23,6 +23,7 @@ namespace ProcessDashboard.iOS
 		UIPickerView PlanTimePicker;
 		String saveButtonLabel = "Save";
 		string planSelectedHour, planSelectedMinute;
+		TaskDetailsViewController controller;
 
 		public TaskDetailTableSource(Task items, UIViewController owner)
 		{
@@ -180,8 +181,6 @@ namespace ProcessDashboard.iOS
 				this.planSelectedMinute = m.ToString();
 			}
 
-
-
 			planModel.NumberSelected += (Object sender, EventArgs e) =>
 			{
 				this.planSelectedHour = planModel.selectedHour;
@@ -243,13 +242,29 @@ namespace ProcessDashboard.iOS
 			toolbar.SizeToFit();
 
 			// Create a 'done' button for the toolbar and add it to the toolbar
-			saveButton = new UIBarButtonItem(saveButtonLabel, UIBarButtonItemStyle.Bordered,
-			(s, e) =>
+			saveButton = new UIBarButtonItem(saveButtonLabel, UIBarButtonItemStyle.Bordered, null);
+
+			saveButton.Clicked += (s, e) =>
 			{
+				Console.WriteLine(saveButton.Title.ToString());
+				if (saveButton.Title.ToString().Equals("Mark Complete"))
+				{
+					//controller.changeCheckBoxImage("checkbox-checked");
+					// TODO: Save the completed Date to datebase
+				}
+				else if (saveButton.Title.ToString().Equals("Mark InComplete"))
+				{
+					//controller.changeCheckBoxImage("checkbox-unchecked");
+					// TODO: Set the current task complete date as "1/1/0001" and save to database
+				}
+				else { // saveButton.Title.ToString().Equals("Change Completion Date")
+					
+					// TODO: Save the new completed Date to datebase
+				}
 				this.completeDateText.Text = completeTimeSelectedDate.ToShortDateString();
 				this.completeDateText.ResignFirstResponder();
-			});
 
+			};
 			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
 
 			cancelButton = new UIBarButtonItem("Cancel", UIBarButtonItemStyle.Bordered,

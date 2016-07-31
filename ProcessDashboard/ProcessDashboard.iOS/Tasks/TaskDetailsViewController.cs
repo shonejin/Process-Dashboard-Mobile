@@ -24,6 +24,14 @@ namespace ProcessDashboard.iOS
     {
 		public Task task;
 		public Task taskDetail;
+		TimeLoggingController timeLoggingController;
+		Controller c;
+		//UITextField completeDateText;
+		DateTime completeTimeSelectedDate;
+		UIToolbar toolbar;
+		UIBarButtonItem saveButton, cancelButton;
+		UIDatePicker CompleteTimePicker;
+		String saveButtonLabel = "Save";
 
 		/*
         public string fullName { get; set; }
@@ -106,13 +114,31 @@ namespace ProcessDashboard.iOS
 
 			base.ViewDidLoad();
 
+			timeLoggingController = TimeLoggingController.GetInstance();
+			timeLoggingController.TimeLoggingStateChanged += new StateChangedEventHandler(timeLoggingStateChanged);
+
+			var apiService = new ApiTypes(null);
+			var service = new PDashServices(apiService);
+			c = new Controller(service);
+
+			TdPauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
+			TdPauseBtn.Enabled = true;
+			TdPauseBtn.TouchUpInside += PauseBtnOnClick;
+
+			TdPlayBtn.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Normal);
+			TdPlayBtn.Enabled = false;
+			TdPlayBtn.TouchUpInside += PlayBtnOnClick;
+
+			TdCheckboxBtn.TouchUpInside += delegate
+			{
+				((TaskDetailTableSource)PlanTable.Source).completeDateText.BecomeFirstResponder();
+
+			};
+
 			var estimated = TimeSpan.FromMinutes(task.EstimatedTime);
 			var actual = TimeSpan.FromMinutes(task.ActualTime);
 			string[] tableItems = new string[]{estimated.ToString("hh\\:mm"), actual.ToString("hh\\:mm"), task.CompletionDate.ToString("MM/dd/yyyy") };
 
-			Console.WriteLine("estimated time: " + task.EstimatedTime);
-			Console.WriteLine("actual time: " + task.ActualTime);
-			Console.WriteLine("complete time: " + task.CompletionDate);
 			refreshData();
 
 			PlanTable.AutoresizingMask = UIViewAutoresizing.All;
@@ -125,5 +151,171 @@ namespace ProcessDashboard.iOS
 
 			TdNotesTf.Text = task.TaskNote ?? "";
 		}
+
+		private void refreshControlButtons()
+		{
+			if (task == null)
+			{
+				TdPauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
+				TdPlayBtn.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Normal);
+				TdCheckboxBtn.SetImage(UIImage.FromBundle("checkbox-unchecked"), UIControlState.Normal);
+				TdPauseBtn.Enabled = false;
+				TdPlayBtn.Enabled = false;
+				TdCheckboxBtn.Enabled = false;
+			}
+			else
+			{
+				if (task.CompletionDate.Ticks > 0)
+				{
+					TdCheckboxBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
+				}
+				else
+				{
+					TdCheckboxBtn.SetImage(UIImage.FromBundle("checkbox-unchecked"), UIControlState.Normal);
+				}
+				TdCheckboxBtn.Enabled = true;
+
+				if (timeLoggingController.isTimerRunning())
+				{
+					TdPauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
+					TdPlayBtn.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Normal);
+					TdPauseBtn.Enabled = true;
+					TdPlayBtn.Enabled = false;
+				}
+				else
+				{
+					TdPauseBtn.SetImage(UIImage.FromBundle("pause-activated"), UIControlState.Normal);
+					TdPlayBtn.SetImage(UIImage.FromBundle("play-deactivated"), UIControlState.Normal);
+					TdPauseBtn.Enabled = false;
+					TdPlayBtn.Enabled = true;
+				}
+			}
+		}
+
+		private void timeLoggingStateChanged(object sender, StateChangedEventArgs ea)
+		{
+			if (ea.NewState.Equals(TimeLoggingControllerStates.TimeLogCanceled))
+			{
+				refreshControlButtons();
+			}
+		}
+
+		public void PauseBtnOnClick(object sender, EventArgs ea)
+		{
+			timeLoggingController.stopTiming();
+			TdPauseBtn.SetImage(UIImage.FromBundle("pause-activated"), UIControlState.Normal);
+			TdPauseBtn.Enabled = false;
+			TdPlayBtn.SetImage(UIImage.FromBundle("play-deactivated"), UIControlState.Normal);
+			TdPlayBtn.Enabled = true;
+		}
+
+		public void PlayBtnOnClick(object sender, EventArgs ea)
+		{
+			if (timeLoggingController.wasNetworkAvailable)
+			{
+				timeLoggingController.startTiming(task.Id);
+				TdPauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
+				TdPauseBtn.Enabled = true;
+				TdPlayBtn.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Normal);
+				TdPlayBtn.Enabled = false;
+			}
+			else
+			{
+				UIAlertController okAlertController = UIAlertController.Create("Oops", "The previous time log is not yet updated to the server. Please try again later.", UIAlertControllerStyle.Alert);
+				okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
+				PresentViewController(okAlertController, true, null);
+				return;
+			}
+		}
+
+
+
+		public void newCompleteDatePicker()
+		{
+
+			CompleteTimePicker = new UIDatePicker(new CoreGraphics.CGRect(0, 300, 400, 200f));
+			CompleteTimePicker.BackgroundColor = UIColor.FromRGB(220, 220, 220);
+
+			CompleteTimePicker.UserInteractionEnabled = true;
+			CompleteTimePicker.Mode = UIDatePickerMode.DateAndTime;
+
+			//Setup the toolbar
+			toolbar = new UIToolbar();
+			toolbar.BarStyle = UIBarStyle.Default;
+			toolbar.BackgroundColor = UIColor.FromRGB(220, 220, 220);
+			toolbar.Translucent = true;
+			toolbar.SizeToFit();
+
+			// Create a 'done' button for the toolbar and add it to the toolbar
+			saveButton = new UIBarButtonItem(saveButtonLabel, UIBarButtonItemStyle.Bordered,
+			(s, e) =>
+			{
+				((TaskDetailTableSource)PlanTable.Source).completeDateText.Text = completeTimeSelectedDate.ToShortDateString();
+				((TaskDetailTableSource)PlanTable.Source).completeDateText.ResignFirstResponder();
+			});
+
+
+			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
+
+			cancelButton = new UIBarButtonItem("Cancel", UIBarButtonItemStyle.Bordered,
+			(s, e) =>
+			{
+				((TaskDetailTableSource)PlanTable.Source).completeDateText.ResignFirstResponder();
+			});
+
+			toolbar.SetItems(new UIBarButtonItem[] { cancelButton, spacer, saveButton }, true);
+
+			completeTimeSelectedDate = task.CompletionDate;
+
+			if (task.CompletionDate.ToShortDateString().Equals("1/1/0001"))
+			{
+				saveButton.Title = "Mark Complete";
+				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(DateTime.Now), true);
+			}
+			else if (!task.CompletionDate.ToShortDateString().Equals("1/1/0001"))
+			{
+				saveButton.Title = "Mark InComplete";
+				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(task.CompletionDate), true);
+			}
+
+			CompleteTimePicker.ValueChanged += (Object s, EventArgs e) =>
+			{
+				if (!task.CompletionDate.ToShortDateString().Equals("1/1/0001"))
+				{
+					saveButton.Title = "Change Completion Date";
+
+				}
+				completeTimeSelectedDate = ConvertNSDateToDateTime((s as UIDatePicker).Date);
+			};
+
+			CompleteTimePicker.BackgroundColor = UIColor.White;
+
+			((TaskDetailTableSource)PlanTable.Source).completeDateText.InputView = CompleteTimePicker;
+			((TaskDetailTableSource)PlanTable.Source).completeDateText.InputAccessoryView = toolbar;
+
+		}
+
+		public static DateTime ConvertNSDateToDateTime(NSDate date)
+		{
+			DateTime reference = new DateTime(2001, 1, 1, 0, 0, 0);
+			DateTime currentDate = reference.AddSeconds(date.SecondsSinceReferenceDate);
+			DateTime localDate = currentDate.ToLocalTime();
+			return localDate;
+		}
+
+		public static NSDate ConvertDateTimeToNSDate(DateTime date)
+		{
+			DateTime newDate = TimeZone.CurrentTimeZone.ToLocalTime(
+				new DateTime(2001, 1, 1, 0, 0, 0));
+			return NSDate.FromTimeIntervalSinceReferenceDate(
+				(date - newDate).TotalSeconds);
+		}
+
+		public void changeCheckBoxImage(String imageName)
+		{
+			Console.WriteLine("hahaha");
+			this.TdCheckboxBtn.SetImage(UIImage.FromBundle(imageName), UIControlState.Normal);
+		}
+			
     }
 }

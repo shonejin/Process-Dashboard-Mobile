@@ -117,24 +117,43 @@
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="334" misplaced="YES">
                                 <rect key="frame" x="102" y="206" width="46" height="30"/>
-                                <state key="normal" image="start.png">
+                                <state key="normal" image="play-activated">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
-                                <connections>
-                                    <action selector="UIButton334_TouchUpInside:" destination="291" eventType="touchUpInside" id="335"/>
-                                </connections>
+                                <connections/>
+                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="130" y="206" width="30" height="30"/>
+                                </variation>
+                                <constraints>
+                                    <constraint id="3377" firstItem="334" firstAttribute="height" constant="40"/>
+                                    <constraint id="3378" firstItem="334" firstAttribute="width" constant="40"/>
+                                </constraints>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="341" misplaced="YES">
                                 <rect key="frame" x="20" y="206" width="46" height="30"/>
-                                <state key="normal" image="stop.png">
+                                <state key="normal" image="pause-activated">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="40" y="206" width="30" height="30"/>
+                                </variation>
+                                <constraints>
+                                    <constraint id="3373" firstItem="341" firstAttribute="height" constant="40"/>
+                                    <constraint id="3374" firstItem="341" firstAttribute="width" constant="40"/>
+                                </constraints>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1474" misplaced="YES">
                                 <rect key="frame" x="266" y="203" width="38" height="36"/>
-                                <state key="normal" image="Checkbox1.png">
+                                <state key="normal" image="checkbox-unchecked">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="295" y="203" width="30" height="30"/>
+                                </variation>
+                                <constraints>
+                                    <constraint id="3379" firstItem="1474" firstAttribute="height" constant="40"/>
+                                    <constraint id="3380" firstItem="1474" firstAttribute="width" constant="40"/>
+                                </constraints>
                             </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="1989" misplaced="YES">
                                 <rect key="frame" x="18" y="260" width="337" height="160"/>
@@ -293,7 +312,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="3338">
-                                                    <rect key="frame" x="46" y="0.0" width="259" height="43"/>
+                                                    <rect key="frame" x="15" y="0.0" width="270" height="43.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -499,7 +518,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="2545" translatesAutoresizingMaskIntoConstraints="NO">
                                 <rect key="frame" x="510" y="215" width="40" height="40"/>
-                                <state key="normal" image="checkbox-empty">
+                                <state key="normal" image="checkbox-checked">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <variation key="heightClass=regular-widthClass=compact">
@@ -1137,7 +1156,4 @@
     <inferredMetricsTieBreakers>
         <segue reference="2519"/>
     </inferredMetricsTieBreakers>
-    <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedScreenMetrics key="destination" type="retina47"/>
-    </simulatedMetricsContainer>
 </document>

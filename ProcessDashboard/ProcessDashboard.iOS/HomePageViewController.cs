@@ -149,19 +149,34 @@ namespace ProcessDashboard.iOS
 			toolbar.Translucent = true;
 			toolbar.SizeToFit();
 
-			// Create a 'done' button for the toolbar and add it to the toolbar
-			saveButton = new UIBarButtonItem(saveButtonLabel, UIBarButtonItemStyle.Bordered,
-			(s, e) =>
+			saveButton = new UIBarButtonItem(saveButtonLabel, UIBarButtonItemStyle.Bordered, null);
+
+			saveButton.Clicked += (s, e) =>
 			{
-				//this.StartTimeText.Text = startTimeSelectedDate.ToString();
+				Console.WriteLine(saveButton.Title.ToString());
+				if (saveButton.Title.ToString().Equals("Mark Complete"))
+				{
+					completeBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
+					// TODO: Save the completed Date to datebase
+				}
+				else if (saveButton.Title.ToString().Equals("Mark InComplete"))
+				{
+					completeBtn.SetImage(UIImage.FromBundle("checkbox-unchecked"), UIControlState.Normal);
+					// TODO: Set the current task complete date as "1/1/0001" and save to database
+				}
+				else { // saveButton.Title.ToString().Equals("Change Completion Date")
+					
+					// TODO: Save the new completed Date to datebase
+				}
 				this.completedDateText.ResignFirstResponder();
-			});
+			};
 
 			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
 
 			cancelButton = new UIBarButtonItem("Cancel", UIBarButtonItemStyle.Bordered,
 			(s, e) =>
 			{
+				Console.WriteLine("Cancel");
 				this.completedDateText.ResignFirstResponder();
 			});
 
