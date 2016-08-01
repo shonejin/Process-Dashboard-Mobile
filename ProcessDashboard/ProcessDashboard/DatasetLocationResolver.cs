@@ -1,5 +1,6 @@
 ﻿#region
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Web;
 #endregion
@@ -26,12 +27,73 @@ namespace ProcessDashboard
         public void ResolveFromUri(Uri uri, out string serverUrl, out string datasetId)
         {
             // parse the long URL, and extract relevant info from it.
-            var p = HttpUtility.ParseQueryString(uri.Query);
-            serverUrl = p.Get("serverUrl");
-            datasetId = p.Get("datasetId");
+			//var p = HttpUtility.ParseQueryString(uri.Query);
+
+			var p = ParseQueryString(uri.Query);
+            serverUrl = p["serverUrl"];
+            datasetId = p["datasetId"];
             if (serverUrl == null || datasetId == null)
                 throw new ArgumentException("Unrecognized token");
         }
+
+		public Dictionary<String, String> ParseQueryString(string query)
+		{
+			if (query.Length == 0)
+				return null;
+
+			string decoded = System.Net.WebUtility.HtmlDecode(query);
+			int decodedLength = decoded.Length;
+			int namePos = 0;
+			bool first = true;
+			Dictionary<String, String> result = new Dictionary<String, String>();
+			while (namePos <= decodedLength)
+			{
+				int valuePos = -1, valueEnd = -1;
+				for (int q = namePos; q < decodedLength; q++)
+				{
+					if (valuePos == -1 && decoded[q] == '=')
+					{
+						valuePos = q + 1;
+					}
+					else if (decoded[q] == '&')
+					{
+						valueEnd = q;
+						break;
+					}
+				}
+
+				if (first)
+				{
+					first = false;
+					if (decoded[namePos] == '?')
+						namePos++;
+				}
+
+				string name, value;
+				if (valuePos == -1)
+				{
+					name = null;
+					valuePos = namePos;
+				}
+				else {
+					name = System.Net.WebUtility.UrlDecode(decoded.Substring(namePos, valuePos - namePos - 1));
+				}
+				if (valueEnd < 0)
+				{
+					namePos = -1;
+					valueEnd = decoded.Length;
+				}
+				else {
+					namePos = valueEnd + 1;
+				}
+				value = System.Net.WebUtility.UrlDecode(decoded.Substring(valuePos, valueEnd - valuePos));
+
+				result.Add(name, value);
+				if (namePos == -1)
+					break;
+			}
+			return result;
+		}
 
         private string ToUrl(string token)
         {

@@ -9,22 +9,16 @@ namespace ProcessDashboard
         private static Settings _instance;
         //TODO: Remove b4 production
         private readonly string _baseurl = " https://pdes.tuma-solutions.com/";
-        private readonly string _password;
+        private readonly string _password = "test";
 
-        private readonly string _username;
+        private readonly string _username = "test";
 
-        private Settings()
-        {
-            CheckWifi = false;
-            //TODO: Remove this before shipping to production
-            _username = "test";
-            _password = "test";
+        public string Dataset {
+            get { return "INST-szewf0"; }
         }
 
         public bool CheckWifi { get; set; }
-        //TODO: Remove b4 production
-        public string Dataset => "mock";
-
+        
         public string AuthHeader
         {
             get

@@ -62,7 +62,5 @@ namespace ProcessDashboard.Service.Interface
         Task<List<DTO.Task>> GetRecentTasksLocal(Priority priority, string dataset);
         Task<List<TimeLogEntry>> GetTimeLogsLocal(Priority priority, string dataset);
         */
-
-        // These tasks gets the values from the Database
     }
 }

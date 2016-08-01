@@ -47,6 +47,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Settings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Stopwatch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TimeLoggingController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StateChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -185,7 +185,5 @@ namespace ProcessDashboard.SyncLogic
             Debug.WriteLine("Get status :" + dro);
             return dro;
         }
-
-        /******* TEST CODE ****/
     }
 }
