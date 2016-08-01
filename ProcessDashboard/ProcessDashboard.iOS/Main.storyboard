@@ -669,7 +669,7 @@
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Home" id="618"/>
-                    <navigationItem key="navigationItem" title="Home" id="609">
+                    <navigationItem key="navigationItem" title="Process Dashboard" id="609">
                         <barButtonItem key="rightBarButtonItem" style="plain" id="610">
                             <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="611">
                                 <rect key="frame" x="0.0" y="0.0" width="24" height="16"/>

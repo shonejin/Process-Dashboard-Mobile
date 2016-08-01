@@ -69,7 +69,6 @@ namespace ProcessDashboard.iOS
 				// Display the alert
 				this.PresentViewController(actionSheetAlert, true, null);
 				//delete the task time log
-	
 
 			});
 
@@ -108,12 +107,22 @@ namespace ProcessDashboard.iOS
 
 			// Create a 'done' button for the toolbar and add it to the toolbar
 
-			saveButton = new UIBarButtonItem("Save", UIBarButtonItemStyle.Bordered,
-			(s, e) =>
+			saveButton = new UIBarButtonItem("Save", UIBarButtonItemStyle.Bordered, null);
+
+			saveButton.Clicked += (s, e) =>
 			{
 				this.StartTimeText.Text = startTimeSelectedDate.ToString();
+				currentTask.StartDate = startTimeSelectedDate;
+				if (Delegate != null)
+				{
+					Delegate.UpdateTaskTimelog(currentTask);
+				}
+				else if (DelegateforTasktimelog != null)
+				{
+					DelegateforTasktimelog.UpdateTaskTimelog(currentTask);
+				}
 				this.StartTimeText.ResignFirstResponder();
-			});
+			};
 
 			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
 
@@ -237,16 +246,23 @@ namespace ProcessDashboard.iOS
 			toolbar.SizeToFit();
 
 			// Create a 'done' button for the toolbar and add it to the toolbar
+			saveButton = new UIBarButtonItem("Save", UIBarButtonItemStyle.Bordered, null);
 
-			saveButton = new UIBarButtonItem("Save", UIBarButtonItemStyle.Bordered,
-			(s, e) =>
+			saveButton.Clicked += (s, e) =>
 			{
 				
 				this.DeltaText.Text = this.deltaSelectedHour + ":" + this.deltaSelectedMinute;
+				currentTask.LoggedTime = int.Parse(this.deltaSelectedHour) * 60 + int.Parse(this.deltaSelectedMinute);
+				if (Delegate != null)
+				{
+					Delegate.UpdateTaskTimelog(currentTask);
+				}
+				else if (DelegateforTasktimelog != null)
+				{
+					DelegateforTasktimelog.UpdateTaskTimelog(currentTask);
+				}
 				this.DeltaText.ResignFirstResponder();
-			});
-
-			//var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
+			};
 
 			cancelButton = new UIBarButtonItem("Cancel", UIBarButtonItemStyle.Bordered,
 			(s, e) =>
@@ -304,15 +320,23 @@ namespace ProcessDashboard.iOS
 			toolbar.SizeToFit();
 
 
-			saveButton = new UIBarButtonItem("Save", UIBarButtonItemStyle.Bordered,
-			(s, e) =>
+			saveButton = new UIBarButtonItem("Save", UIBarButtonItemStyle.Bordered, null);
+
+			saveButton.Clicked += (s, e) =>
 			{
 				this.IntText.Text = this.intSelectedHour + ":" + this.intSelectedMinute;
-				//Console.WriteLine("haha" + this.intSelectedHour);
-				//Console.WriteLine("hehe" + this.intSelectedMinute);
+				currentTask.InterruptTime = int.Parse(this.intSelectedHour) * 60 + int.Parse(this.intSelectedMinute);
+				if (Delegate != null)
+				{
+					Delegate.UpdateTaskTimelog(currentTask);
+				}
+				else if (DelegateforTasktimelog != null)
+				{
+					DelegateforTasktimelog.UpdateTaskTimelog(currentTask);
+				}
 
 				this.IntText.ResignFirstResponder();
-			});
+			};
 
 			cancelButton = new UIBarButtonItem("Cancel", UIBarButtonItemStyle.Bordered,
 			(s, e) =>
@@ -381,17 +405,15 @@ namespace ProcessDashboard.iOS
 			if (e.ButtonIndex == 1)
 			{
 				CommentText.SetTitle(parent_alert.GetTextField(0).Text, UIControlState.Normal);
-
-				// TODO: fix the type
-				//TimelogTableItem newTask = new TimelogTableItem();
-				//newTask.Heading = currentTask.Heading;
-				//newTask.SubHeading = currentTask.SubHeading;
-				//newTask.StartTime = currentTask.StartTime;
-				//newTask.Delta = currentTask.Delta;
-				//newTask.Int = currentTask.Int;
-				//newTask.Comment = parent_alert.GetTextField(0).Text;
-				//Delegate.SaveTask(currentTask, newTask);
-
+				currentTask.Comment = parent_alert.GetTextField(0).Text;
+				if (Delegate != null)
+				{
+					Delegate.UpdateTaskTimelog(currentTask);
+				}
+				else if (DelegateforTasktimelog != null)
+				{
+					DelegateforTasktimelog.UpdateTaskTimelog(currentTask);
+				}
 			}
 
 		}

@@ -133,6 +133,36 @@ namespace ProcessDashboard.iOS
 			return 0;
 
 		}
+
+		public async void UpdateTaskTimelog(TimeLogEntry log)
+		{
+			await UpdateATimeLog(log);
+			//NavigationController.PopViewController(true);
+		}
+
+		public async System.Threading.Tasks.Task<int> UpdateATimeLog(TimeLogEntry editedTimeLog)
+		{
+
+			var apiService = new ApiTypes(null);
+			var service = new PDashServices(apiService);
+			Controller c = new Controller(service);
+
+			EditATimeLogRoot tr = await c.UpdateTimeLog("INST-szewf0", editedTimeLog.Id.ToString(), editedTimeLog.Comment, editedTimeLog.StartDate.ToString(Settings.GetInstance().DateTimePattern), editedTimeLog.Task.Id.ToString(),  editedTimeLog.InterruptTime, editedTimeLog.LoggedTime, true);
+			try
+			{
+				System.Diagnostics.Debug.WriteLine("** Updated the new Time Log entry **");
+				System.Diagnostics.Debug.WriteLine("Updated Logged Time :" + tr.TimeLogEntry.LoggedTime);
+
+			}
+			catch (System.Exception e)
+			{
+				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+			}
+			return 0;
+
+		}
+
+
 		// This ID is used to fetch the time logs. It is set by the previous view controller
 
 		public async void refreshData()
