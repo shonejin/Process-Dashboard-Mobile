@@ -66,7 +66,7 @@ namespace ProcessDashboard.iOS
 					presentationPopover.PermittedArrowDirections = UIPopoverArrowDirection.Up;
 				}
 
-				// Display the alert
+				// Display the alertg
 				this.PresentViewController(actionSheetAlert, true, null);
 				//delete the task time log
 
@@ -78,8 +78,8 @@ namespace ProcessDashboard.iOS
 
 			TaskNameLabel.Text = currentTask.Task.FullName;
 
-			StartTimeText.Text = currentTask.StartDate.ToShortDateString() + " " + currentTask.StartDate.ToShortTimeString();
-
+			StartTimeText.Text = currentTask.StartDate.ToLocalTime().ToString("g");
+		
 			// set up start time customized UIpicker
 
 			StartTimePicker = new UIDatePicker(new CoreGraphics.CGRect(10f, this.View.Frame.Height - 250, this.View.Frame.Width - 20, 200f));
@@ -87,8 +87,9 @@ namespace ProcessDashboard.iOS
 
 			StartTimePicker.UserInteractionEnabled = true;
 			StartTimePicker.Mode = UIDatePickerMode.DateAndTime;
+			StartTimePicker.MaximumDate = ConvertDateTimeToNSDate(DateTime.UtcNow.ToLocalTime());
 
-			startTimeSelectedDate = currentTask.StartDate;
+			startTimeSelectedDate = currentTask.StartDate.ToLocalTime();
 
 			StartTimePicker.ValueChanged += (Object sender, EventArgs e) =>
 			{
@@ -137,33 +138,11 @@ namespace ProcessDashboard.iOS
 			this.StartTimeText.InputView = StartTimePicker;
 			this.StartTimeText.InputAccessoryView = toolbar;
 
-
-			int newHour =  (int)currentTask.LoggedTime / 60;
-			int newMin = (int)currentTask.LoggedTime % 60;
-			string newLoggedTime = newHour + ":" + newMin;
-
-			DeltaText.Text = newLoggedTime;
+			DeltaText.Text = TimeSpan.FromMinutes(currentTask.LoggedTime).ToString(@"hh\:mm");
 
 			IntLabel.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
-			int newH = (int)currentTask.InterruptTime / 60;
-			int newM = (int)currentTask.InterruptTime % 60;
-			string tempH = null, tempM = null;
-
-			tempH = newH.ToString();
-
-			if (newM < 10)
-			{
-				tempM = "0" + newM.ToString();
-			}
-			else {
-				
-				tempM = newM.ToString();
-			}
-
-			string newInt = tempH + ":" + tempM;
-
-			IntText.Text = newInt;
+			IntText.Text = TimeSpan.FromMinutes(currentTask.InterruptTime).ToString(@"hh\:mm");
 
 			CommentText.SetTitle(currentTask.Comment ?? "No Comment", UIControlState.Normal);
 
@@ -223,8 +202,6 @@ namespace ProcessDashboard.iOS
 			else {
 				this.deltaSelectedMinute = m.ToString();
 			}
-
-
 
 			deltaModel.NumberSelected += (Object sender,EventArgs e) =>
 			{
@@ -356,25 +333,8 @@ namespace ProcessDashboard.iOS
 			base.ViewWillAppear(animated);
 
 			TaskNameLabel.Text = currentTask.Task.FullName;
-			StartTimeText.Text = currentTask.StartDate.ToShortDateString() + " " + currentTask.StartDate.ToShortTimeString();
-		    int newHour = (int)currentTask.LoggedTime / 60;
-			int newMin = (int)currentTask.LoggedTime % 60;
-			string newH = null, newM = null;
-
-			newH = newHour.ToString();
-
-			if (newMin < 10)
-			{
-				newM = "0" + newMin.ToString();
-			}
-			else {
-				
-				newM = newMin.ToString();
-			}
-				
-			string newLoggedTime = newH + ":" + newM;
-
-			DeltaText.Text = newLoggedTime;
+			StartTimeText.Text = currentTask.StartDate.ToLocalTime().ToString("g");
+			DeltaText.Text = TimeSpan.FromMinutes(currentTask.LoggedTime).ToString(@"hh\:mm");
 
 		}
 

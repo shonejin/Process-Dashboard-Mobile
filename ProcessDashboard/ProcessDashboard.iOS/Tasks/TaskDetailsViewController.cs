@@ -238,6 +238,7 @@ namespace ProcessDashboard.iOS
 
 			CompleteTimePicker.UserInteractionEnabled = true;
 			CompleteTimePicker.Mode = UIDatePickerMode.DateAndTime;
+			CompleteTimePicker.MaximumDate = ConvertDateTimeToNSDate(DateTime.UtcNow.ToLocalTime());
 
 			//Setup the toolbar
 			toolbar = new UIToolbar();
@@ -313,7 +314,7 @@ namespace ProcessDashboard.iOS
 
 		public void changeCheckBoxImage(String imageName)
 		{
-			Console.WriteLine("hahaha");
+			//Console.WriteLine("hahaha");
 			this.TdCheckboxBtn.SetImage(UIImage.FromBundle(imageName), UIControlState.Normal);
 		}
 			

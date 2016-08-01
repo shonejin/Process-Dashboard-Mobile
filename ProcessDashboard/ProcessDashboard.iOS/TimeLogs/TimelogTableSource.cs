@@ -98,22 +98,9 @@ namespace ProcessDashboard.iOS
 
 			//cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
 
-			int newHour = (int)item.LoggedTime/60;
-			int newMin = (int)item.LoggedTime % 60;
-			string newM = null;
-
-			if (newMin < 10)
-			{
-				newM = "0" + newMin.ToString();
-			}
-			else {
-				newM = newMin.ToString();
-			}
-			string newLoggedTime= newHour + ":" + newM;
-
 			cell.UpdateCell(item.Task.FullName.ToString()
-			                , item.StartDate.ToShortTimeString()
-			                , newLoggedTime);
+			                , item.StartDate.ToLocalTime().ToShortTimeString()
+			                , TimeSpan.FromMinutes(item.LoggedTime).ToString(@"hh\:mm"));
 
 			Console.WriteLine("taks full name: " + item.Task.FullName.ToString());
 
@@ -138,13 +125,6 @@ namespace ProcessDashboard.iOS
 					// delete the row from the table
 					tableView.DeleteRows(new NSIndexPath[] { indexPath }, UITableViewRowAnimation.Fade);
 					break;
-
-				//case UITableViewCellEditingStyle.Insert:
-				//	//---- create a new item and add it to our underlying data
-				//	tableItems.Insert(indexPath.Row, new TableItem("(inserted)"));
-				//	//---- insert a new row in the table
-				//	tableView.InsertRows(new NSIndexPath[] { indexPath }, UITableViewRowAnimation.Fade);
-				//	break;
 
 				case UITableViewCellEditingStyle.None:
 					Console.WriteLine("CommitEditingStyle:None called");

@@ -126,14 +126,14 @@ namespace ProcessDashboard.iOS
 				completeDateText.TextAlignment = UITextAlignment.Right;
 				newCompleteDatePicker();
 
-				if (TaskItem.CompletionDate == null)
+				if (!TaskItem.CompletionDate.HasValue)
 				{
 					completeDateText.Text = "--";
 				}
 				else 
 				{
 					completeDateText.Text = TaskItem.CompletionDate.Value.ToShortDateString();
-					//Console.WriteLine("task completion date:" + TaskItem.completionDate.ToShortDateString());
+
 				}
 			}
 
@@ -233,7 +233,7 @@ namespace ProcessDashboard.iOS
 
 			CompleteTimePicker.UserInteractionEnabled = true;
 			CompleteTimePicker.Mode = UIDatePickerMode.DateAndTime;
-
+			CompleteTimePicker.MaximumDate = ConvertDateTimeToNSDate(DateTime.UtcNow.ToLocalTime());
 			//Setup the toolbar
 			toolbar = new UIToolbar();
 			toolbar.BarStyle = UIBarStyle.Default;

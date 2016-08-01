@@ -141,7 +141,7 @@ namespace ProcessDashboard.iOS
 
 			CompleteTimePicker.UserInteractionEnabled = true;
 			CompleteTimePicker.Mode = UIDatePickerMode.DateAndTime;
-
+			CompleteTimePicker.MaximumDate = ConvertDateTimeToNSDate(DateTime.UtcNow.ToLocalTime());
 			//Setup the toolbar
 			toolbar = new UIToolbar();
 			toolbar.BarStyle = UIBarStyle.Default;
@@ -181,8 +181,6 @@ namespace ProcessDashboard.iOS
 			});
 
 			toolbar.SetItems(new UIBarButtonItem[] { cancelButton, spacer, saveButton }, true);
-
-		    //completeTimeSelectedDate = currentTask.CompletionDate;
 
 			if (currentTask.CompletionDate == null)
 			{
