@@ -77,7 +77,14 @@ namespace ProcessDashboard.iOS
 		{
 
 			var cell = tableView.DequeueReusableCell(CellIdentifier);
-			Task item = TasksSorted[indexPath.Row];
+
+			int idx = indexPath.Row;
+			for (int sec = 0; sec < indexPath.Section; sec++)
+			{
+				idx += (int) RowsInSection(tableView, sec);
+			}
+
+			Task item = TasksSorted[idx];
 
 			if (cell == null)
 				cell = new UITableViewCell(UITableViewCellStyle.Default, CellIdentifier);
