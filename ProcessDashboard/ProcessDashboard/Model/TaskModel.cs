@@ -1,10 +1,12 @@
-﻿using System;
+﻿#region
+using System;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
-
+#endregion
+// ReSharper disable UnusedMember.Local
 namespace ProcessDashboard.Model
 {
-   public class TaskModel
+    public class TaskModel
     {
         [PrimaryKey, Column("task_id")]
         public string TaskId { get; set; }
@@ -32,6 +34,5 @@ namespace ProcessDashboard.Model
 
         [Column("recent_ordinal")]
         public int RecentOrdinal { get; set; }
-        
     }
 }

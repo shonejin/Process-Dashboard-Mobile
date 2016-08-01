@@ -135,9 +135,9 @@ namespace ProcessDashboard.iOS
 
 			};
 
-			var estimated = TimeSpan.FromMinutes(task.EstimatedTime);
-			var actual = TimeSpan.FromMinutes(task.ActualTime);
-			string[] tableItems = new string[]{estimated.ToString("hh\\:mm"), actual.ToString("hh\\:mm"), task.CompletionDate.ToString("MM/dd/yyyy") };
+			TimeSpan estimated = TimeSpan.FromMinutes(task.EstimatedTime);
+			TimeSpan actual = TimeSpan.FromMinutes(task.ActualTime);
+			string[] tableItems = new string[]{estimated.ToString("hh\\:mm"), actual.ToString("hh\\:mm"), task.CompletionDate.Value.ToString("MM/dd/yyyy") };
 
 			refreshData();
 
@@ -165,7 +165,7 @@ namespace ProcessDashboard.iOS
 			}
 			else
 			{
-				if (task.CompletionDate.Ticks > 0)
+				if (task.CompletionDate != null)
 				{
 					TdCheckboxBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
 				}
@@ -175,7 +175,7 @@ namespace ProcessDashboard.iOS
 				}
 				TdCheckboxBtn.Enabled = true;
 
-				if (timeLoggingController.isTimerRunning())
+				if (timeLoggingController.IsTimerRunning())
 				{
 					TdPauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
 					TdPlayBtn.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Normal);
@@ -202,7 +202,7 @@ namespace ProcessDashboard.iOS
 
 		public void PauseBtnOnClick(object sender, EventArgs ea)
 		{
-			timeLoggingController.stopTiming();
+			timeLoggingController.StopTiming();
 			TdPauseBtn.SetImage(UIImage.FromBundle("pause-activated"), UIControlState.Normal);
 			TdPauseBtn.Enabled = false;
 			TdPlayBtn.SetImage(UIImage.FromBundle("play-deactivated"), UIControlState.Normal);
@@ -211,9 +211,9 @@ namespace ProcessDashboard.iOS
 
 		public void PlayBtnOnClick(object sender, EventArgs ea)
 		{
-			if (timeLoggingController.wasNetworkAvailable)
+			if (timeLoggingController.WasNetworkAvailable)
 			{
-				timeLoggingController.startTiming(task.Id);
+				timeLoggingController.StartTiming(task.Id);
 				TdPauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
 				TdPauseBtn.Enabled = true;
 				TdPlayBtn.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Normal);
@@ -265,22 +265,22 @@ namespace ProcessDashboard.iOS
 
 			toolbar.SetItems(new UIBarButtonItem[] { cancelButton, spacer, saveButton }, true);
 
-			completeTimeSelectedDate = task.CompletionDate;
+			completeTimeSelectedDate = task.CompletionDate.Value;
 
-			if (task.CompletionDate.ToShortDateString().Equals("1/1/0001"))
+			if (task.CompletionDate == null)
 			{
 				saveButton.Title = "Mark Complete";
 				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(DateTime.Now), true);
 			}
-			else if (!task.CompletionDate.ToShortDateString().Equals("1/1/0001"))
+			else
 			{
 				saveButton.Title = "Mark InComplete";
-				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(task.CompletionDate), true);
+				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(task.CompletionDate.Value), true);
 			}
 
 			CompleteTimePicker.ValueChanged += (Object s, EventArgs e) =>
 			{
-				if (!task.CompletionDate.ToShortDateString().Equals("1/1/0001"))
+				if (task.CompletionDate != null)
 				{
 					saveButton.Title = "Change Completion Date";
 

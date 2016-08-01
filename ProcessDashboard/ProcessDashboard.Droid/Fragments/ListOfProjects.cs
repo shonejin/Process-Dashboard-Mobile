@@ -1,16 +1,13 @@
-
+#region
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Widget;
 using ProcessDashboard.DTO;
 using ProcessDashboard.SyncLogic;
-using Object = Java.Lang.Object;
-
+using Debug = System.Diagnostics.Debug;
+#endregion
 namespace ProcessDashboard.Droid.Fragments
 {
     public class ListOfProjects : ListFragment
@@ -20,69 +17,78 @@ namespace ProcessDashboard.Droid.Fragments
             base.OnCreate(savedInstanceState);
             RetainInstance = true;
             // Create your fragment here
-            ((MainActivity)(this.Activity)).setTitle("List of Projects");
+            ((MainActivity) Activity).SetTitle("List of Projects");
             // Create your fragment here
         }
 
         public override void OnResume()
         {
             base.OnResume();
-            ((MainActivity)(this.Activity)).setTitle("List of projects");
+            ((MainActivity) Activity).SetTitle("List of projects");
         }
-
 
         public override void OnActivityCreated(Bundle savedInstanceState)
         {
             base.OnActivityCreated(savedInstanceState);
-            ListView listView = this.ListView;
-            listView.ItemClick += (object sender, AdapterView.ItemClickEventArgs e) =>
+            var listView = ListView;
+            listView.ItemClick += (sender, e) =>
             {
                 // var p = e.Parent.SelectedItem.Class;
-                ProjectsAdapter p = (ProjectsAdapter)listView.Adapter;
-                System.Diagnostics.Debug.WriteLine("Type:" + p.GetProject(e.Position));
-                string projectId = p.GetProject(e.Position).Id;
+                var p = (ProjectsAdapter) listView.Adapter;
+                Debug.WriteLine("Type:" + p.GetProject(e.Position));
+                var projectId = p.GetProject(e.Position).Id;
                 //  ((MainActivity)this.Activity).switchToFragment(MainActivity.fragmentTypes.listoftasks);
-                ((MainActivity)this.Activity).ListOfProjectsCallback(projectId);
-
+                ((MainActivity) Activity).ListOfProjectsCallback(projectId);
             };
-            System.Diagnostics.Debug.WriteLine("We are now assigning values to the list view");
-            GetData(listView, ((MainActivity)this.Activity).Ctrl);
-
-
+            Debug.WriteLine("We are now assigning values to the list view");
+            GetData(listView, ((MainActivity) Activity).Ctrl);
         }
-   
 
         private async void GetData(ListView listView, Controller ctrl)
         {
-            List<Project> output = await ctrl.GetProjects(Settings.GetInstance().Dataset);
-            ArrayList al = new ArrayList();
-            ProjectsAdapter listAdapter = new ProjectsAdapter(Activity, Android.Resource.Layout.SimpleListItem1, output.ToArray(),1);
-         
-            listView.Adapter = listAdapter;
-            SetListShown(true);
+            try
+            {
+                var output = await ctrl.GetProjects(Settings.GetInstance().Dataset);
+
+                var listAdapter = new ProjectsAdapter(Activity, Android.Resource.Layout.SimpleListItem1,
+                    output.ToArray());
+
+                listView.Adapter = listAdapter;
+                SetListShown(true);
+            }
+            catch (CannotReachServerException)
+            {
+            }
+            catch (CancelTimeLoggingException)
+            {
+            }
+            catch (StatusNotOkayException)
+            {
+            }
+            catch (Exception)
+            {
+                // For any other weird exceptions
+            }
         }
-        
-		private void LoadDummyData(ListView listView)
-		{
-			string[] items = new string[] { "Sample Project", "Linux Kernel", "Windows 11 Ultimate", "Mobile Process Dashboard"};
-			//ArrayAdapter ListAdapter = new ArrayAdapter<String>(Activity, Android.Resource.Layout.SimpleListItem1, items);
-			//listView.Adapter = ListAdapter;
-		}
+
+        // ReSharper disable once UnusedMember.Local
+        private void LoadDummyData(ListView listView)
+        {
+            string[] items = {"Sample Project", "Linux Kernel", "Windows 11 Ultimate", "Mobile Process Dashboard"};
+            ArrayAdapter listAdapter = new ArrayAdapter<string>(Activity, Android.Resource.Layout.SimpleListItem1, items);
+            listView.Adapter = listAdapter;
+        }
     }
-
-
 
     public class ProjectsAdapter : ArrayAdapter
     {
-        Project[] _projectList;
+        private Project[] _projectList;
 
-        public ProjectsAdapter(Context context, int resource, Project[] objects, int flag) : base(context, resource, objects)
+        public ProjectsAdapter(Context context, int resource, Project[] objects) : base(context, resource, objects)
         {
-            System.Diagnostics.Debug.WriteLine("We are in the right constructor");
-            this._projectList = objects ;
+            _projectList = objects;
         }
 
-      
         public Project GetProject(int position)
         {
             return _projectList[position];

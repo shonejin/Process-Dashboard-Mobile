@@ -1,21 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#region
+using System;
 using System.Collections;
-using SQLite;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using ProcessDashboard.Model;
-
-
+using SQLite;
+#endregion
 namespace ProcessDashboard.DBWrapper
 {
     public class TimeLogWrapper
     {
-        SQLiteConnection _db;
+        private readonly SQLiteConnection _db;
 
         public TimeLogWrapper(SQLiteConnection db)
         {
-            this._db = db;
+            _db = db;
         }
 
         public bool CreateTable()
@@ -27,7 +27,7 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return false;
             }
         }
@@ -37,11 +37,10 @@ namespace ProcessDashboard.DBWrapper
             _db.RunInTransaction(() =>
             {
                 // database calls inside the transaction
-                foreach (TimeLogEntryModel tem in entries)
+                foreach (var tem in entries)
                 {
                     _db.Insert(tem);
                 }
-
             });
             return true;
         }
@@ -55,7 +54,7 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return false;
             }
         }
@@ -70,7 +69,7 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return null;
             }
         }
@@ -84,7 +83,7 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return null;
             }
         }
@@ -119,7 +118,7 @@ namespace ProcessDashboard.DBWrapper
                 }
                 if (ht.ContainsKey("Comment"))
                 {
-                    item.Comment = (ht["Comment"].ToString());
+                    item.Comment = ht["Comment"].ToString();
                 }
                 if (ht.ContainsKey("IsOpen"))
                 {
@@ -127,7 +126,7 @@ namespace ProcessDashboard.DBWrapper
                 }
                 if (ht.ContainsKey("ChangeFlag"))
                 {
-                    item.ChangeFlag = (ht["ChangeFlag"].ToString()[0]);
+                    item.ChangeFlag = ht["ChangeFlag"].ToString()[0];
                 }
                 item.EditTimestamp = DateTime.Now;
                 _db.Update(item);
@@ -135,7 +134,7 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return false;
             }
         }
@@ -149,10 +148,9 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return false;
             }
-
         }
     }
 }

@@ -1,17 +1,33 @@
-﻿using System;
-using System.Threading;
+﻿#region
+using System;
 using ProcessDashboard.Service;
 using ProcessDashboard.Service_Access_Layer;
 using ProcessDashboard.SyncLogic;
-
+#endregion
 namespace ProcessDashboard
 {
+
 	// delegate used for state changes of Process Dashboard.
 	// use this delegate to trigger UI updates
 	public delegate void StateChangedEventHandler(object sender, StateChangedEventArgs e);
 
 	public class TimeLoggingController
 	{
+		public bool isReadyForNewTimeLog = true;
+		public bool WasNetworkAvailable = true;
+		
+		private const int MaxContinuousInterruptTime = 10; // minutes
+		private const int RunawayTimerTime = 60; // one hour
+		private Controller _controller;
+
+		private OsTimerService _osTimerService;
+		private int _savedLoggedTime;
+		private int _savedInterruptTime;
+		private Stopwatch _stopwatch = new Stopwatch();
+		private String _taskId;
+		private String _timeLogEntryId;
+		
+
 
 		// Events --------------------------------------------------------------------------------------------------------------------
 
@@ -46,248 +62,232 @@ namespace ProcessDashboard
 			return _instance ?? (_instance = new TimeLoggingController());
 		}
 
-		public bool isReadyForNewTimeLog = true;
-
-		private const int maxContinuousInterruptTime = 10; // minutes
-		private const int runawayTimerTime = 60; // one hour
-		private int savedLoggedTime;
-		private int savedInterruptTime;
-
-		private String taskId;
-		private String timeLogEntryId;
-
-		private Stopwatch stopwatch = new Stopwatch();
-		private OsTimerService osTimerService;
-		private Controller controller;
-
-		public bool wasNetworkAvailable = true;
-
 		public TimeLoggingController()
 		{
 			var apiService = new ApiTypes(null);
 			var service = new PDashServices(apiService);
-			controller = new Controller(service);
-			osTimerService = new OsTimerService(this);
+			_controller = new Controller(service);
+			_osTimerService = new OsTimerService(this);
 		}
 
-		public async System.Threading.Tasks.Task stopTiming()
+		public async System.Threading.Tasks.Task StopTiming()
 		{
-			stopwatch.stop();
-			await save();
+			_stopwatch.Stop();
+			await Save();
 		}
 
 
-		public async System.Threading.Tasks.Task startTiming(String taskId)
+		public async System.Threading.Tasks.Task StartTiming(String _taskId)
 		{
 
-			Console.WriteLine("Trying to start timer for task: " + taskId);
+			Console.WriteLine("Trying to start timer for task: " + _taskId);
 
-			await setTaskId(taskId);
-			if (stopwatch.getTrailingLoggedMinutes() > maxContinuousInterruptTime)
+			await SetTaskId(_taskId);
+			if (_stopwatch.GetTrailingLoggedMinutes() > MaxContinuousInterruptTime)
 			{
-				await saveIfNeeded();
-				releaseTimeLogEntry(true);
+				await SaveIfNeeded();
+				ReleaseTimeLogEntry(true);
 			}
 
-			stopwatch.start();
-			await save();
+			_stopwatch.Start();
+			await Save();
 
-			if (stopwatch.isPaused())
+			if (_stopwatch.IsPaused())
 			{
-				stopwatch.start();
-				await save();
+				_stopwatch.Start();
+				await Save();
 			}
 		}
 
-		private async System.Threading.Tasks.Task setTaskId(String newTaskId)
+		private async System.Threading.Tasks.Task SetTaskId(String newTaskId)
 		{
-			if (newTaskId.Equals(this.taskId))
+			if (newTaskId.Equals(this._taskId))
 			{
 				return;
 			}
-			stopwatch.stop();
-			await saveIfNeeded();
+			_stopwatch.Stop();
+			await SaveIfNeeded();
 
-			this.taskId = newTaskId;
-			releaseTimeLogEntry(true);
+			this._taskId = newTaskId;
+			ReleaseTimeLogEntry(true);
 		}
 
-		public String getTimingTaskId()
+		public String GetTimingTaskId()
 		{
-			return isTimerRunning() ? taskId : null;
+			return IsTimerRunning() ? _taskId : null;
 		}
 
-		public Boolean isTimerRunning()
+		public Boolean IsTimerRunning()
 		{
-			return stopwatch.isRunning();
+			return _stopwatch.IsRunning();
 		}
 
-		public String getActiveTimeLogEntryId()
+		public String GetActiveTimeLogEntryId()
 		{
-			return timeLogEntryId;
+			return _timeLogEntryId;
 		}
 
-		public async System.Threading.Tasks.Task setLoggedTime(int minutes)
+		public async System.Threading.Tasks.Task SetLoggedTime(int minutes)
 		{
-			stopwatch.setLoggedMinutes(minutes);
-			await save();
+			_stopwatch.SetLoggedMinutes(minutes);
+			await Save();
 		}
 
-		public async System.Threading.Tasks.Task setInterruptTime(int minutes)
+		public async System.Threading.Tasks.Task SetInterruptTime(int minutes)
 		{
-			stopwatch.setInterruptMinutes(minutes);
-			await save();
+			_stopwatch.SetInterruptMinutes(minutes);
+			await Save();
 		}
 
-		public async void ping(Object stateInfo)
+		public async void Ping(Object stateInfo)
 		{
-			stopwatch.maybeCancelRunawayTimer(runawayTimerTime);
-			await save();
+			_stopwatch.MaybeCancelRunawayTimer(RunawayTimerTime);
+			await Save();
 		}
 
-		private async System.Threading.Tasks.Task save()
+		private async System.Threading.Tasks.Task Save()
 		{
 			Console.WriteLine("save() called");
 			try
 			{
-				await saveIfNeeded();
-				osTimerService.setBackgroundPingsEnabled(stopwatch.isRunning());
+				await SaveIfNeeded();
+				_osTimerService.SetBackgroundPingsEnabled(_stopwatch.IsRunning());
 
-				if (!wasNetworkAvailable)
+				if (!WasNetworkAvailable)
 				{
 					OnNetworkAvailabilityChanged(NetworkAvailabilityStates.BecameAvailable, String.Empty);
-					wasNetworkAvailable = true;
+					WasNetworkAvailable = true;
 				}
 			}
 			catch (CannotReachServerException e)
 			{
 				isReadyForNewTimeLog = false;
 
-				osTimerService.setBackgroundPingsEnabled(true);
+				_osTimerService.SetBackgroundPingsEnabled(true);
 
 				OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogUpdateFailed, String.Empty);
 
 				Console.WriteLine("save() catched CannotReachServerException. Background ping enabled.");
 
-				if (wasNetworkAvailable)
+				if (WasNetworkAvailable)
 				{
 					OnNetworkAvailabilityChanged(NetworkAvailabilityStates.BecameUnavailable, String.Empty);
-					wasNetworkAvailable = false;
+					WasNetworkAvailable = false;
 				}
 			}
 		}
 
-		private async System.Threading.Tasks.Task saveIfNeeded()
+		private async System.Threading.Tasks.Task SaveIfNeeded()
 		{
 			Console.WriteLine("saveIfNeeded() called");
 
-			if (timeLogEntryId == null)
+			if (_timeLogEntryId == null)
 			{
-				if (stopwatch.isRunning() || timeIsDiscrepant())
+				if (_stopwatch.IsRunning() || TimeIsDiscrepant())
 				{
 					try
 					{
-						int logged = round(stopwatch.getLoggedMinutes());
-						int interrupt = round(stopwatch.getInterruptMinutes());
+						int logged = Round(_stopwatch.GetLoggedMinutes());
+						int interrupt = Round(_stopwatch.GetInterruptMinutes());
 
 
-						var value = await controller.AddATimeLog(Settings.GetInstance().Dataset, "", "" + stopwatch.getFirstStartTime(), taskId, logged, interrupt, stopwatch.isRunning());
+						var value = await _controller.AddATimeLog(Settings.GetInstance().Dataset, "", _stopwatch.Get_first_startTime(), _taskId, logged, interrupt, _stopwatch.IsRunning());
 
-						timeLogEntryId = "" + value.TimeLogEntry.Id;
+						_timeLogEntryId = "" + value.Id;
 
-						Console.WriteLine("timelogentryid: " + timeLogEntryId);
-						savedLoggedTime = logged;
-						savedInterruptTime = interrupt;
+						Console.WriteLine("timelogentryid: " + _timeLogEntryId);
+						_savedLoggedTime = logged;
+						_savedInterruptTime = interrupt;
 
 						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogCreated, String.Empty);
 					}
 					catch (CancelTimeLoggingException e)
 					{
 						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogCanceled, String.Empty);
-						await handleCancelTimeLoggingException(e);
+						await HandleCancelTimeLoggingException(e);
 					}
 				}
 			}
 			else
 			{
-				if (stopwatch.isPaused() && stopwatch.getLoggedMinutes() < 0.5)
+				if (_stopwatch.IsPaused() && _stopwatch.GetLoggedMinutes() < 0.5)
 				{
-					Console.WriteLine("Calling DeleteTimeLog(). Minutes: " + stopwatch.getTrailingLoggedMinutes());
+					Console.WriteLine("Calling DeleteTimeLog(). Minutes: " + _stopwatch.GetTrailingLoggedMinutes());
 
-					await controller.DeleteTimeLog(Settings.GetInstance().Dataset, timeLogEntryId);
-					releaseTimeLogEntry(false);
+					await _controller.DeleteTimeLog(Settings.GetInstance().Dataset, _timeLogEntryId);
+					ReleaseTimeLogEntry(false);
 
 					OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogUpdated, "Time log deleted because it is too short.");
 				}
-				else if (timeIsDiscrepant())
+				else if (TimeIsDiscrepant())
 				{
 					try
 					{
-						int logged = round(stopwatch.getLoggedMinutes());
-						int interrupt = round(stopwatch.getInterruptMinutes());
+						int logged = Round(_stopwatch.GetLoggedMinutes());
+						int interrupt = Round(_stopwatch.GetInterruptMinutes());
 
 						Console.WriteLine("Calling UpdateTimeLog()");
 
-						await controller.UpdateTimeLog(Settings.GetInstance().Dataset, timeLogEntryId, "comment", stopwatch.getFirstStartTime().ToString(Settings.GetInstance().DateTimePattern), taskId,
-						                               loggedTimeDelta(), interruptTimeDelta(), stopwatch.isRunning());
+						await _controller.UpdateTimeLog(Settings.GetInstance().Dataset, _timeLogEntryId, "", _stopwatch.Get_first_startTime(), _taskId,
+						                               LoggedTimeDelta(), interruptTimeDelta(), _stopwatch.IsRunning());
 
 						Console.WriteLine(">>>> timelog update: delta: " + logged + ", int: " + interrupt);
 
-						savedLoggedTime = logged;
-						savedInterruptTime = interrupt;
+						_savedLoggedTime = logged;
+						_savedInterruptTime = interrupt;
 						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogUpdated, "Time log updated");
 					}
 					catch (CancelTimeLoggingException e)
 					{
 						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogCanceled, String.Empty);
-						await handleCancelTimeLoggingException(e);
+						await HandleCancelTimeLoggingException(e);
 					}
 				}
 			}
 			isReadyForNewTimeLog = true;
 		}
 
-		// TODO: CannotReachServerException
-		private async System.Threading.Tasks.Task handleCancelTimeLoggingException(CancelTimeLoggingException e)
+		private async System.Threading.Tasks.Task HandleCancelTimeLoggingException(CancelTimeLoggingException e)
 		{
 			Console.WriteLine("handleCancelTimeLoggingException() called");
 
-			stopwatch.cancelTimingAsOf(e.GetStopTime());
-			await saveIfNeeded();
-			releaseTimeLogEntry(true);
+			_stopwatch.CancelTimingAsOf(e.GetStopTime());
+			await SaveIfNeeded();
+			ReleaseTimeLogEntry(true);
 		}
 
-		private void releaseTimeLogEntry(Boolean resetStopwatch)
+		private void ReleaseTimeLogEntry(Boolean resetStopwatch)
 		{
-			timeLogEntryId = null;
-			savedLoggedTime = 0;
-			savedInterruptTime = 0;
+			_timeLogEntryId = null;
+			_savedLoggedTime = 0;
+			_savedInterruptTime = 0;
 			if (resetStopwatch)
 			{
-				stopwatch.reset();
+				_stopwatch.Reset();
 			}
 		}
 
-		private Boolean timeIsDiscrepant()
+		private Boolean TimeIsDiscrepant()
 		{
-			return loggedTimeDelta() != 0 || interruptTimeDelta() != 0;
+			return LoggedTimeDelta() != 0 || interruptTimeDelta() != 0;
 		}
 
-		private int loggedTimeDelta()
+		private int LoggedTimeDelta()
 		{
-			int ret = round(stopwatch.getLoggedMinutes() - savedLoggedTime);
+			int ret = Round(_stopwatch.GetLoggedMinutes() - _savedLoggedTime);
 			Console.WriteLine("loggedTimeDelta: " + ret);
 			return ret;
 		}
 
 		private int interruptTimeDelta()
 		{
-			return round(stopwatch.getInterruptMinutes() - savedInterruptTime);
+			return Round(_stopwatch.GetInterruptMinutes() - _savedInterruptTime);
 		}
 
-		private int round(double d)
+		private int Round(double d)
 		{
 			return (int)Math.Round(d);
 		}
 	}
 }
+

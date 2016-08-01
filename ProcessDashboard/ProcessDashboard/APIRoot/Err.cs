@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿#region
+using System;
+#endregion
 namespace ProcessDashboard.APIRoot
 {
     public class Err
@@ -14,7 +13,6 @@ namespace ProcessDashboard.APIRoot
         public override string ToString()
         {
             return "Code : " + Code + " Msg :" + Msg;
-
         }
     }
 }

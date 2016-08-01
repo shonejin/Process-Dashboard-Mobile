@@ -1,24 +1,23 @@
-﻿using System;
-
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#region
+using System;
 using System.Collections;
-using SQLite;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using ProcessDashboard.Model;
-
+using SQLite;
+#endregion
 // DB Wrapper for Timelog
 // Wrapping up the services
-
 namespace ProcessDashboard.DBWrapper
 {
     public class TaskWrapper
     {
-        SQLiteConnection _db;
+        private readonly SQLiteConnection _db;
 
         public TaskWrapper(SQLiteConnection db)
         {
-            this._db = db;
+            _db = db;
         }
 
         public bool CreateTable()
@@ -30,7 +29,7 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return false;
             }
         }
@@ -44,7 +43,7 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return false;
             }
         }
@@ -54,11 +53,10 @@ namespace ProcessDashboard.DBWrapper
             _db.RunInTransaction(() =>
             {
                 // database calls inside the transaction
-                foreach (TaskModel tm in entries)
+                foreach (var tm in entries)
                 {
                     _db.Insert(tm);
                 }
-
             });
             return true;
         }
@@ -68,12 +66,12 @@ namespace ProcessDashboard.DBWrapper
             try
             {
                 var table = _db.Table<TaskModel>().ToList();
-                
+
                 return table;
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return null;
             }
         }
@@ -87,7 +85,7 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return null;
             }
         }
@@ -116,7 +114,7 @@ namespace ProcessDashboard.DBWrapper
                 }
                 if (ht.ContainsKey("TaskNote"))
                 {
-                    item.TaskNote = (ht["TaskNote"].ToString());
+                    item.TaskNote = ht["TaskNote"].ToString();
                 }
                 if (ht.ContainsKey("ProjectOrdinal"))
                 {
@@ -136,7 +134,7 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return false;
             }
         }
@@ -150,13 +148,9 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return false;
             }
-
         }
-
-      
-
     }
 }

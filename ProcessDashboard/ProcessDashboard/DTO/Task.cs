@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿#region
+using System;
+#endregion
 namespace ProcessDashboard.DTO
 {
-
     /*
     * Classes for Parsing JSON to OO Model Objects.
     * Variable names are case-sensitive. Donot change or else parsing will fail
@@ -13,10 +11,11 @@ namespace ProcessDashboard.DTO
 
     public class Task
     {
+        //TODO: Remove ToString
         public string Id { get; set; }
         public string FullName { get; set; }
         public Project Project { get; set; }
-        public DateTime CompletionDate { get; set; }
+        public DateTime? CompletionDate { get; set; }
         public double EstimatedTime { get; set; }
         public double ActualTime { get; set; }
         public string TaskNote { get; set; }
@@ -24,7 +23,6 @@ namespace ProcessDashboard.DTO
         public override string ToString()
         {
             return FullName;
-            
         }
     }
 }

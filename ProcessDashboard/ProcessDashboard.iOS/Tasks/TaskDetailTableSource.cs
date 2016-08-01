@@ -126,13 +126,13 @@ namespace ProcessDashboard.iOS
 				completeDateText.TextAlignment = UITextAlignment.Right;
 				newCompleteDatePicker();
 
-				if (TaskItem.CompletionDate.ToShortDateString().Equals("1/1/0001"))
+				if (TaskItem.CompletionDate == null)
 				{
 					completeDateText.Text = "--";
 				}
 				else 
 				{
-					completeDateText.Text = TaskItem.CompletionDate.ToShortDateString();
+					completeDateText.Text = TaskItem.CompletionDate.Value.ToShortDateString();
 					//Console.WriteLine("task completion date:" + TaskItem.completionDate.ToShortDateString());
 				}
 			}
@@ -275,22 +275,20 @@ namespace ProcessDashboard.iOS
 
 			toolbar.SetItems(new UIBarButtonItem[] { cancelButton, spacer, saveButton }, true);
 
-			completeTimeSelectedDate = TaskItem.CompletionDate;
-
-			if (TaskItem.CompletionDate.ToShortDateString().Equals("1/1/0001"))
+			if (TaskItem.CompletionDate == null)
 			{
 				saveButton.Title = "Mark Complete";
 				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(DateTime.Now), true);
 			}
-			else if (!TaskItem.CompletionDate.ToShortDateString().Equals("1/1/0001"))
+			else
 			{
 				saveButton.Title = "Mark InComplete";
-				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(TaskItem.CompletionDate), true);
+				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(TaskItem.CompletionDate.Value), true);
 			}
 
 			CompleteTimePicker.ValueChanged += (Object s, EventArgs e) =>
 			{
-				if (!TaskItem.CompletionDate.ToShortDateString().Equals("1/1/0001"))
+				if (TaskItem.CompletionDate != null)
 				{
 					saveButton.Title = "Change Completion Date";
 

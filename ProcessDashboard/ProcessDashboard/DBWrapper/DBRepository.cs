@@ -1,21 +1,21 @@
-﻿using System;
+﻿#region
+using System;
 using System.Diagnostics;
 using System.IO;
 using SQLite;
-
+#endregion
 namespace ProcessDashboard.DBWrapper
 {
     public class DbManager
     {
+        private const string DbName = "pdash.db3";
         private static DbManager _instance;
-
-        public ProjectWrapper Pw;
-        public TaskWrapper Tw;
-        public TimeLogWrapper Tlw;
 
         private static SQLiteConnection _db;
 
-        private const string DbName = "pdash.db3";
+        public ProjectWrapper Pw;
+        public TimeLogWrapper Tlw;
+        public TaskWrapper Tw;
 
         // Private Constructor for Singleton Class.
         private DbManager()
@@ -26,7 +26,6 @@ namespace ProcessDashboard.DBWrapper
             Tw = new TaskWrapper(_db);
             Tlw = new TimeLogWrapper(_db);
 
-            
             //Create the table
             Pw.CreateTable();
             Tw.CreateTable();
@@ -41,12 +40,13 @@ namespace ProcessDashboard.DBWrapper
         //Create the Database
         public static bool CreateDb()
         {
-            try {
+            try
+            {
                 CreateConnection();
                 Debug.WriteLine("DB Created");
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debug.WriteLine("DB Creation failed : " + e.Message);
                 return false;
@@ -56,7 +56,7 @@ namespace ProcessDashboard.DBWrapper
         // Create the connection to the DB.
         private static void CreateConnection()
         {
-            string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), DbName);
+            var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), DbName);
             _db = new SQLiteConnection(dbPath);
         }
     }

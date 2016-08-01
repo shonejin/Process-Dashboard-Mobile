@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿#region
+using System;
+#endregion
+// ReSharper disable UnusedMember.Local
 namespace ProcessDashboard.Model
 {
-    class EditToTaskCompletionDate
+    internal class EditToTaskCompletionDate
     {
-        String TaskId { get; set; }
-        DateTime NewCompletionDate { get; set; }
-        DateTime EditTimestamp { get; set; }
+        private string TaskId { get; set; }
+
+        private DateTime NewCompletionDate { get; set; }
+        private DateTime EditTimestamp { get; set; }
     }
 }

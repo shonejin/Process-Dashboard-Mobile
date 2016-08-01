@@ -1,10 +1,9 @@
-﻿using System;
+﻿#region
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ProcessDashboard.APIRoot;
-using ProcessDashboard.DTO;
 using Refit;
-
+#endregion
 namespace ProcessDashboard.Service.Interface
 {
     /*
@@ -28,52 +27,60 @@ namespace ProcessDashboard.Service.Interface
     [Headers("Accept: application/json")]
     public interface IPDashApi
     {
-
         // Get list of projects
         // Sample URL : https://pdes.tuma-solutions.com/api/v1/datasets/mock/projects/
-        [Get("/datasets/{dataset}/projects/")]
-        Task<ProjectsListRoot> GetProjectsList(string dataset,[Header("Authorization")] string authorization);
+        [Get("/api/v1/datasets/{dataset}/projects/")]
+        Task<ProjectsListRoot> GetProjectsList(string dataset, [Header("Authorization")] string authorization);
 
         // Get list of tasks
         // Sample URL : https://pdes.tuma-solutions.com/api/v1/datasets/mock/projects/iokdum2d/tasks/
-        [Get("/datasets/{dataset}/projects/{projectId}/tasks/")]
+        [Get("/api/v1/datasets/{dataset}/projects/{projectId}/tasks/")]
         Task<TaskListRoot> GetTasksList(string dataset, string projectId, [Header("Authorization")] string authorization);
 
         // Get details about a task
         // Sample URL : https://pdes.tuma-solutions.com/api/v1/datasets/mock/tasks/iokdum2d:11401830/
-        [Get("/datasets/{dataset}/tasks/{projecttaskId}/")]
-        Task<TaskRoot> GetTaskDetails(string dataset, string projecttaskId, [Header("Authorization")] string authorization);
+        [Get("/api/v1/datasets/{dataset}/tasks/{projecttaskId}/")]
+        Task<TaskRoot> GetTaskDetails(string dataset, string projecttaskId,
+            [Header("Authorization")] string authorization);
 
         // Recent tasks
         // Sample URL : https://pdes.tuma-solutions.com/api/v1/mock/datasets/recent-tasks/
-        [Get("/datasets/{dataset}/recent-tasks/")]
+        [Get("/api/v1/datasets/{dataset}/recent-tasks/")]
         Task<RecentTasksRoot> GetRecentTasks(string dataset, [Header("Authorization")] string authorization);
 
         //Get list of timelogs
         // Sample URL : https://pdes.tuma-solutions.com/api/v1/datasets/mock/time-log/
         // Optional Parameters: maxResults, startDateFrom, startDateTo, taskId, projectId
-        [Get("/datasets/{dataset}/time-log/")]
-        Task<TimeLogsRoot> GetTimeLogs(string dataset,int? maxResults, DateTime? startDateFrom, DateTime? startDateTo, string taskId, string projectId, [Header("Authorization")] string authorization);
+        [Get("/api/v1/datasets/{dataset}/time-log/")]
+        Task<TimeLogsRoot> GetTimeLogs(string dataset, int? maxResults, string startDateFrom, string startDateTo,
+            string taskId, string projectId, [Header("Authorization")] string authorization);
 
         //Add a new time-log entry
-       [Post("/datasets/{dataset}/time-log/")]
-        Task<EditATimeLogRoot> AddTimeLog([Header("Authorization")] string authorization, string dataset, [Body(BodySerializationMethod.UrlEncoded)] Dictionary<string,object> tl);
+        [Post("/api/v1/datasets/{dataset}/time-log/")]
+        Task<EditATimeLogRoot> AddTimeLog([Header("Authorization")] string authorization, string dataset,
+            [Body(BodySerializationMethod.UrlEncoded)] Dictionary<string, object> tl);
 
         // Update an existing time-log entry
-        [Put("/datasets/{dataset}/time-log/{timelogId}/")]
-        Task<EditATimeLogRoot> UpdateTimeLog([Header("Authorization")] string authorization, string dataset, string timelogId, [Body(BodySerializationMethod.UrlEncoded)] Dictionary<string, object> tl);
+        [Put("/api/v1/datasets/{dataset}/time-log/{timelogId}/")]
+        Task<EditATimeLogRoot> UpdateTimeLog([Header("Authorization")] string authorization, string dataset,
+            string timelogId, [Body(BodySerializationMethod.UrlEncoded)] Dictionary<string, object> tl);
 
         // Delete a time-log entry
-        [Delete("/datasets/{dataset}/time-log/{timelogId}/")]
-        Task<DeleteRoot> DeleteTimeLog([Header("Authorization")] string authorization, string dataset, string timelogId, string editTimestamp);
+        [Delete("/api/v1/datasets/{dataset}/time-log/{timelogId}/")]
+        Task<DeleteRoot> DeleteTimeLog([Header("Authorization")] string authorization, string dataset, string timelogId,
+            string editTimestamp);
+
+        [Get("/api/v1/datasets/{dataset}/time-log/{timelogid}/")]
+        Task<TimeLogRoot> GetTimeLog(string dataset, string timelogid, [Header("Authorization")] string authorization);
 
 
-      [Get("/datasets/{dataset}/time-log/{timelogid}/")]
-      Task<TimeLogRoot> GetTimeLog(string dataset, string timelogid, [Header("Authorization")] string authorization);
+        [Put("/api/v1/datasets/{dataset}/tasks/{projecttaskId}/")]
+        Task<TaskRoot> UpdateTaskDetails([Header("Authorization")] string authorization, string dataset, string projecttaskId, string editTimestamp, [Body(BodySerializationMethod.UrlEncoded)] Dictionary<string, object> tl);
+    
 
-        [Put("/datasets/{dataset}/tasks/{projecttaskId}/")]
-        Task<TaskRoot> UpdateTaskDetails (string dataset, string projecttaskId, DateTime editTimeStamp, double? estimatedTime, DateTime? completionDate, [Header("Authorization")] string authorization);
-
-
+        /*[Put("/api/v1/datasets/{dataset}/tasks/{projecttaskId}/")]
+          Task<TaskRoot> UpdateTaskDetails([Header("Authorization")] string authorization, string dataset, string projecttaskId, string editTimestamp,
+                double? estimatedTime, string completionDate = null);
+         */
     }
 }

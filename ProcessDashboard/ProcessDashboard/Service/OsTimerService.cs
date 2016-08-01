@@ -1,21 +1,23 @@
-﻿using System;
+﻿#region
 using System.Threading;
+using System;
+#endregion
 namespace ProcessDashboard
 {
 	public class OsTimerService
 	{
-		private Timer pingTimer = null;
-		private TimeLoggingController controller;
-
-		public OsTimerService(TimeLoggingController controller)
+		private TimeLoggingController _controller;
+		private Timer _pingTimer = null;
+		
+		public OsTimerService(TimeLoggingController _controller)
 		{
-			this.controller = controller;
+			this._controller = _controller;
 		}
 
-		public void setBackgroundPingsEnabled(Boolean enable)
+		public void SetBackgroundPingsEnabled(Boolean enable)
 		{
 			// nothing changes
-			if (enable == (pingTimer != null))
+			if (enable == (_pingTimer != null))
 			{
 				return;
 			}
@@ -23,14 +25,14 @@ namespace ProcessDashboard
 			if (enable)
 			{
 				AutoResetEvent autoEvent = new AutoResetEvent(false);
-				TimerCallback tcb = controller.ping;
-				pingTimer = new System.Threading.Timer(tcb, autoEvent, 0, 1000 * 60);
+				TimerCallback tcb = _controller.Ping;
+				_pingTimer = new System.Threading.Timer(tcb, autoEvent, 0, 1000 * 60);
 			}
 			// state change from started to stopped
 			else
 			{
-				pingTimer.Dispose();
-				pingTimer = null;
+				_pingTimer.Dispose();
+				_pingTimer = null;
 			}
 		}
 	}

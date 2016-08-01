@@ -1,23 +1,16 @@
-﻿using System;
+﻿#region
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Fusillade;
 using Plugin.Connectivity;
 using Plugin.Connectivity.Abstractions;
-using ProcessDashboard.APIRoot;
-using ProcessDashboard.DBWrapper;
+using Polly;
 using ProcessDashboard.DTO;
-using ProcessDashboard.Model;
 using ProcessDashboard.Service.Interface;
-using Refit;
 using Task = ProcessDashboard.DTO.Task;
-using ProcessDashboard;
-
-//using Plugin.Connectivity;
-//using Polly;
+#endregion
 namespace ProcessDashboard.Service_Access_Layer
 {
     /*
@@ -32,23 +25,337 @@ namespace ProcessDashboard.Service_Access_Layer
      * The local service use of the Database Manager for connecting to SQlite Database.
 
      */
-    
+
     public class PDashServices : IPDashServices
     {
         // Api Service for making the request using Fusilade
         private readonly IApiTypes _apiService;
-        // DB Manager to manage Database operations
-        private readonly DbManager _dbm;
-        private Settings _settings;
 
-        private string _pattern;
+        private readonly Policy _globalPolicy = Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync
+            (
+                5,
+                retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
+            );
+        // DB Manager to manage Database operations
+        // private readonly DbManager _dbm;
+
+        private readonly Settings _settings;
+        private readonly Util _util;
 
         public PDashServices(IApiTypes apiService)
         {
             _apiService = apiService;
-            this._settings = Settings.GetInstance();
-            _pattern = _settings.DateTimePattern;
-            _dbm = DbManager.GetInstance();
+            _util = Util.GetInstance();
+            _settings = Settings.GetInstance();
+            //_dbm = DbManager.GetInstance();
+        }
+
+        /*
+         * List of projects 
+         * 
+         */
+
+        public async Task<List<Project>> GetProjectsListRemote(Priority priority, string dataset)
+        {
+            CheckConnection();
+            try
+            {
+                var projectsDtoTask = _apiService.GetApi(priority).GetProjectsList(dataset, _settings.AuthHeader);
+
+                var projects = await _globalPolicy
+                    .ExecuteAsync(async () => await projectsDtoTask);
+
+                if (!projects.Stat.Equals("ok"))
+                {
+                    throw new StatusNotOkayException(projects.Err.Msg, projects.Err.Code);
+                }
+
+                return projects.Projects;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<Task>> GetTasksListRemote(Priority priority, string dataset, string projectId)
+        {
+            CheckConnection();
+            try
+            {
+                var getTasksDtoTask = _apiService.GetApi(priority)
+                    .GetTasksList(dataset, projectId, _settings.AuthHeader);
+                var tasks = await _globalPolicy
+                    .ExecuteAsync(async () => await getTasksDtoTask);
+
+                // Adding the project value to each of the tasks
+                var p = tasks.ForProject;
+
+                for (var i = 0; i < tasks.ProjectTasks.Count; i++)
+                {
+                    var t = tasks.ProjectTasks[i];
+                    t.Project = p;
+                    // TODO: Check whether the line below can be removed
+                    tasks.ProjectTasks[i] = t;
+                }
+
+                if (!tasks.Stat.Equals("ok"))
+                {
+                    throw new StatusNotOkayException(tasks.Err.Msg, tasks.Err.Code);
+                }
+
+                return tasks.ProjectTasks;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<Task> GetTaskDetailsRemote(Priority priority, string dataset, string projecttaskId)
+        {
+            CheckConnection();
+            try
+            {
+                var getTaskDetailsDtoTask = _apiService.GetApi(priority)
+                    .GetTaskDetails(dataset, projecttaskId, _settings.AuthHeader);
+
+                var task = await _globalPolicy
+                    .ExecuteAsync(async () => await getTaskDetailsDtoTask);
+
+                if (!task.Stat.Equals("ok"))
+                {
+                    throw new StatusNotOkayException(task.Err.Msg, task.Err.Code);
+                }
+
+                return task.Task;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<Task>> GetRecentTasksRemote(Priority priority, string dataset)
+        {
+            CheckConnection();
+            try
+            {
+                var getRecentTasksDtoTask = _apiService.GetApi(priority).GetRecentTasks(dataset, _settings.AuthHeader);
+
+                var recenttask = await _globalPolicy
+                    .ExecuteAsync(async () => await getRecentTasksDtoTask);
+
+                if (!recenttask.Stat.Equals("ok"))
+                {
+                    throw new StatusNotOkayException(recenttask.Err.Msg, recenttask.Err.Code);
+                }
+                return recenttask.RecentTasks;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /* 
+         * List of Time Logs/ Global Time Log
+         */
+
+        public async Task<List<TimeLogEntry>> GetTimeLogsRemote(Priority priority, string dataset, int? maxResults,
+            DateTime? startDateFrom, DateTime? startDateTo, string taskId, string projectId)
+        {
+            CheckConnection();
+            try
+            {
+                var getTimeLogsDtoTask = _apiService.GetApi(priority)
+                    .GetTimeLogs(dataset, maxResults, _util.GetServerTimeString(startDateFrom),
+                        _util.GetServerTimeString(startDateTo), taskId, projectId, _settings.AuthHeader);
+
+                var timelogs = await _globalPolicy
+                    .ExecuteAsync(async () => await getTimeLogsDtoTask);
+
+                if (!timelogs.Stat.Equals("ok"))
+                {
+                    throw new StatusNotOkayException(timelogs.Err.Msg, timelogs.Err.Code);
+                }
+
+                return timelogs.TimeLogEntries;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        // TODO: This might not be needed. Can be removed if so
+        public async Task<TimeLogEntry> GetATimeLogRemote(Priority priority, string dataset, string timelogId)
+        {
+            CheckConnection();
+            try
+            {
+                var getTimeLogDtoTask = _apiService.GetApi(priority)
+                    .GetTimeLog(dataset, timelogId, _settings.AuthHeader);
+
+                var timelog = await _globalPolicy
+                    .ExecuteAsync(async () => await getTimeLogDtoTask);
+
+                if (!timelog.Stat.Equals("ok"))
+                {
+                    throw new StatusNotOkayException(timelog.Err.Msg, timelog.Err.Code);
+                }
+
+                return timelog.TimeLogEntry;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<Task> UpdateTaskDetails(Priority priority, string dataset, string projecttaskId,
+            double? estimatedTime,
+            DateTime? completionDate,bool markIncomplete)
+        {
+            CheckConnection();
+            try
+            {
+                var value = new Dictionary<string, object>();
+
+                if (estimatedTime.HasValue)
+                    value.Add("estimatedTime", estimatedTime.Value);
+                if (markIncomplete)
+                    value.Add("completionDate", null);
+                else if (completionDate.HasValue)
+                    value.Add("completionDate", _util.GetServerTimeString(completionDate));
+
+                var updateTaskDtoTask = _apiService.GetApi(priority)
+                    .UpdateTaskDetails(_settings.AuthHeader, dataset, projecttaskId, _util.GetEditTimeStamp(),
+                        value);
+
+                var task = await _globalPolicy
+                    .ExecuteAsync(async () => await updateTaskDtoTask);
+
+                if (!task.Stat.Equals("ok"))
+                {
+                    //TODO: Remove before production
+                    System.Diagnostics.Debug.WriteLine("Msg :" + task.Err.Msg + " Code :" + task.Err.Code);
+                    throw new StatusNotOkayException(task.Err.Msg, task.Err.Code);
+                }
+
+                return task.Task;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /*
+         * Adding/Updating/Deleting Time Log entries
+         */
+
+        public async Task<TimeLogEntry> AddTimeLog(Priority priority, string dataset, string comment, DateTime startDate,
+            string taskId, double loggedTime, double interruptTime, bool open)
+        {
+            CheckConnection();
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("1");
+                var value = new Dictionary<string, object>
+                {
+                    {"comment", comment},
+                    {"startDate", _util.GetServerTimeString(startDate)},
+                    {"taskId", taskId},
+                    {"loggedTime", loggedTime},
+                    {"editTimestamp", _util.GetEditTimeStamp()},
+                    {"open", open},
+                    {"interruptTime", interruptTime}
+                };
+                var addTimeLog = _apiService.GetApi(priority).AddTimeLog(_settings.AuthHeader, dataset, value);
+                System.Diagnostics.Debug.WriteLine("2");
+                var timelogged = await addTimeLog;
+                System.Diagnostics.Debug.WriteLine("3");
+                if (!timelogged.Stat.Equals("ok"))
+                {
+                    throw new StatusNotOkayException(timelogged.Err.Msg, timelogged.Err.Code);
+                }
+
+                return timelogged.TimeLogEntry;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<TimeLogEntry> UpdateTimeLog(Priority priority, string dataset, string timeLogId,
+            string comment, DateTime? startDate, string taskId,
+             double? loggedTimeDelta, double? interruptTimeDelta, bool open)
+        {
+            CheckConnection();
+
+            try
+            {
+                
+                var value = new Dictionary<string, object>();
+                if (comment != null)
+                    value.Add("comment", comment);
+                if (taskId != null)
+                    value.Add("taskId", taskId);
+                if (startDate.HasValue)
+                    value.Add("startDate", _util.GetServerTimeString(startDate));
+                if (loggedTimeDelta.HasValue)
+                    value.Add("loggedTimeDelta", loggedTimeDelta.Value);
+                value.Add("open", open);
+                if (interruptTimeDelta.HasValue)
+                    value.Add("interruptTimeDelta", interruptTimeDelta.Value);
+                value.Add("editTimestamp", _util.GetEditTimeStamp());
+
+                var updateTimeLog = _apiService.GetApi(priority)
+                    .UpdateTimeLog(_settings.AuthHeader, dataset, timeLogId, value);
+
+                var updatedTimeLog = await _globalPolicy
+                    .ExecuteAsync(async () => await updateTimeLog);
+
+                if (!updatedTimeLog.Stat.Equals("ok"))
+                {
+                    throw new StatusNotOkayException(updatedTimeLog.Err.Msg, updatedTimeLog.Err.Code);
+                }
+
+                return updatedTimeLog.TimeLogEntry;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<DeleteRoot> DeleteTimeLog(Priority priority, string dataset, string timelogId)
+        {
+            CheckConnection();
+            try
+            {
+                var editTimeStamp = _util.GetEditTimeStamp();
+
+                var deleteTimeLog = _apiService.GetApi(priority)
+                    .DeleteTimeLog(_settings.AuthHeader, dataset, timelogId, editTimeStamp);
+
+                var deletestatus = await _globalPolicy
+                    .ExecuteAsync(async () => await deleteTimeLog);
+
+                if (!deletestatus.Stat.Equals("ok"))
+                {
+                    throw new StatusNotOkayException(deletestatus.Err.Msg, deletestatus.Err.Code);
+                }
+
+                return deletestatus;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         /*
@@ -57,675 +364,27 @@ namespace ProcessDashboard.Service_Access_Layer
 
         public bool IsWifiConnected()
         {
-            CheckConnection();
-
-            ConnectionType ct = ConnectionType.WiFi;
-
+            var ct = ConnectionType.WiFi;
             return CrossConnectivity.Current.ConnectionTypes.Contains(ct);
-
         }
 
-         /*
-          * Check Network Connectivity
-          */
+        /*
+         * Check Network Connectivity
+         */
 
         public void CheckConnection()
         {
+            if (Settings.GetInstance().CheckWifi)
+            {
+                if (!IsWifiConnected())
+                {
+                    throw new CannotReachServerException();
+                }
+            }
             if (!CrossConnectivity.Current.IsConnected)
             {
                 throw new CannotReachServerException();
             }
         }
-
-        /*
-         * List of projects 
-         * 
-         */ 
-
-        public async Task<List<Project>> GetProjectsListLocal(Priority priority, string dataset)
-        {
-            Debug.WriteLine("ProjectModel Service : " + " Going to get data from DB");
-
-            List<Project> output = null;
-
-            List<ProjectModel> values = _dbm.Pw.GetAllRecords();
-
-            if (values == null || values.Count == 0)
-            {
-                Debug.WriteLine("ProjectModel Service : " + "Nothing in the DB");
-                return null;
-            }
-            // Map from project model to project and return values.
-            output = Mapper.GetInstance().ToProjectList(values);
-
-            Debug.WriteLine("ProjectModel Service : " + " Done with that");
-
-            return output;
-        }
-
-        public async Task<List<Project>> GetProjectsListRemote(Priority priority, string dataset) 
-        {
-            Debug.WriteLine("ProjectModel Service : " + " Going for remote task");
-            if(Settings.GetInstance().CheckWifi)
-            IsWifiConnected();
-            else
-            {
-                CheckConnection();
-            }
-
-            Task<ProjectsListRoot> getTaskDtoTask;
-
-            Debug.WriteLine("ProjectModel Service : " + " Setting priority");
-
-            switch (priority)
-            {
-                case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetProjectsList(dataset,_settings.AuthHeader);
-                    break;
-                case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetProjectsList(dataset, _settings.AuthHeader);
-                    break;
-                case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetProjectsList(dataset, _settings.AuthHeader);
-                    break;
-                default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetProjectsList(dataset, _settings.AuthHeader);
-                    break;
-            }
-
-            ProjectsListRoot projects = await getTaskDtoTask;
-
-            //var gitHubApi = RestService.For<IPDashApi>("https://pdes.tuma-solutions.com/api/v1/");
-            //ProjectsListRoot projects = await gitHubApi.GetProjectsList("mock");
-
-            Debug.WriteLine("ProjectModel Service : " + "Got the content I guess");
-            Debug.WriteLine("ProjectModel Service : " + projects.Stat);
-            Debug.WriteLine("ProjectModel Service : " + (projects.Projects.Count));
-
-            if (!projects.Stat.Equals("ok") || projects.Projects==null)
-            {
-                Debug.WriteLine("ProjectModel Service : " + "Null here");
-                return null;
-            }
-
-            // Convert to model and store in DB
-            //List<ProjectModel> output = Mapper.GetInstance().toProjectModelList(projects.projects);
-            //_dbm.pw.insertMultipleRecords(output);
-
-            //test(projects);
-
-            /*
-            if (CrossConnectivity.Current.IsConnected)
-            {
-                System.Diagnostics.Debug.WriteLine("TaskModel Service : " + " Setting connection policy");
-                task = await Policy
-                    .Handle<Exception>()
-                    .RetryAsync(retryCount: 5)
-                    .ExecuteAsync(async () => await getTaskDtoTask);
-            }
-            */
-            return projects.Projects;
-        }
-
-        /*
-         * Task APIs
-         */
-
-        public async Task<List<Task>> GetTasksListLocal(Priority priority, string dataset, string projectId)
-        {
-            Debug.WriteLine("TaskModel Service : " + " Going to get data from DB");
-            List<Task> output = null;
-
-            List<TaskModel> values = _dbm.Tw.GetAllRecords();
-
-            if (values == null || values.Count == 0)
-            {
-                return null;
-            }
-            // Map from project model to project and return values.
-            output = Mapper.GetInstance().ToTaskList(values);
-
-            Debug.WriteLine("TaskModel Service : " + " Done with that");
-
-            return output;
-        }
-
-        public async Task<List<Task>> GetTasksListRemote(Priority priority, string dataset, string projectId)
-        {
-            Debug.WriteLine("Task Service : " + " Going for remote task");
-            if (Settings.GetInstance().CheckWifi)
-                IsWifiConnected();
-            else
-            {
-                CheckConnection();
-            }
-
-            TaskListRoot tasks = null;
-            Task<TaskListRoot> getTaskDtoTask;
-            Debug.WriteLine("Task Service : " + " Setting priority");
-            switch (priority)
-            {
-                case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetTasksList(dataset, projectId, _settings.AuthHeader);
-                    break;
-                case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTasksList(dataset, projectId, _settings.AuthHeader);
-                    break;
-                case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetTasksList(dataset, projectId, _settings.AuthHeader);
-                    break;
-                default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTasksList(dataset, projectId, _settings.AuthHeader);
-                    break;
-            }
-
-            tasks = await getTaskDtoTask;
-            Debug.WriteLine("Task Service : " + "Got the content. STATUS :"+tasks.Stat);
-            Debug.WriteLine("Task Service : " + "Is null : " + (tasks.ProjectTasks==null));
-
-            Project p = tasks.ForProject;
-            Debug.Assert(tasks.ProjectTasks != null, "tasks.projectTasks != null");
-            for (int i = 0; i < tasks.ProjectTasks.Count; i++)
-            {
-                Task t = tasks.ProjectTasks[i];
-                t.Project = p;
-                tasks.ProjectTasks[i] = t;
-            }
-
-            /*
-            if (CrossConnectivity.Current.IsConnected)
-            {
-                System.Diagnostics.Debug.WriteLine("TaskModel Service : " + " Setting connection policy");
-                task = await Policy
-                    .Handle<Exception>()
-                    .RetryAsync(retryCount: 5)
-                    .ExecuteAsync(async () => await getTaskDtoTask);
-            }
-            */
-            return tasks.ProjectTasks;
-        }
-        
-        /**
-         * Task Details API
-         */
-        public async Task<Task> GetTaskDetailsLocal(Priority priority, string dataset, string projecttaskId)
-        {
-            Debug.WriteLine("TaskModel Service : " + " Going to get data from DB");
-            Task output = null;
-
-            TaskModel values = _dbm.Tw.GetRecord(projecttaskId);
-
-            if (values == null)
-            {
-                Debug.WriteLine("TaskModel Service : " + " Nothing in DB");
-                // DB does not have any values. Get the values from the server.
-                output = await GetTaskDetailsRemote(priority, dataset, projecttaskId);
-
-                // Map from task to task model
-                values = Mapper.GetInstance().ToTaskModel(output);
-                // Store in DB
-                _dbm.Tw.InsertRecord(values);
-
-            }
-            else
-            {
-                // Map from project model to project and return values.
-                output = Mapper.GetInstance().ToTask(values);
-            }
-
-            Debug.WriteLine("TaskModel Service : " + " Done with that");
-
-            return output;
-        }
-
-        public async Task<Task> GetTaskDetailsRemote(Priority priority, string dataset, string projecttaskId)
-        {
-            Debug.WriteLine("Task Service : " + " Going for remote task");
-            if (Settings.GetInstance().CheckWifi)
-                IsWifiConnected();
-            else
-            {
-                CheckConnection();
-            }
-
-            TaskRoot task = null;
-            Task<TaskRoot> getTaskDtoTask;
-            Debug.WriteLine("Task Service : " + " Setting priority");
-            switch (priority)
-            {
-                case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetTaskDetails(dataset, projecttaskId, _settings.AuthHeader);
-                    break;
-                case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTaskDetails(dataset, projecttaskId, _settings.AuthHeader);
-                    break;
-                case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetTaskDetails(dataset, projecttaskId, _settings.AuthHeader);
-                    break;
-                default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTaskDetails(dataset, projecttaskId, _settings.AuthHeader);
-                    break;
-            }
-
-            task = await getTaskDtoTask;
-            Debug.WriteLine("Task Service : " + "Got the content I guess");
-
-            // Convert to model and store in DB
-
-            TaskModel output = Mapper.GetInstance().ToTaskModel(task.Task);
-            _dbm.Tw.InsertRecord(output);
-
-            /*
-            if (CrossConnectivity.Current.IsConnected)
-            {
-                System.Diagnostics.Debug.WriteLine("TaskModel Service : " + " Setting connection policy");
-                task = await Policy
-                    .Handle<Exception>()
-                    .RetryAsync(retryCount: 5)
-                    .ExecuteAsync(async () => await getTaskDtoTask);
-            }
-            */
-            return task.Task;
-        }
-
-        /*
-         *Recent Tasks 
-         */
-        public async Task<List<Task>> GetRecentTasksLocal(Priority priority, string dataset)
-        {
-            Debug.WriteLine("TaskModel Service : " + " Going to get data from DB");
-            List<Task> output = null;
-
-            List<TaskModel> values = _dbm.Tw.GetAllRecords();
-
-            values.Sort((val1, val2) => val1.RecentOrdinal.CompareTo(val2.RecentOrdinal));
-
-            if (values == null || values.Count == 0)
-            {
-                Debug.WriteLine("TaskModel Service : " + " Nothing in DB");
-                // DB does not have any values. Get the values from the server.
-                output = await GetRecentTasksRemote(priority, dataset);
-
-                // Map from project to project model
-                Mapper.GetInstance().ToTaskModelList(output);
-                
-                // Update Recent ordinal
-                
-                //dbm.tw.insertMultipleRecords(values);
-
-            }
-            else
-            {
-                // Map from project model to project and return values.
-                output = Mapper.GetInstance().ToTaskList(values);
-            }
-
-            Debug.WriteLine("TaskModel Service : " + " Done with that");
-
-            return output;
-
-        }
-
-        public async Task<List<Task>> GetRecentTasksRemote(Priority priority, string dataset)
-        {
-            Debug.WriteLine("Task Service : " + " Going for remote task");
-            if (Settings.GetInstance().CheckWifi)
-                IsWifiConnected();
-            else
-            {
-                CheckConnection();
-            }
-
-            RecentTasksRoot task = null;
-            Task<RecentTasksRoot> getTaskDtoTask;
-            Debug.WriteLine("Task Service : " + " Setting priority");
-            switch (priority)
-            {
-                case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetRecentTasks(dataset, _settings.AuthHeader);
-                    break;
-                case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetRecentTasks(dataset, _settings.AuthHeader);
-                    break;
-                case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetRecentTasks(dataset, _settings.AuthHeader);
-                    break;
-                default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetRecentTasks(dataset, _settings.AuthHeader);
-                    break;
-            }
-
-            task = await getTaskDtoTask;
-            Debug.WriteLine("Task Service : " + "Got the content I guess");
-            
-            // Convert to model and store in DB
-
-            var output = Mapper.GetInstance().ToTaskModelList(task.RecentTasks);
-            Debug.WriteLine("Task Service : " + "Done with the mapping");
-            // TODO: UPdate Recent Ordinal
-            /*
-            if (CrossConnectivity.Current.IsConnected)
-            {
-                System.Diagnostics.Debug.WriteLine("TaskModel Service : " + " Setting connection policy");
-                task = await Policy
-                    .Handle<Exception>()
-                    .RetryAsync(retryCount: 5)
-                    .ExecuteAsync(async () => await getTaskDtoTask);
-            }
-            */
-            return task.RecentTasks;
-        }
-
-        /* 
-         * List of Time Logs/ Global Time Log
-         */
-        public async Task<List<TimeLogEntry>> GetTimeLogsLocal(Priority priority, string dataset)
-        {
-            Debug.WriteLine("Time log Service : " + " Going to get data from DB");
-            List<TimeLogEntry> output = null;
-
-            var values = _dbm.Tlw.GetAllRecords();
-
-            if (values == null || values.Count == 0)
-            {
-                Debug.WriteLine("TaskModel Service : " + " Nothing in DB");
-                // DB does not have any values. Get the values from the server.
-            //    output = await GetTimeLogsRemote(priority, dataset);
-
-                // Map from project to project model
-                values = Mapper.GetInstance().ToTimeLogEntryModelList(output);
-                // Store in DB
-                _dbm.Tlw.InsertMultipleRecords(values);
-
-            }
-            else
-            {
-                // Map from project model to project and return values.
-                output = Mapper.GetInstance().ToTimeLogEntryList(values);
-            }
-
-            Debug.WriteLine("TaskModel Service : " + " Done with that");
-
-            return output;
-
-
-        }
-
-        public async Task<List<TimeLogEntry>> GetTimeLogsRemote(Priority priority, string dataset, int? maxResults, DateTime? startDateFrom, DateTime? startDateTo, string taskId, string projectId)
-        {
-            Debug.WriteLine("Time Logs Service : " + " Going for remote time logs");
-            if (Settings.GetInstance().CheckWifi)
-                IsWifiConnected();
-            else
-            {
-                CheckConnection();
-            }
-
-            Task<TimeLogsRoot> getTaskDtoTask;
-            Debug.WriteLine("Time Logs Service : " + " Setting priority");
-            switch (priority)
-            {
-                case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetTimeLogs(dataset,maxResults,  startDateFrom,  startDateTo,  taskId,  projectId, _settings.AuthHeader);
-                    break;
-                case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId, _settings.AuthHeader);
-                    break;
-                case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId, _settings.AuthHeader);
-                    break;
-                default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId, _settings.AuthHeader);
-                    break;
-            }
-
-            var task = await getTaskDtoTask;
-            Debug.WriteLine("Time Logs Service: " + "Got the content I guess");
-            System.Diagnostics.Debug.WriteLine(task);
-            // Convert to model and store in DB
-
-            //List<TimeLogEntryModel> output = Mapper.GetInstance().toTimeLogEntryModelList(task.timeLogEntries);
-            //_dbm.tlw.insertMultipleRecords(output);
-
-            /*
-            if (CrossConnectivity.Current.IsConnected)
-            {
-                System.Diagnostics.Debug.WriteLine("TaskModel Service : " + " Setting connection policy");
-                task = await Policy
-                    .Handle<Exception>()
-                    .RetryAsync(retryCount: 5)
-                    .ExecuteAsync(async () => await getTaskDtoTask);
-            }
-            */
-            return task.TimeLogEntries;
-        }
-
-        public async Task<TimeLogEntry> GetATimeLogRemote(Priority priority, string dataset, string timelogId)
-        {
-            // throw new NotImplementedException();
-            Debug.WriteLine("Time Logs Service : " + " Going for remote time logs");
-            if (Settings.GetInstance().CheckWifi)
-                IsWifiConnected();
-            else
-            {
-                CheckConnection();
-            }
-
-            Task<TimeLogRoot> getTaskDtoTask;
-            Debug.WriteLine("Time Logs Service : " + " Setting priority");
-            switch (priority)
-            {
-                case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.GetTimeLog(dataset,timelogId, _settings.AuthHeader);
-                    break;
-                case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLog(dataset, timelogId, _settings.AuthHeader);
-                    break;
-                case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.GetTimeLog(dataset, timelogId, _settings.AuthHeader);
-                    break;
-                default:
-                    getTaskDtoTask = _apiService.UserInitiated.GetTimeLog(dataset, timelogId, _settings.AuthHeader);
-                    break;
-            }
-
-            var task = await getTaskDtoTask;
-            Debug.WriteLine("Time Logs Service: " + "Got the content I guess");
-            return task.timeLogEntry;
-
-        }
-
-        public async Task<TaskRoot> UpdateTaskDetails(Priority priority,string dataset, string projecttaskId, DateTime editTimeStamp, double? estimatedTime,
-            DateTime? completionDate)
-        {
-            Debug.WriteLine("Time Logs Service : " + " Going for remote time logs");
-            if (Settings.GetInstance().CheckWifi)
-                IsWifiConnected();
-            else
-            {
-                CheckConnection();
-            }
-
-            Task<TaskRoot> getTaskDtoTask;
-            Debug.WriteLine("Time Logs Service : " + " Setting priority");
-            switch (priority)
-            {
-                case Priority.Background:
-                    getTaskDtoTask = _apiService.Background.UpdateTaskDetails(dataset, projecttaskId, editTimeStamp,
-                        estimatedTime.GetValueOrDefault(), completionDate.GetValueOrDefault(),_settings.AuthHeader);
-
-                    break;
-                case Priority.UserInitiated:
-                    getTaskDtoTask = _apiService.UserInitiated.UpdateTaskDetails(dataset, projecttaskId, editTimeStamp,
-                        estimatedTime.GetValueOrDefault(), completionDate.GetValueOrDefault(), _settings.AuthHeader);
-                    break;
-                case Priority.Speculative:
-                    getTaskDtoTask = _apiService.Speculative.UpdateTaskDetails(dataset, projecttaskId, editTimeStamp,
-                        estimatedTime.GetValueOrDefault(), completionDate.GetValueOrDefault(), _settings.AuthHeader);
-                    break;
-                default:
-                    getTaskDtoTask = _apiService.UserInitiated.UpdateTaskDetails(dataset, projecttaskId, editTimeStamp,
-                        estimatedTime.GetValueOrDefault(), completionDate.GetValueOrDefault(), _settings.AuthHeader);
-                    break;
-            }
-
-            var task = await getTaskDtoTask;
-            Debug.WriteLine("Time Logs Service: " + "Got the content I guess");
-            System.Diagnostics.Debug.WriteLine(task);
-            // Convert to model and store in DB
-
-            //List<TimeLogEntryModel> output = Mapper.GetInstance().toTimeLogEntryModelList(task.timeLogEntries);
-            //_dbm.tlw.insertMultipleRecords(output);
-
-            /*
-            if (CrossConnectivity.Current.IsConnected)
-            {
-                System.Diagnostics.Debug.WriteLine("TaskModel Service : " + " Setting connection policy");
-                task = await Policy
-                    .Handle<Exception>()
-                    .RetryAsync(retryCount: 5)
-                    .ExecuteAsync(async () => await getTaskDtoTask);
-            }
-            */
-            return task;
-
-
-
-        }
-
-
-        /*
-         * Adding/Updating/Deleting Time Log entries
-         */ 
-        
-        public async Task<EditATimeLogRoot> AddTimeLog(Priority priority, string dataset, string comment, string startDate, string taskId, double loggedTime,double interruptTime, bool open)
-        {
-            if (Settings.GetInstance().CheckWifi)
-                IsWifiConnected();
-            else
-            {
-                CheckConnection();
-            }
-            Dictionary<string, object> value = new Dictionary<string, object>();
-            value.Add("comment", comment);
-            value.Add("startDate", DateTime.Parse(startDate).ToString(_pattern));
-            value.Add("taskId", taskId);
-            value.Add("loggedTime", loggedTime);
-            value.Add("editTimestamp", DateTime.Now.ToString(_pattern));
-            value.Add("open",open);
-            value.Add("interruptTime",interruptTime);
-
-            EditATimeLogRoot task = null;
-            Task<EditATimeLogRoot> addTimeLog;
-            Debug.WriteLine("Task Service : " + " Setting priority");
-            switch (priority)
-            {
-                case Priority.Background:
-                    addTimeLog = _apiService.Background.AddTimeLog(_settings.AuthHeader, dataset, value);
-                    break;
-                case Priority.UserInitiated:
-                    addTimeLog = _apiService.UserInitiated.AddTimeLog(_settings.AuthHeader, dataset, value);
-                    break;
-                case Priority.Speculative:
-                    addTimeLog = _apiService.Speculative.AddTimeLog(_settings.AuthHeader, dataset, value);
-                    break;
-                default:
-                    addTimeLog = _apiService.UserInitiated.AddTimeLog(_settings.AuthHeader, dataset, value);
-                    break;
-            }
-            var timelogged = await addTimeLog;
-            return timelogged;
-        }
-
-        public async Task<EditATimeLogRoot> UpdateTimeLog(Priority priority, string dataset, string timeLogId, string comment, string startDate, string taskId,
-            double interruptTimeDelta, double loggedTimeDelta, bool open)
-    {
-            if (Settings.GetInstance().CheckWifi)
-                IsWifiConnected();
-            else
-            {
-                CheckConnection();
-            }
-
-
-            Dictionary<string, object> value = new Dictionary<string, object>();
-            value.Add("comment", comment);
-            value.Add("startDate", startDate);
-            value.Add("taskId", taskId);
-            value.Add("loggedTime", loggedTimeDelta);
-            value.Add("open", open);
-            value.Add("interruptTime", interruptTimeDelta);
-            value.Add("editTimestamp", DateTime.Now.ToString(_pattern));
-            System.Diagnostics.Debug.WriteLine("Data set is :"+dataset+" Time Log is :"+timeLogId+" EditTime stamp:"+value["editTimestamp"]);
-            EditATimeLogRoot task = null;
-            Task<EditATimeLogRoot> updateTimeLog;
-            Debug.WriteLine("Task Service : " + " Setting priority");
-            switch (priority)
-            {
-                case Priority.Background:
-                    updateTimeLog = _apiService.Background.UpdateTimeLog(_settings.AuthHeader, dataset, timeLogId, value);
-                    break;
-                case Priority.UserInitiated:
-                    updateTimeLog = _apiService.UserInitiated.UpdateTimeLog(_settings.AuthHeader, dataset, timeLogId, value);
-                    break;
-                case Priority.Speculative:
-                    updateTimeLog = _apiService.Speculative.UpdateTimeLog(_settings.AuthHeader, dataset, timeLogId, value);
-                    break;
-                default:
-                    updateTimeLog = _apiService.UserInitiated.UpdateTimeLog(_settings.AuthHeader, dataset, timeLogId, value);
-                    break;
-            }
-
-
-            var timelogged = await updateTimeLog;
-
-            return timelogged;
-
-        }
-
-        public async Task<DeleteRoot> DeleteTimeLog(Priority priority,string dataset, string timelogId)
-        {
-
-            if (Settings.GetInstance().CheckWifi)
-                IsWifiConnected();
-            else
-            {
-                CheckConnection();
-            }
-
-            string value = DateTime.Now.ToString(_pattern);
-
-            DeleteRoot task = null;
-            Task<DeleteRoot> deleteTimeLog;
-            Debug.WriteLine("Task Service : " + " Setting priority");
-            switch (priority)
-            {
-                case Priority.Background:
-                    deleteTimeLog = _apiService.Background.DeleteTimeLog(_settings.AuthHeader, dataset,timelogId, value);
-                    break;
-                case Priority.UserInitiated:
-                    deleteTimeLog = _apiService.UserInitiated.DeleteTimeLog(_settings.AuthHeader, dataset, timelogId, value);
-                    break;
-                case Priority.Speculative:
-                    deleteTimeLog = _apiService.Speculative.DeleteTimeLog(_settings.AuthHeader, dataset, timelogId, value);
-                    break;
-                default:
-                    deleteTimeLog = _apiService.UserInitiated.DeleteTimeLog(_settings.AuthHeader, dataset, timelogId, value);
-                    break;
-            }
-
-
-            var timelogged = await deleteTimeLog;
-
-            return timelogged;
-
-
-        }
-
-     
     }
-
-
-
-
 }
