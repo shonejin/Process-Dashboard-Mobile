@@ -108,6 +108,7 @@ namespace ProcessDashboard.iOS
 				newTimeLog.Task = task;
 				newTimeLog.StartDate = DateTime.Now;
 				controller.CreateTask(this, newTimeLog);
+				AddTaskTimelog(newTimeLog);
 
 			}
 
@@ -173,6 +174,33 @@ namespace ProcessDashboard.iOS
 				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
 			}
 			return 0;
+
+		}
+
+		public async void AddTaskTimelog(TimeLogEntry log)
+		{
+			await AddATimeLog(log);
+		}
+
+		public async System.Threading.Tasks.Task<int> AddATimeLog(TimeLogEntry log)
+		{
+			var apiService = new ApiTypes(null);
+			var service = new PDashServices(apiService);
+			Controller c = new Controller(service);
+
+			EditATimeLogRoot tr = await c.AddATimeLog("INST-szewf0", "No Comment", DateTime.Now.ToString(), log.Task.Id, log.InterruptTime, log.LoggedTime, true);
+			try
+			{
+				System.Diagnostics.Debug.WriteLine("** Added a new Time Log entry **");
+
+				System.Diagnostics.Debug.WriteLine(tr.TimeLogEntry.Id);
+			}
+			catch (System.Exception e)
+			{
+				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+			}
+
+			return tr.TimeLogEntry.Id;
 
 		}
     }
