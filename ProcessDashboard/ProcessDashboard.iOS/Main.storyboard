@@ -798,18 +798,40 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="UserName" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="211">
-                                <rect key="frame" x="56" y="129" width="280" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Data Token*" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="211">
+                                <rect key="frame" x="40" y="150" width="520" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
+                                <constraints>
+                                    <constraint id="3481" firstItem="211" firstAttribute="height" constant="30">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="30"/>
+                                    </constraint>
+                                </constraints>
+                                <variation key="heightClass=regular-widthClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="3481"/>
+                                    </mask>
+                                    <rect key="frame" x="40" y="150" width="295" height="30"/>
+                                </variation>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="212">
-                                <rect key="frame" x="56" y="181" width="280" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="User ID*" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="212">
+                                <rect key="frame" x="40" y="200" width="520" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <constraints>
+                                    <constraint id="3483" firstItem="212" firstAttribute="height" constant="30">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="30"/>
+                                    </constraint>
+                                </constraints>
+                                <variation key="heightClass=regular-widthClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="3483"/>
+                                    </mask>
+                                    <rect key="frame" x="40" y="200" width="295" height="30"/>
+                                </variation>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="213">
-                                <rect key="frame" x="56" y="282" width="280" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="213">
+                                <rect key="frame" x="70" y="380" width="460" height="30"/>
                                 <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Login">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -823,32 +845,165 @@
                                 <connections>
                                     <action selector="LoginButton_TouchUpInside:" destination="207" eventType="touchUpInside" id="229"/>
                                 </connections>
+                                <variation key="heightClass=regular-widthClass=compact">
+                                    <rect key="frame" x="70" y="360" width="235" height="30"/>
+                                    <mask key="constraints">
+                                        <include reference="3495"/>
+                                    </mask>
+                                </variation>
+                                <constraints>
+                                    <constraint id="3495" firstItem="213" firstAttribute="height" constant="30">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="30"/>
+                                    </constraint>
+                                </constraints>
                             </button>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="ServerLink" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ifu-m3-cp9">
-                                <rect key="frame" x="56" y="231" width="280" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password*" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ifu-m3-cp9">
+                                <rect key="frame" x="40" y="250" width="520" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                                <constraints>
+                                    <constraint id="3489" firstItem="ifu-m3-cp9" firstAttribute="height" constant="30">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="30"/>
+                                    </constraint>
+                                </constraints>
+                                <variation key="heightClass=regular-widthClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="3489"/>
+                                    </mask>
+                                    <rect key="frame" x="40" y="250" width="295" height="30"/>
+                                </variation>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Process Dashboard" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nus-J0-tou">
-                                <rect key="frame" x="105" y="69" width="183" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Process Dashboard" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nus-J0-tou">
+                                <rect key="frame" x="0.0" y="70" width="600" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="highlightedColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <variation key="heightClass=regular-widthClass=compact">
+                                    <rect key="frame" x="0.0" y="70" width="375" height="30"/>
+                                </variation>
                             </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" lineBreakMode="tailTruncation" minimumFontSize="10" id="3475" translatesAutoresizingMaskIntoConstraints="NO" usesAttributedText="YES" misplaced="YES">
+                                <rect key="frame" x="137" y="452.5" width="101.5" height="15.5"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                                <variation key="heightClass=regular-widthClass=compact">
+                                    <rect key="frame" x="135" y="432.5" width="101.5" height="15.5"/>
+                                </variation>
+                                <attributedString key="attributedText">
+                                    <fragment content="need an account?">
+                                        <attributes>
+                                            <color key="NSColor" colorSpace="calibratedRGB" red="0" green="0" blue="0" alpha="1"/>
+                                            <font key="NSFont" name="HelveticaNeue-LightItalic" family="Helvetica Neue" size="13"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="infoLight" lineBreakMode="middleTruncation" id="3476" translatesAutoresizingMaskIntoConstraints="NO" misplaced="YES">
+                                <rect key="frame" x="244" y="449" width="22" height="22"/>
+                                <state key="normal">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="heightClass=regular-widthClass=compact">
+                                    <rect key="frame" x="239.5" y="429" width="22" height="22"/>
+                                </variation>
+                                <connections>
+                                    <action selector="InfoBtnOnClicked:" destination="207" id="3581" eventType="touchUpInside"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <variation key="heightClass=regular-widthClass=compact">
+                            <mask key="subviews">
+                                <include reference="3475"/>
+                                <include reference="3476"/>
+                            </mask>
+                            <mask key="constraints">
+                                <include reference="3477"/>
+                                <include reference="3478"/>
+                                <include reference="3479"/>
+                                <include reference="3480"/>
+                                <include reference="3482"/>
+                                <include reference="3484"/>
+                                <include reference="3485"/>
+                                <include reference="3486"/>
+                                <include reference="3487"/>
+                                <include reference="3488"/>
+                                <include reference="3496"/>
+                                <include reference="3497"/>
+                                <include reference="3498"/>
+                                <include reference="3500"/>
+                                <include reference="3501"/>
+                                <include reference="3578"/>
+                                <include reference="3584"/>
+                            </mask>
+                        </variation>
+                        <constraints>
+                            <constraint id="3477" firstItem="nus-J0-tou" firstAttribute="top" secondItem="204" secondAttribute="bottom" constant="50">
+                                <variation key="heightClass=regular-widthClass=compact" constant="50"/>
+                            </constraint>
+                            <constraint id="3478" firstItem="208" firstAttribute="trailing" secondItem="211" secondAttribute="trailing" constant="40">
+                                <variation key="heightClass=regular-widthClass=compact" constant="40"/>
+                            </constraint>
+                            <constraint id="3479" firstItem="211" firstAttribute="leading" secondItem="208" secondAttribute="leading" constant="40">
+                                <variation key="heightClass=regular-widthClass=compact" constant="40"/>
+                            </constraint>
+                            <constraint id="3480" firstItem="211" firstAttribute="top" secondItem="nus-J0-tou" secondAttribute="bottom" constant="50">
+                                <variation key="heightClass=regular-widthClass=compact" constant="50"/>
+                            </constraint>
+                            <constraint id="3482" firstItem="212" firstAttribute="top" secondItem="211" secondAttribute="bottom" constant="20">
+                                <variation key="heightClass=regular-widthClass=compact" constant="20"/>
+                            </constraint>
+                            <constraint id="3484" firstItem="208" firstAttribute="trailing" secondItem="212" secondAttribute="trailing" constant="40">
+                                <variation key="heightClass=regular-widthClass=compact" constant="40"/>
+                            </constraint>
+                            <constraint id="3485" firstItem="212" firstAttribute="leading" secondItem="208" secondAttribute="leading" constant="40">
+                                <variation key="heightClass=regular-widthClass=compact" constant="40"/>
+                            </constraint>
+                            <constraint id="3486" firstItem="ifu-m3-cp9" firstAttribute="top" secondItem="212" secondAttribute="bottom" constant="20">
+                                <variation key="heightClass=regular-widthClass=compact" constant="20"/>
+                            </constraint>
+                            <constraint id="3487" firstItem="208" firstAttribute="trailing" secondItem="ifu-m3-cp9" secondAttribute="trailing" constant="40">
+                                <variation key="heightClass=regular-widthClass=compact" constant="40"/>
+                            </constraint>
+                            <constraint id="3488" firstItem="ifu-m3-cp9" firstAttribute="leading" secondItem="208" secondAttribute="leading" constant="40">
+                                <variation key="heightClass=regular-widthClass=compact" constant="40"/>
+                            </constraint>
+                            <constraint id="3496" firstItem="208" firstAttribute="trailing" secondItem="213" secondAttribute="trailing" constant="70">
+                                <variation key="heightClass=regular-widthClass=compact" constant="70"/>
+                            </constraint>
+                            <constraint id="3497" firstItem="213" firstAttribute="leading" secondItem="208" secondAttribute="leading" constant="70">
+                                <variation key="heightClass=regular-widthClass=compact" constant="70"/>
+                            </constraint>
+                            <constraint id="3498" firstItem="3475" firstAttribute="centerY" secondItem="213" secondAttribute="bottom" constant="50">
+                                <variation key="heightClass=regular-widthClass=compact" constant="50"/>
+                            </constraint>
+                            <constraint id="3500" firstItem="3476" firstAttribute="centerY" secondItem="3475" secondAttribute="centerY"/>
+                            <constraint id="3501" firstItem="3476" firstAttribute="leading" secondItem="3475" secondAttribute="trailing" constant="3">
+                                <variation key="heightClass=regular-widthClass=compact" constant="3"/>
+                            </constraint>
+                            <constraint id="3575" firstItem="208" firstAttribute="trailing" secondItem="nus-J0-tou" secondAttribute="trailing"/>
+                            <constraint id="3576" firstItem="nus-J0-tou" firstAttribute="leading" secondItem="208" secondAttribute="leading"/>
+                            <constraint id="3578" firstItem="208" firstAttribute="centerX" secondItem="3475" secondAttribute="centerX" constant="2">
+                                <variation key="heightClass=regular-widthClass=compact" constant="2"/>
+                            </constraint>
+                            <constraint id="3584" firstItem="213" firstAttribute="top" secondItem="ifu-m3-cp9" secondAttribute="bottom" constant="80">
+                                <variation key="heightClass=regular-widthClass=compact" constant="80"/>
+                            </constraint>
+                        </constraints>
                     </view>
                     <connections>
                         <outlet property="AppNameLabel" destination="nus-J0-tou" id="name-outlet-nus-J0-tou"/>
                         <outlet property="LoginButton" destination="213" id="name-outlet-213"/>
-                        <outlet property="PasswordTextView" destination="212" id="name-outlet-212"/>
-                        <outlet property="ServerLinkTextView" destination="ifu-m3-cp9" id="name-outlet-ifu-m3-cp9"/>
-                        <outlet property="UserNameTextView" destination="211" id="name-outlet-211"/>
+                        <outlet property="UserIDTextView" destination="212" id="name-outlet-212"/>
+                        <outlet property="PasswordTextView" destination="ifu-m3-cp9" id="name-outlet-ifu-m3-cp9"/>
+                        <outlet property="DataTokenTextView" destination="211" id="name-outlet-211"/>
+                        <outlet property="InfoButton" destination="3476" id="name-outlet-3476"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="209" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-632" y="-676"/>
+            <point key="canvasLocation" x="-614" y="-676"/>
         </scene>
         <!--Time Logs-->
         <scene sceneID="Wbe-qe-Dnr">
@@ -1172,4 +1327,7 @@
     <inferredMetricsTieBreakers>
         <segue reference="2519"/>
     </inferredMetricsTieBreakers>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedScreenMetrics key="destination" type="retina47"/>
+    </simulatedMetricsContainer>
 </document>

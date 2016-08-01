@@ -191,7 +191,7 @@ namespace ProcessDashboard
 						int interrupt = Round(_stopwatch.GetInterruptMinutes());
 
 
-						var value = await _controller.AddATimeLog(Settings.GetInstance().Dataset, "", _stopwatch.Get_first_startTime(), _taskId, logged, interrupt, _stopwatch.IsRunning());
+						var value = await _controller.AddATimeLog(AccountStorage.DataSet, "", _stopwatch.Get_first_startTime().GetValueOrDefault(), _taskId, logged, interrupt, _stopwatch.IsRunning());
 
 						_timeLogEntryId = "" + value.Id;
 
@@ -214,7 +214,7 @@ namespace ProcessDashboard
 				{
 					Console.WriteLine("Calling DeleteTimeLog(). Minutes: " + _stopwatch.GetTrailingLoggedMinutes());
 
-					await _controller.DeleteTimeLog(Settings.GetInstance().Dataset, _timeLogEntryId);
+					await _controller.DeleteTimeLog(AccountStorage.DataSet, _timeLogEntryId);
 					ReleaseTimeLogEntry(false);
 
 					OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogUpdated, "Time log deleted because it is too short.");
@@ -228,7 +228,7 @@ namespace ProcessDashboard
 
 						Console.WriteLine("Calling UpdateTimeLog()");
 
-						await _controller.UpdateTimeLog(Settings.GetInstance().Dataset, _timeLogEntryId, "", _stopwatch.Get_first_startTime(), _taskId,
+						await _controller.UpdateTimeLog(AccountStorage.DataSet, _timeLogEntryId, "", _stopwatch.Get_first_startTime(), _taskId,
 						                               LoggedTimeDelta(), interruptTimeDelta(), _stopwatch.IsRunning());
 
 						Console.WriteLine(">>>> timelog update: delta: " + logged + ", int: " + interrupt);

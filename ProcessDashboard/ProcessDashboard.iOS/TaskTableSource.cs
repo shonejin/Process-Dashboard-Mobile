@@ -77,12 +77,25 @@ namespace ProcessDashboard.iOS
 		{
 
 			var cell = tableView.DequeueReusableCell(CellIdentifier);
-			string item = TasksSorted[indexPath.Row].FullName;
+			Task item = TasksSorted[indexPath.Row];
 
 			if (cell == null)
 				cell = new UITableViewCell(UITableViewCellStyle.Default, CellIdentifier);
 
-			cell.TextLabel.Text = item;
+			if (item.CompletionDate != null)
+			{
+				var attriStr = new NSAttributedString(item.FullName, strikethroughStyle: NSUnderlineStyle.Single);
+				cell.TextLabel.AttributedText = attriStr;
+			}
+			else {
+				cell.TextLabel.Text = item.FullName;
+			}
+			cell.TextLabel.Font = UIFont.SystemFontOfSize(13);
+			cell.TextLabel.Lines = 0;
+			cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
+			cell.TextLabel.TextColor = UIColor.Black;
+			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
+
 			return cell;
 		}
 

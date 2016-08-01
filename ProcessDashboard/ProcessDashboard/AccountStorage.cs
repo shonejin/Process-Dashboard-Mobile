@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Xamarin.Auth;
 
 namespace ProcessDashboard
@@ -10,7 +12,7 @@ namespace ProcessDashboard
 	{
 		private const String AppName = "Process_Dashboard";
 
-		public void Set(String userId, String password, String baseUrl, String dataSet)
+		public static void Set(String userId, String password, String baseUrl, String dataSet)
 		{
 			ClearStorage();
 
@@ -36,14 +38,14 @@ namespace ProcessDashboard
 			}
 		}
 
-		public void ClearStorage()
+		public static void ClearStorage()
 		{
 			while (true)
 			{
-				Account account = (Account)AccountStore.Create().FindAccountsForService(AppName);
-				if (account != null)
+				List<Account> accounts = (List<Account>)AccountStore.Create().FindAccountsForService(AppName);
+				if (accounts.Count > 0)
 				{
-					AccountStore.Create().Delete(account, AppName);
+					AccountStore.Create().Delete(accounts[0], AppName);
 				}
 				else
 				{
@@ -52,39 +54,50 @@ namespace ProcessDashboard
 			}
 		}
 
-		public string UserId
+		public static string AuthHeader
 		{
 			get
 			{
-				Account account = (Account) AccountStore.Create().FindAccountsForService(AppName);
-				return (account != null) ? account.Username : null;
+				String _username = AccountStorage.UserId;
+				String _password = AccountStorage.Password;
+				var authData = $"{_username}:{_password}";
+				return "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(authData));
 			}
 		}
 
-		public string Password
+		public static string UserId
 		{
 			get
 			{
-				Account account = (Account) AccountStore.Create().FindAccountsForService(AppName);
-				return (account != null) ? account.Properties["Password"] : null;
+				List<Account> accounts = (List<Account>) AccountStore.Create().FindAccountsForService(AppName);
+				return (accounts.Count > 0) ? accounts[0].Username : null;
 			}
 		}
 
-		public string BaseUrl
+		public static string Password
 		{
 			get
 			{
-				Account account = (Account)AccountStore.Create().FindAccountsForService(AppName);
-				return (account != null) ? account.Properties["BaseUrl"] : null;
+				List<Account> accounts = (List<Account>)AccountStore.Create().FindAccountsForService(AppName);
+				return (accounts.Count > 0) ? accounts[0].Properties["Password"] : null;
 			}
 		}
 
-		public string DataSet
+		public static string BaseUrl
 		{
 			get
 			{
-				Account account = (Account)AccountStore.Create().FindAccountsForService(AppName);
-				return (account != null) ? account.Properties["DataSet"] : null;
+				List<Account> accounts = (List<Account>)AccountStore.Create().FindAccountsForService(AppName);
+				return (accounts.Count > 0) ? accounts[0].Properties["BaseUrl"] : null;
+			}
+		}
+
+		public static string DataSet
+		{
+			get
+			{
+				List<Account> accounts = (List<Account>)AccountStore.Create().FindAccountsForService(AppName);
+				return (accounts.Count > 0) ? accounts[0].Properties["DataSet"] : null;
 			}
 		}
 	}

@@ -9,9 +9,6 @@ namespace ProcessDashboard.iOS
 	[Register("AppDelegate")]
 	public class AppDelegate : UIApplicationDelegate
 	{
-		// class-level declarations
-		private bool isAuthenticated = false;
-
 		public override UIWindow Window
 		{
 			get;
@@ -48,15 +45,16 @@ namespace ProcessDashboard.iOS
 
 		public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
 		{
-			if (!isAuthenticated)
+			if (AccountStorage.UserId != null)
 			{
-				//We are already authenticated, so go to the main tab bar controller;
+				// Account information found. We can skip the login screen
+				// If the account credentials are changed on the server side, the user will be requested to login upon the first API request
 				var tabBarController = GetViewController(MainStoryboard, "rootTabBarViewController");
 				SetRootViewController(tabBarController, false);
 			}
 			else
 			{
-				//User needs to log in, so show the Login View Controlller
+				// Haven't logged in even once
 				var loginViewController = GetViewController(MainStoryboard, "LoginPageViewController") as LoginPageViewController;
 				loginViewController.OnLoginSuccess += LoginViewController_OnLoginSuccess;
 				SetRootViewController(loginViewController, false);

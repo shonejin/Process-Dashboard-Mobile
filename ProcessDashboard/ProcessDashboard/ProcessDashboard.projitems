@@ -49,6 +49,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)TimeLoggingController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StateChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AccountStorage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Readme.md" />

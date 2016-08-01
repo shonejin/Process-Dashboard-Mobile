@@ -102,7 +102,10 @@ namespace ProcessDashboard.iOS
 
 			activityView = new UIActivityIndicatorView(UIActivityIndicatorViewStyle.WhiteLarge);
 			activityView.Frame = View.Frame;
+			activityView.BackgroundColor = UIColor.FromRGBA(0, 0, 0, 0.6f);
 			activityView.Center = View.Center;
+			activityView.HidesWhenStopped = true;
+			View.AddSubview(activityView);
 
 			pauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
 			pauseBtn.Enabled = true;
@@ -157,16 +160,21 @@ namespace ProcessDashboard.iOS
 				if (saveButton.Title.ToString().Equals("Mark Complete"))
 				{
 					completeBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
-					// TODO: Save the completed Date to datebase
+
+					DateTime reference = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(2001, 1, 1, 0, 0, 0));
+					reference.AddSeconds(CompleteTimePicker.Date.SecondsSinceReferenceDate);
+					c.UpdateATask(AccountStorage.DataSet, currentTask.Id, currentTask.EstimatedTime, reference, false);
 				}
-				else if (saveButton.Title.ToString().Equals("Mark InComplete"))
+				else if (saveButton.Title.ToString().Equals("Mark Incomplete"))
 				{
 					completeBtn.SetImage(UIImage.FromBundle("checkbox-unchecked"), UIControlState.Normal);
-					// TODO: Set the current task complete date as "1/1/0001" and save to database
+					c.UpdateATask(AccountStorage.DataSet, currentTask.Id, currentTask.EstimatedTime, null, true);
 				}
 				else { // saveButton.Title.ToString().Equals("Change Completion Date")
-					
-					// TODO: Save the new completed Date to datebase
+					completeBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
+					DateTime reference = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(2001, 1, 1, 0, 0, 0));
+					reference.AddSeconds(CompleteTimePicker.Date.SecondsSinceReferenceDate);
+					c.UpdateATask(AccountStorage.DataSet, currentTask.Id, currentTask.EstimatedTime, reference, false);
 				}
 				this.completedDateText.ResignFirstResponder();
 			};
@@ -182,8 +190,6 @@ namespace ProcessDashboard.iOS
 
 			toolbar.SetItems(new UIBarButtonItem[] { cancelButton, spacer, saveButton }, true);
 
-		    //completeTimeSelectedDate = currentTask.CompletionDate;
-
 			if (currentTask.CompletionDate == null)
 			{
 				saveButton.Title = "Mark Complete";
@@ -191,7 +197,7 @@ namespace ProcessDashboard.iOS
 			}
 			else
 			{
-				saveButton.Title = "Mark InComplete";
+				saveButton.Title = "Mark Incomplete";
 				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate((DateTime)currentTask.CompletionDate), true);
 			}
 
@@ -264,7 +270,6 @@ namespace ProcessDashboard.iOS
 		public async void refreshData()
 		{
 			activityView.StartAnimating();
-			activityView.Hidden = false;
 
 			projectNameBtn.SetTitle("loading current project ...", UIControlState.Normal);
 			taskNameBtn.SetTitle("loading current task ...", UIControlState.Normal);
@@ -291,13 +296,12 @@ namespace ProcessDashboard.iOS
 			finally
 			{
 				activityView.StopAnimating();
-				activityView.Hidden = true;
 			}
 		}
 
 		public async System.Threading.Tasks.Task<int> GetRecentTasksData()
 		{
-			List<DTO.Task> projectsList = await c.GetRecentTasks(Settings.GetInstance().Dataset);
+			List<DTO.Task> projectsList = await c.GetRecentTasks(AccountStorage.DataSet);
 			RecentTaskItems = projectsList;
 			return 0;
 		}

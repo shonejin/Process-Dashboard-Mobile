@@ -20,6 +20,14 @@ namespace ProcessDashboard.iOS
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UITextField DataTokenTextView { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIButton InfoButton { get; set; }
+
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UIButton LoginButton { get; set; }
 
         [Outlet]
@@ -28,21 +36,31 @@ namespace ProcessDashboard.iOS
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UITextField ServerLinkTextView { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UITextField UserNameTextView { get; set; }
+        UIKit.UITextField UserIDTextView { get; set; }
 
         [Action ("LoginButton_TouchUpInside:")]
         [GeneratedCode ("iOS Designer", "1.0")]
         partial void LoginButton_TouchUpInside (UIKit.UIButton sender);
+
+        [Action ("InfoBtnOnClicked:")]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        partial void InfoBtnOnClicked (UIKit.UIButton sender);
 
         void ReleaseDesignerOutlets ()
         {
             if (AppNameLabel != null) {
                 AppNameLabel.Dispose ();
                 AppNameLabel = null;
+            }
+
+            if (DataTokenTextView != null) {
+                DataTokenTextView.Dispose ();
+                DataTokenTextView = null;
+            }
+
+            if (InfoButton != null) {
+                InfoButton.Dispose ();
+                InfoButton = null;
             }
 
             if (LoginButton != null) {
@@ -55,14 +73,9 @@ namespace ProcessDashboard.iOS
                 PasswordTextView = null;
             }
 
-            if (ServerLinkTextView != null) {
-                ServerLinkTextView.Dispose ();
-                ServerLinkTextView = null;
-            }
-
-            if (UserNameTextView != null) {
-                UserNameTextView.Dispose ();
-                UserNameTextView = null;
+            if (UserIDTextView != null) {
+                UserIDTextView.Dispose ();
+                UserIDTextView = null;
             }
         }
     }

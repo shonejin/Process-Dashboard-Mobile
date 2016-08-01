@@ -77,21 +77,6 @@ namespace ProcessDashboard.iOS
 			cell.TextLabel.TextColor = UIColor.Black;
 			cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
 
-			//if (isFirst && tableItems[indexPath.Row].completionDate.ToShortDateString().Equals("1/1/0001"))
-			//{
-			//	firstIncompleteTaskPos = indexPath.Row;
-			//	Console.WriteLine("Line:" + indexPath.Row);
-			//	isFirst = false;
-			//}
-			//Console.WriteLine(isFirst + "Outside Line:" + indexPath.Row);
-			//cell.TextLabel.Text = tableItems[indexPath.Row].FullName;
-			//cell.TextLabel.Font = UIFont.SystemFontOfSize(13);
-			//cell.TextLabel.Lines = 0;
-			//cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
-			//cell.TextLabel.TextColor = UIColor.Black;
-			//cell.TextLabel.LineBreakMode = UILineBreakMode.WordWrap;
-
-
 			return cell;
 		}
 	}

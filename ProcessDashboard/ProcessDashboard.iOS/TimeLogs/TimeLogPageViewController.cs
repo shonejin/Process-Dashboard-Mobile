@@ -177,7 +177,7 @@ namespace ProcessDashboard.iOS
 			var service = new PDashServices(apiService);
 			Controller c = new Controller(service);
 
-			List<TimeLogEntry> timeLogEntries = await c.GetTimeLogs(Settings.GetInstance().Dataset, 0, null, null, null, null);
+			List<TimeLogEntry> timeLogEntries = await c.GetTimeLogs(AccountStorage.DataSet, 0, null, null, null, null);
 
 			globalTimeLogCache = timeLogEntries;
 

@@ -62,7 +62,7 @@ namespace ProcessDashboard.Service_Access_Layer
             CheckConnection();
             try
             {
-                var projectsDtoTask = _apiService.GetApi(priority).GetProjectsList(dataset, _settings.AuthHeader);
+				var projectsDtoTask = _apiService.GetApi(priority).GetProjectsList(dataset,AccountStorage.AuthHeader);
 
                 var projects = await _globalPolicy
                     .ExecuteAsync(async () => await projectsDtoTask);
@@ -86,7 +86,7 @@ namespace ProcessDashboard.Service_Access_Layer
             try
             {
                 var getTasksDtoTask = _apiService.GetApi(priority)
-                    .GetTasksList(dataset, projectId, _settings.AuthHeader);
+				                                 .GetTasksList(dataset, projectId, AccountStorage.AuthHeader);
                 var tasks = await _globalPolicy
                     .ExecuteAsync(async () => await getTasksDtoTask);
 
@@ -120,7 +120,7 @@ namespace ProcessDashboard.Service_Access_Layer
             try
             {
                 var getTaskDetailsDtoTask = _apiService.GetApi(priority)
-                    .GetTaskDetails(dataset, projecttaskId, _settings.AuthHeader);
+				                                       .GetTaskDetails(dataset, projecttaskId, AccountStorage.AuthHeader);
 
                 var task = await _globalPolicy
                     .ExecuteAsync(async () => await getTaskDetailsDtoTask);
@@ -143,7 +143,7 @@ namespace ProcessDashboard.Service_Access_Layer
             CheckConnection();
             try
             {
-                var getRecentTasksDtoTask = _apiService.GetApi(priority).GetRecentTasks(dataset, _settings.AuthHeader);
+				var getRecentTasksDtoTask = _apiService.GetApi(priority).GetRecentTasks(dataset, AccountStorage.AuthHeader);
 
                 var recenttask = await _globalPolicy
                     .ExecuteAsync(async () => await getRecentTasksDtoTask);
@@ -172,7 +172,7 @@ namespace ProcessDashboard.Service_Access_Layer
             {
                 var getTimeLogsDtoTask = _apiService.GetApi(priority)
                     .GetTimeLogs(dataset, maxResults, _util.GetServerTimeString(startDateFrom),
-                        _util.GetServerTimeString(startDateTo), taskId, projectId, _settings.AuthHeader);
+                        _util.GetServerTimeString(startDateTo), taskId, projectId, AccountStorage.AuthHeader);
 
                 var timelogs = await _globalPolicy
                     .ExecuteAsync(async () => await getTimeLogsDtoTask);
@@ -196,7 +196,7 @@ namespace ProcessDashboard.Service_Access_Layer
             try
             {
                 var getTimeLogDtoTask = _apiService.GetApi(priority)
-                    .GetTimeLog(dataset, timelogId, _settings.AuthHeader);
+                    .GetTimeLog(dataset, timelogId, AccountStorage.AuthHeader);
 
                 var timelog = await _globalPolicy
                     .ExecuteAsync(async () => await getTimeLogDtoTask);
@@ -231,7 +231,7 @@ namespace ProcessDashboard.Service_Access_Layer
                     value.Add("completionDate", _util.GetServerTimeString(completionDate));
 
                 var updateTaskDtoTask = _apiService.GetApi(priority)
-                    .UpdateTaskDetails(_settings.AuthHeader, dataset, projecttaskId, _util.GetEditTimeStamp(),
+                    .UpdateTaskDetails(AccountStorage.AuthHeader, dataset, projecttaskId, _util.GetEditTimeStamp(),
                         value);
 
                 var task = await _globalPolicy
@@ -273,7 +273,7 @@ namespace ProcessDashboard.Service_Access_Layer
                     {"open", open},
                     {"interruptTime", interruptTime}
                 };
-                var addTimeLog = _apiService.GetApi(priority).AddTimeLog(_settings.AuthHeader, dataset, value);
+                var addTimeLog = _apiService.GetApi(priority).AddTimeLog(AccountStorage.AuthHeader, dataset, value);
                 System.Diagnostics.Debug.WriteLine("2");
                 var timelogged = await addTimeLog;
                 System.Diagnostics.Debug.WriteLine("3");
@@ -314,7 +314,7 @@ namespace ProcessDashboard.Service_Access_Layer
                 value.Add("editTimestamp", _util.GetEditTimeStamp());
 
                 var updateTimeLog = _apiService.GetApi(priority)
-                    .UpdateTimeLog(_settings.AuthHeader, dataset, timeLogId, value);
+                    .UpdateTimeLog(AccountStorage.AuthHeader, dataset, timeLogId, value);
 
                 var updatedTimeLog = await _globalPolicy
                     .ExecuteAsync(async () => await updateTimeLog);
@@ -340,7 +340,7 @@ namespace ProcessDashboard.Service_Access_Layer
                 var editTimeStamp = _util.GetEditTimeStamp();
 
                 var deleteTimeLog = _apiService.GetApi(priority)
-                    .DeleteTimeLog(_settings.AuthHeader, dataset, timelogId, editTimeStamp);
+                    .DeleteTimeLog(AccountStorage.AuthHeader, dataset, timelogId, editTimeStamp);
 
                 var deletestatus = await _globalPolicy
                     .ExecuteAsync(async () => await deleteTimeLog);
