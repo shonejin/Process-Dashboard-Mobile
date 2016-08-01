@@ -1,21 +1,11 @@
+#region
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-
-namespace ProcessDashboard.Droid.Fragments.Interfaces
+#endregion
+namespace ProcessDashboard.Droid.Interfaces
 {
-    interface IListOfTaksInterface
+    internal interface IListOfTaksInterface
     {
-
-        void PassTaskDetailsInfo(string id, string taskName, string projectName, DateTime? completionDate, double? estimatedTime, double? actualTime);
-
+        void PassTaskDetailsInfo(string id, string taskName, string projectName, DateTime? completionDate,
+            double? estimatedTime, double? actualTime);
     }
 }

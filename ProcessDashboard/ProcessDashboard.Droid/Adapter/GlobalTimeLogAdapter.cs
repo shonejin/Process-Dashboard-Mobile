@@ -1,39 +1,31 @@
-using System;
+#region
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
 using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Java.Lang;
 using ProcessDashboard.DTO;
-using Object = Java.Lang.Object;
-
-
+#endregion
 namespace ProcessDashboard.Droid.Adapter
 {
-   class GlobalTimeLogAdapter : BaseExpandableListAdapter
+    internal class GlobalTimeLogAdapter : BaseExpandableListAdapter
     {
-        Dictionary<string, List<TimeLogEntry>> _dictGroup = null;
-        List<string> _lstGroupId = null;
-        Activity _activity;
+        private Activity _activity;
+        private Dictionary<string, List<TimeLogEntry>> _dictGroup;
+        private List<string> _lstGroupId;
 
-        public GlobalTimeLogAdapter(Activity activity,Dictionary<string, List<TimeLogEntry>> dictGroup)
+        public GlobalTimeLogAdapter(Activity activity, Dictionary<string, List<TimeLogEntry>> dictGroup)
         {
             _dictGroup = dictGroup;
             _activity = activity;
             _lstGroupId = dictGroup.Keys.ToList();
-
         }
         #region implemented abstract members of BaseExpandableListAdapter
-        public override Java.Lang.Object GetChild(int groupPosition, int childPosition)
+        public override Object GetChild(int groupPosition, int childPosition)
         {
-            TimeLogEntry myObj = _dictGroup[_lstGroupId[groupPosition]][childPosition];
-            return new JavaObjectWrapper<TimeLogEntry>() { Obj = myObj };
-            
+            var myObj = _dictGroup[_lstGroupId[groupPosition]][childPosition];
+            return new JavaObjectWrapper<TimeLogEntry> {Obj = myObj};
         }
         public override long GetChildId(int groupPosition, int childPosition)
         {
@@ -44,10 +36,10 @@ namespace ProcessDashboard.Droid.Adapter
             return _dictGroup[_lstGroupId[groupPosition]].Count;
         }
         public override View GetChildView(int groupPosition,
-                                            int childPosition,
-                                            bool isLastChild,
-                                            View convertView,
-                                            ViewGroup parent)
+            int childPosition,
+            bool isLastChild,
+            View convertView,
+            ViewGroup parent)
         {
             var item = _dictGroup[_lstGroupId[groupPosition]][childPosition];
 
@@ -59,13 +51,13 @@ namespace ProcessDashboard.Droid.Adapter
             var startTime = convertView.FindViewById<TextView>(Resource.Id.gt_startTime);
 
             taskName.Text = item.Task.FullName;
-            delta.Text = ""+item.LoggedTime;
+            delta.Text = "" + item.LoggedTime;
             startTime.Text = "" + item.StartDate.TimeOfDay;
-            
+
             return convertView;
         }
 
-        public override Java.Lang.Object GetGroup(int groupPosition)
+        public override Object GetGroup(int groupPosition)
         {
             return _lstGroupId[groupPosition];
         }
@@ -90,16 +82,12 @@ namespace ProcessDashboard.Droid.Adapter
             return true;
         }
         public override int GroupCount => _dictGroup.Count;
-       public override bool HasStableIds => true;
-
-       #endregion
+        public override bool HasStableIds => true;
+        #endregion
     }
 
-    public class JavaObjectWrapper<T> : Java.Lang.Object
+    public class JavaObjectWrapper<T> : Object
     {
         public T Obj { get; set; }
     }
-
-
-
 }

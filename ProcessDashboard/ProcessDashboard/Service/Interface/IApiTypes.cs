@@ -1,3 +1,6 @@
+#region
+using Fusillade;
+#endregion
 namespace ProcessDashboard.Service.Interface
 {
     /*
@@ -15,9 +18,10 @@ namespace ProcessDashboard.Service.Interface
      *   UserInitiated > Background > Speculative
     */
     public interface IApiTypes
-	{
+    {
         IPDashApi Speculative { get; }
         IPDashApi UserInitiated { get; }
         IPDashApi Background { get; }
-	}
+        IPDashApi GetApi(Priority priority);
+    }
 }

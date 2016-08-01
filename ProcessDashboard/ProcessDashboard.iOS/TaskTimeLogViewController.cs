@@ -52,7 +52,7 @@ namespace ProcessDashboard.iOS
 			var service = new PDashServices(apiService);
 			Controller c = new Controller(service);
 
-			List<TimeLogEntry> timeLogEntries = await c.GetTimeLog(Settings.GetInstance().Dataset, 0, null, null,taskId, null);
+			List<TimeLogEntry> timeLogEntries = await c.GetTimeLogs(Settings.GetInstance().Dataset, 0, null, null,taskId, null);
 
 			timeLogCache = timeLogEntries;
 
@@ -128,26 +128,23 @@ namespace ProcessDashboard.iOS
 			Controller c = new Controller(service);
 
 			string timeLogId;
-			if (!val.HasValue)
+			if (val.HasValue)
 			{
-				timeLogId = "" + await c.TestAddATimeLog();
-			}
-			else
 				timeLogId = "" + val.Value;
 
-			DeleteRoot tr = await c.DeleteTimeLog("INST-szewf0", timeLogId);
-			try
-			{
-				System.Diagnostics.Debug.WriteLine("** Delete the new Time Log entry **");
-				System.Diagnostics.Debug.WriteLine("Status :" + tr.Stat);
+				DeleteRoot tr = await c.DeleteTimeLog("INST-szewf0", timeLogId);
+				try
+				{
+					System.Diagnostics.Debug.WriteLine("** Delete the new Time Log entry **");
+					System.Diagnostics.Debug.WriteLine("Status :" + tr.Stat);
 
-			}
-			catch (System.Exception e)
-			{
-				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+				}
+				catch (System.Exception e)
+				{
+					System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+				}
 			}
 			return 0;
-
 		}
 
 		public async void UpdateTaskTimelog(TimeLogEntry log)
@@ -162,11 +159,11 @@ namespace ProcessDashboard.iOS
 			var service = new PDashServices(apiService);
 			Controller c = new Controller(service);
 
-			EditATimeLogRoot tr = await c.UpdateTimeLog("INST-szewf0", editedTimeLog.Id.ToString(), editedTimeLog.Comment, editedTimeLog.StartDate.ToString(Settings.GetInstance().DateTimePattern), editedTimeLog.Task.Id.ToString(), editedTimeLog.InterruptTime, editedTimeLog.LoggedTime, true);
+			TimeLogEntry tr = await c.UpdateTimeLog("INST-szewf0", editedTimeLog.Id.ToString(), editedTimeLog.Comment, editedTimeLog.StartDate, editedTimeLog.Task.Id, editedTimeLog.InterruptTime, editedTimeLog.LoggedTime, true);
 			try
 			{
 				System.Diagnostics.Debug.WriteLine("** Updated the new Time Log entry **");
-				System.Diagnostics.Debug.WriteLine("Updated Logged Time :" + tr.TimeLogEntry.LoggedTime);
+				System.Diagnostics.Debug.WriteLine("Updated Logged Time :" + tr.LoggedTime);
 
 			}
 			catch (System.Exception e)

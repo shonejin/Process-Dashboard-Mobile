@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region
 using ProcessDashboard.DTO;
-
+#endregion
 namespace ProcessDashboard.APIRoot
 {
     public class TimeLogRoot
     {
-
-        public TimeLogEntry timeLogEntry { get; set; }
+        public TimeLogEntry TimeLogEntry { get; set; }
         public string Stat { get; set; }
         public Err Err { get; set; }
         public override string ToString()
         {
             if (Stat.Equals("ok"))
-                return "TimeLog Entries :" + timeLogEntry.Id;
-              
-            else
-                return "Err : " + Err;
+                return "TimeLog Entries :" + TimeLogEntry.Id;
+
+            return "Err : " + Err;
         }
     }
 }

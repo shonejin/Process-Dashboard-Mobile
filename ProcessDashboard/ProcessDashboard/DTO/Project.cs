@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿#region
+using System;
+#endregion
 namespace ProcessDashboard.DTO
 {
     /*
@@ -11,6 +10,7 @@ namespace ProcessDashboard.DTO
     */
     public class Project
     {
+        //TODO: Remove ToString
         public string Id { get; set; }
         public string Name { get; set; }
         public DateTime CreationDate { get; set; }
@@ -18,9 +18,7 @@ namespace ProcessDashboard.DTO
 
         public override string ToString()
         {
-            return this.Name;
+            return Name;
         }
     }
-
-
 }

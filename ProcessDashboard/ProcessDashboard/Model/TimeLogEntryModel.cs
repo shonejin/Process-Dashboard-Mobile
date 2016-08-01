@@ -1,7 +1,9 @@
-﻿using System;
+﻿#region
+using System;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
-
+#endregion
+// ReSharper disable UnusedMember.Local
 namespace ProcessDashboard.Model
 {
     public class TimeLogEntryModel
@@ -21,7 +23,6 @@ namespace ProcessDashboard.Model
         [Column("end_date")]
         public DateTime EndDate { get; set; }
 
-
         [Column("elapsed_time")]
         public double ElapsedTime { get; set; }
 
@@ -40,6 +41,5 @@ namespace ProcessDashboard.Model
         // Allowed values 'A','M','D'
         [Column("change_flag")]
         public char ChangeFlag { get; set; }
-        
     }
 }

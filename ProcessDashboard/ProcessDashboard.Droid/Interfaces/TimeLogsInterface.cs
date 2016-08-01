@@ -1,9 +1,7 @@
-﻿namespace ProcessDashboard.Droid
+﻿namespace ProcessDashboard.Droid.Interfaces
 {
-    interface ITimeLogsInterface
+    internal interface ITimeLogsInterface
     {
         void PassTimeLogInfo(string timelogId, string projectName, string taskName);
-
-
     }
 }

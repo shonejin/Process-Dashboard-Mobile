@@ -1,19 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿#region
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using ProcessDashboard.Model;
 using SQLite;
-
+#endregion
 namespace ProcessDashboard.DBWrapper
 {
     public class ProjectWrapper
     {
-        SQLiteConnection _db;
+        private SQLiteConnection _db;
 
         public ProjectWrapper(SQLiteConnection db)
         {
-            this._db = db;
+            _db = db;
         }
 
         public bool CreateTable()
@@ -25,7 +27,7 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return false;
             }
         }
@@ -39,7 +41,7 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return false;
             }
         }
@@ -53,18 +55,18 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return false;
             }
         }
 
         public bool InsertMultipleRecords(List<ProjectModel> entries)
         {
-                // database calls inside the transaction
-                foreach (ProjectModel pm in entries)
-                {
-                    _db.InsertOrReplace(pm);
-                }
+            // database calls inside the transaction
+            foreach (var pm in entries)
+            {
+                _db.InsertOrReplace(pm);
+            }
 
             return true;
         }
@@ -78,7 +80,7 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return null;
             }
         }
@@ -92,7 +94,7 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return null;
             }
         }
@@ -120,11 +122,9 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return false;
             }
-
-
         }
 
         public bool DeleteRecord(string projectId)
@@ -136,13 +136,9 @@ namespace ProcessDashboard.DBWrapper
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.Message);
                 return false;
             }
-
         }
-
-       
-
     }
 }

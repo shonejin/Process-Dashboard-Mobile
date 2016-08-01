@@ -1,10 +1,11 @@
-﻿using System;
+﻿#region
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fusillade;
-using ProcessDashboard.APIRoot;
 using ProcessDashboard.DTO;
-
+using Task = ProcessDashboard.DTO.Task;
+#endregion
 namespace ProcessDashboard.Service.Interface
 {
     /*
@@ -38,24 +39,28 @@ namespace ProcessDashboard.Service.Interface
     */
     public interface IPDashServices
     {
-        // These tasks gets the values from the Database
+        // These tasks gets the value from the server
+        Task<List<Project>> GetProjectsListRemote(Priority priority, string dataset);
+        Task<List<Task>> GetTasksListRemote(Priority priority, string dataset, string projectId);
+        Task<Task> GetTaskDetailsRemote(Priority priority, string dataset, string projecttaskId);
+        Task<List<Task>> GetRecentTasksRemote(Priority priority, string dataset);
+        Task<List<TimeLogEntry>> GetTimeLogsRemote(Priority priority, string dataset, int? maxResults,
+            DateTime? startDateFrom, DateTime? startDateTo, string taskId, string projectId);
+
+        Task<TimeLogEntry> GetATimeLogRemote(Priority priority, string dataset, string timelogId);
+        Task<Task> UpdateTaskDetails(Priority priority, string dataset, string projecttaskId, double? estimatedTime,
+            DateTime? completionDate,bool markTaskIncomplete);
+        Task<TimeLogEntry> AddTimeLog(Priority priority, string dataset, string comment, DateTime startDate,
+            string taskId, double loggedTime, double interruptTime, bool open);
+        Task<TimeLogEntry> UpdateTimeLog(Priority priority, string dataset, string timeLogId, string comment,
+            DateTime? startDate, string taskId,  double? loggedTimeDelta, double? interruptTimeDelta, bool open);
+        Task<DeleteRoot> DeleteTimeLog(Priority priority, string dataset, string timelogId);
+        /*
         Task<List<Project>> GetProjectsListLocal(Priority priority, string dataset);
         Task<List<DTO.Task>> GetTasksListLocal(Priority priority, string dataset, string projectId);
         Task<DTO.Task> GetTaskDetailsLocal(Priority priority, string dataset, string projecttaskId);
         Task<List<DTO.Task>> GetRecentTasksLocal(Priority priority, string dataset);
         Task<List<TimeLogEntry>> GetTimeLogsLocal(Priority priority, string dataset);
-
-        // These tasks gets the value from the server
-        Task<List<Project>> GetProjectsListRemote(Priority priority, string dataset);
-        Task<List<DTO.Task>> GetTasksListRemote(Priority priority, string dataset, string projectId);
-        Task<DTO.Task> GetTaskDetailsRemote(Priority priority, string dataset, string projecttaskId);
-        Task<List<DTO.Task>> GetRecentTasksRemote(Priority priority, string dataset);
-        Task<List<TimeLogEntry>> GetTimeLogsRemote(Priority priority, string dataset, int? maxResults, DateTime? startDateFrom, DateTime? startDateTo, string taskId, string projectId);
-
-        Task<TimeLogEntry> GetATimeLogRemote(Priority priority, string dataset, string timelogId);
-        Task<TaskRoot> UpdateTaskDetails(Priority priority, string dataset, string projecttaskId, DateTime editTimeStamp, double? estimatedTime, DateTime? completionDate);
-        Task<EditATimeLogRoot> AddTimeLog(Priority priority, string dataset, string comment, string startDate, string taskId, double loggedTime,double interruptTime,bool open);
-        Task<EditATimeLogRoot> UpdateTimeLog(Priority priority, string dataset, string timeLogId, string comment, string startDate, string taskId, double loggedTimeDelta, double interruptTimeDelta, bool open);
-        Task<DeleteRoot> DeleteTimeLog(Priority priority, string dataset, string timelogId);
+        */
     }
 }

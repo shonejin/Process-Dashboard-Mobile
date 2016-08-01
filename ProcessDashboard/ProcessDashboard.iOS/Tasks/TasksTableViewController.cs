@@ -91,7 +91,7 @@ namespace ProcessDashboard.iOS
 			int pos = 0;
 			for (int i = 0; i < tasksCache.Count; i++)
 			{
-				if (tasksCache[i].CompletionDate.ToShortDateString().Equals("1/1/0001"))
+				if (tasksCache[i].CompletionDate == null)
 				{
 					if (i <= 4)
 					{

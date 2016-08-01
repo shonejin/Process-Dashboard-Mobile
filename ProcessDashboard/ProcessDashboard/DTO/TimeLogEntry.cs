@@ -1,15 +1,16 @@
-﻿using System;
-
+﻿#region
+using System;
+#endregion
 namespace ProcessDashboard.DTO
 {
-
 /*
  * Classes for Parsing JSON to OO Model Objects.
  * Variable names are case-sensitive. Donot change or else parsing will fail
  * 
- */ 
+ */
     public class TimeLogEntry
     {
+        //TODO: Remove ToString
         public int Id { get; set; }
         public Task Task { get; set; }
         public DateTime StartDate { get; set; }
@@ -21,7 +22,7 @@ namespace ProcessDashboard.DTO
 
         public override string ToString()
         {
-            return StartDate.ToLongDateString() + " : "+LoggedTime;
+            return StartDate.ToLongDateString() + " : " + LoggedTime;
         }
     }
 }
