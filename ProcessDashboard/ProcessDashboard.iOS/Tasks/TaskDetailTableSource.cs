@@ -14,7 +14,7 @@ namespace ProcessDashboard.iOS
 		}
 		Task TaskItem;
 		protected string cellIdentifier = "Cell";
-		UIViewController owner;
+		TaskDetailsViewController owner;
 		public UITextField completeDateText, planTimeText;
 		DateTime completeTimeSelectedDate;
 		UIToolbar toolbar;
@@ -25,7 +25,7 @@ namespace ProcessDashboard.iOS
 		string planSelectedHour, planSelectedMinute;
 		TaskDetailsViewController controller;
 
-		public TaskDetailTableSource(Task items, UIViewController owner)
+		public TaskDetailTableSource(Task items, TaskDetailsViewController owner)
 		{
 			TaskItem = items;
 			this.owner = owner;
@@ -52,13 +52,6 @@ namespace ProcessDashboard.iOS
 				owner.PerformSegue("TaskTimeLogsSegue", owner);
 			}
 			tableView.DeselectRow(indexPath, true);
-			/*
-			UIAlertController okAlertController = UIAlertController.Create("Row Selected", tableItems[indexPath.Row], UIAlertControllerStyle.Alert);
-			okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
-			owner.PresentViewController(okAlertController, true, null);
-
-			
-			*/
 		}
 
 		/// <summary>
@@ -66,21 +59,19 @@ namespace ProcessDashboard.iOS
 		/// </summary>
 		public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
 		{
-			// request a recycled cell to save memory
 			UITableViewCell cell = tableView.DequeueReusableCell(cellIdentifier);
-			// if there are no cells to reuse, create a new one
-		//	string item = TableItems[indexPath.Row];
-
 			if (cell == null)
 				cell = new UITableViewCell(UITableViewCellStyle.Value1, cellIdentifier);
 
 			if (indexPath.Row == 0)
 			{
+				
 				cell.TextLabel.Text = "Planned Time";
 				planTimeText = new UITextField(new CGRect(0, 300, 150, 30));
 				cell.AccessoryView = planTimeText;
 				planTimeText.TextColor = UIColor.LightGray;
 				planTimeText.TextAlignment = UITextAlignment.Right;
+
 				newPlanTimePicker();
 
 				int newHour = (int)TaskItem.EstimatedTime / 60;
@@ -118,22 +109,22 @@ namespace ProcessDashboard.iOS
 				cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
 			}
 			else {
-
+				
 				cell.TextLabel.Text = "Completed Date";
 				completeDateText = new UITextField(new CGRect(0, 400, 150, 30));
 				cell.AccessoryView = completeDateText;
 				completeDateText.TextColor = UIColor.LightGray;
 				completeDateText.TextAlignment = UITextAlignment.Right;
+
 				newCompleteDatePicker();
 
 				if (TaskItem.CompletionDate == null)
 				{
-					completeDateText.Text = "--";
+					completeDateText.Text = "-:-";
 				}
 				else 
 				{
 					completeDateText.Text = TaskItem.CompletionDate.Value.ToShortDateString();
-					//Console.WriteLine("task completion date:" + TaskItem.completionDate.ToShortDateString());
 				}
 			}
 
@@ -249,17 +240,18 @@ namespace ProcessDashboard.iOS
 				Console.WriteLine(saveButton.Title.ToString());
 				if (saveButton.Title.ToString().Equals("Mark Complete"))
 				{
-					//controller.changeCheckBoxImage("checkbox-checked");
-					// TODO: Save the completed Date to datebase
+					DateTime reference = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(2001, 1, 1, 0, 0, 0));
+					reference.AddSeconds(CompleteTimePicker.Date.SecondsSinceReferenceDate);
+					owner.MarkComplete(reference);
 				}
-				else if (saveButton.Title.ToString().Equals("Mark InComplete"))
+				else if (saveButton.Title.ToString().Equals("Mark Incomplete"))
 				{
-					//controller.changeCheckBoxImage("checkbox-unchecked");
-					// TODO: Set the current task complete date as "1/1/0001" and save to database
+					owner.MarkIncomplete();
 				}
-				else { // saveButton.Title.ToString().Equals("Change Completion Date")
-					
-					// TODO: Save the new completed Date to datebase
+				else {
+					DateTime reference = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(2001, 1, 1, 0, 0, 0));
+					reference.AddSeconds(CompleteTimePicker.Date.SecondsSinceReferenceDate);
+					owner.ChangeCompleteDate(reference);
 				}
 				this.completeDateText.Text = completeTimeSelectedDate.ToShortDateString();
 				this.completeDateText.ResignFirstResponder();
@@ -282,7 +274,7 @@ namespace ProcessDashboard.iOS
 			}
 			else
 			{
-				saveButton.Title = "Mark InComplete";
+				saveButton.Title = "Mark Incomplete";
 				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(TaskItem.CompletionDate.Value), true);
 			}
 

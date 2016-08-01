@@ -23,25 +23,13 @@ namespace ProcessDashboard.iOS
     public partial class TaskDetailsViewController : UIViewController
     {
 		public Task task;
-		public Task taskDetail;
 		TimeLoggingController timeLoggingController;
 		Controller c;
-		//UITextField completeDateText;
 		DateTime completeTimeSelectedDate;
 		UIToolbar toolbar;
 		UIBarButtonItem saveButton, cancelButton;
 		UIDatePicker CompleteTimePicker;
 		String saveButtonLabel = "Save";
-
-		/*
-        public string fullName { get; set; }
-        public Project project { get; set; }
-        public DateTime completionDate { get; set; }
-        public double estimatedTime { get; set; }
-        public double actualTime { get; set; }
-        public string taskNote { get; set; }
-
-		*/
 
 		public TaskDetailsViewController (IntPtr handle) : base (handle)
         {
@@ -63,32 +51,8 @@ namespace ProcessDashboard.iOS
 				controller.projectId = task.Project.Id;
 				controller.projectName = task.Project.Name;
 			}
-
 		}
 
-
-		public async System.Threading.Tasks.Task<int> GetTaskithID(string taskID)
-		{
-			var apiService = new ApiTypes(null);
-			var service = new PDashServices(apiService);
-			Controller c = new Controller(service);
-			DTO.Task taskItem = await c.GetTask(AccountStorage.DataSet, taskID);
-			taskDetail = taskItem;
-
-			try
-			{
-				System.Diagnostics.Debug.WriteLine("** TASK ENTRY **");
-				System.Diagnostics.Debug.WriteLine(taskItem.FullName + " : " + taskItem.Id);
-				System.Diagnostics.Debug.WriteLine(taskItem.EstimatedTime + " & " + taskItem.ActualTime);
-			}
-			catch (Exception e)
-			{
-				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
-			}
-			return 0;
-
-
-		}
 		public override void ViewDidAppear(bool animated)
 		{
 			base.ViewDidAppear(animated);
@@ -97,9 +61,35 @@ namespace ProcessDashboard.iOS
 
 		public async void refreshData()
 		{
-			await GetTaskithID(task.Id);
-			PlanTable.Source = new TaskDetailTableSource(taskDetail, this);
-			PlanTable.ReloadData();
+			try
+			{
+				task = await c.GetTask(AccountStorage.DataSet, task.Id);
+				PlanTable.Source = new TaskDetailTableSource(task, this);
+				PlanTable.ReloadData();
+				refreshControlButtons();
+			}
+			catch (Exception e)
+			{
+				;
+			}
+
+		}
+
+		public void MarkComplete(DateTime date)
+		{ 
+			TdCheckboxBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
+			c.UpdateATask(AccountStorage.DataSet, task.Id, task.EstimatedTime, date, false);
+		}
+
+		public void MarkIncomplete()
+		{ 
+			TdCheckboxBtn.SetImage(UIImage.FromBundle("checkbox-unchecked"), UIControlState.Normal);
+			c.UpdateATask(AccountStorage.DataSet, task.Id, task.EstimatedTime, null, true);
+		}
+
+		public void ChangeCompleteDate(DateTime date)
+		{ 
+			c.UpdateATask(AccountStorage.DataSet, task.Id, task.EstimatedTime, date, false);
 		}
 
 		public override void ViewDidLoad()
@@ -132,16 +122,15 @@ namespace ProcessDashboard.iOS
 			TdCheckboxBtn.TouchUpInside += delegate
 			{
 				((TaskDetailTableSource)PlanTable.Source).completeDateText.BecomeFirstResponder();
-
 			};
 
 			TimeSpan estimated = TimeSpan.FromMinutes(task.EstimatedTime);
 			TimeSpan actual = TimeSpan.FromMinutes(task.ActualTime);
-			string[] tableItems = new string[]{estimated.ToString("hh\\:mm"), actual.ToString("hh\\:mm"), task.CompletionDate.Value.ToString("MM/dd/yyyy") };
+			string[] tableItems = new string[]{estimated.ToString("hh\\:mm"), 
+				                                        actual.ToString("hh\\:mm"), 
+				                                        task.CompletionDate == null ? "-:-" : task.CompletionDate.Value.ToString("MM/dd/yyyy") };
 
 			refreshData();
-
-			PlanTable.AutoresizingMask = UIViewAutoresizing.All;
 
 			View.AddSubview(PlanTable);
 
@@ -165,7 +154,7 @@ namespace ProcessDashboard.iOS
 			}
 			else
 			{
-				if (task.CompletionDate != null)
+				if (task.CompletionDate.HasValue)
 				{
 					TdCheckboxBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
 				}
@@ -175,7 +164,7 @@ namespace ProcessDashboard.iOS
 				}
 				TdCheckboxBtn.Enabled = true;
 
-				if (timeLoggingController.IsTimerRunning())
+				if (timeLoggingController.IsTimerRunning() && timeLoggingController.GetTimingTaskId() == task.Id)
 				{
 					TdPauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
 					TdPlayBtn.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Normal);
@@ -229,7 +218,6 @@ namespace ProcessDashboard.iOS
 		}
 
 
-
 		public void newCompleteDatePicker()
 		{
 
@@ -274,7 +262,7 @@ namespace ProcessDashboard.iOS
 			}
 			else
 			{
-				saveButton.Title = "Mark InComplete";
+				saveButton.Title = "Mark Incomplete";
 				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(task.CompletionDate.Value), true);
 			}
 

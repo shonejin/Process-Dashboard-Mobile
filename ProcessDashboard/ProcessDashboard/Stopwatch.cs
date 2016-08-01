@@ -7,29 +7,29 @@ namespace ProcessDashboard
 	public class Stopwatch
 	{
 		private const double MINUTES = 60000.0;
-		private DateTime? _first_startTime;
+		private DateTime _first_startTime = new DateTime(0, DateTimeKind.Utc);
 		private long _interruptMillis = 0;
 		private long _loggedMillis = 0;
-		private DateTime? _startTime;
-		private DateTime? _stopTime;
-		
-		public DateTime? Get_first_startTime()
+		private DateTime _startTime = new DateTime(0, DateTimeKind.Utc);
+		private DateTime _stopTime = new DateTime(0, DateTimeKind.Utc);
+
+		public DateTime Get_first_startTime()
 		{
 			return _first_startTime;
 		}
 
 		public void Start()
 		{
-			if (_startTime == null)
+			if (_startTime.Ticks == 0)
 			{
 				_startTime = DateTime.UtcNow;
-				if (_first_startTime == null)
+				if (_first_startTime.Ticks == 0)
 				{
 					_first_startTime = _startTime;
 				}
-				if (_stopTime == null)
+				if (_stopTime.Ticks != 0)
 				{
-					_interruptMillis += (long)(_startTime - _stopTime).Value.TotalMilliseconds;
+					_interruptMillis += (long)(_startTime - _stopTime).TotalMilliseconds;
 				}
 			}
 		}
@@ -41,29 +41,29 @@ namespace ProcessDashboard
 
 		private void StopAsOf(DateTime when)
 		{
-			if (_startTime != null)
+			if (_startTime.Ticks != 0)
 			{
 				_stopTime = when;
-				_loggedMillis += (long)(_stopTime - _startTime).Value.TotalMilliseconds;
+				_loggedMillis += (long)(_stopTime - _startTime).TotalMilliseconds;
 				_startTime = new DateTime(0, DateTimeKind.Utc);
 			}
 		}
 
 		public bool IsRunning()
 		{
-			return _startTime != null;
+			return _startTime.Ticks != 0;
 		}
 
 		public bool IsPaused()
 		{
-			return _startTime == null;
+			return _startTime.Ticks == 0;
 		}
 
 		public void Reset()
 		{
-			_first_startTime = null;
-			_startTime = null;
-			_stopTime = null;
+			_first_startTime = new DateTime(0, DateTimeKind.Utc);
+			_startTime = new DateTime(0, DateTimeKind.Utc);
+			_stopTime = new DateTime(0, DateTimeKind.Utc);
 			_loggedMillis = 0;
 			_interruptMillis = 0;
 		}
@@ -88,7 +88,7 @@ namespace ProcessDashboard
 			long time = (long)(_loggedMillis / MINUTES);
 			if (IsRunning())
 			{
-				time += (long)(DateTime.UtcNow - _startTime).Value.TotalMinutes;
+				time += (long)(DateTime.UtcNow - _startTime).TotalMinutes;
 			}
 			Console.WriteLine("return: " + time);
 			return time;
@@ -108,8 +108,8 @@ namespace ProcessDashboard
 		{
 			if (IsRunning())
 			{
-				Console.WriteLine("getTrailingLoggedMinutes: from " + _startTime.ToString() + " has minutes: " + (DateTime.UtcNow - _startTime).Value.TotalMinutes);
-				return (DateTime.UtcNow - _startTime).Value.TotalMinutes;
+				Console.WriteLine("getTrailingLoggedMinutes: from " + _startTime.ToString() + " has minutes: " + (DateTime.UtcNow - _startTime).TotalMinutes);
+				return (DateTime.UtcNow - _startTime).TotalMinutes;
 			}
 			else
 			{
@@ -120,9 +120,9 @@ namespace ProcessDashboard
 
 		public double GetTrailingInterruptMinutes()
 		{
-			if (IsPaused() && _stopTime != null)
+			if (IsPaused() && _stopTime.Ticks != 0)
 			{
-				return (DateTime.UtcNow - _stopTime).Value.TotalMinutes;
+				return (DateTime.UtcNow - _stopTime).TotalMinutes;
 			}
 			else
 			{
@@ -151,7 +151,7 @@ namespace ProcessDashboard
 				cancellationTime = now;
 			}
 
-			if (_startTime != null)
+			if (_startTime.Ticks != 0)
 			{
 				if (_startTime < cancellationTime)
 				{
@@ -160,9 +160,9 @@ namespace ProcessDashboard
 				}
 				else
 				{
-					if (_stopTime != null)
+					if (_stopTime.Ticks != 0)
 					{
-						long interrupToDiscard = (long)(_startTime - _stopTime).Value.TotalMilliseconds;
+						long interrupToDiscard = (long)(_startTime - _stopTime).TotalMilliseconds;
 						_interruptMillis -= interrupToDiscard;
 						if (_interruptMillis < 0)
 						{
@@ -173,9 +173,9 @@ namespace ProcessDashboard
 				}
 			}
 
-			if (_stopTime != null && cancellationTime < _stopTime)
+			if (_stopTime.Ticks != 0 && cancellationTime < _stopTime)
 			{
-				long overlapMillis = (long)(_stopTime - cancellationTime).Value.TotalMilliseconds;
+				long overlapMillis = (long)(_stopTime - cancellationTime).TotalMilliseconds;
 				if (overlapMillis > _loggedMillis)
 				{
 					Reset();
@@ -189,4 +189,3 @@ namespace ProcessDashboard
 		}
 	}
 }
-

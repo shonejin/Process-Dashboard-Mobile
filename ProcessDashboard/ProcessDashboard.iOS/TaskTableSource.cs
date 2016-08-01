@@ -62,13 +62,26 @@ namespace ProcessDashboard.iOS
 
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 		{
-			selectedTask = TableItems[indexPath.Row];
+			int idx = indexPath.Row;
+			for (int sec = 0; sec < indexPath.Section; sec++)
+			{
+				idx += (int)RowsInSection(tableView, sec);
+			}
+
+			selectedTask = TasksSorted[idx];
 			tvcontroller.PerformSegue("home2taskDetailsSegue", indexPath);
 			tableView.DeselectRow(indexPath, true);
 		}
 
 		public override void AccessoryButtonTapped(UITableView tableView, NSIndexPath indexPath)
 		{
+			int idx = indexPath.Row;
+			for (int sec = 0; sec < indexPath.Section; sec++)
+			{
+				idx += (int)RowsInSection(tableView, sec);
+			}
+
+			selectedTask = TasksSorted[idx];
 			tvcontroller.PerformSegue("home2taskDetailsSegue", indexPath);
 			tableView.DeselectRow(indexPath, true);
 		}

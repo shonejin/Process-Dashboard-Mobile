@@ -237,7 +237,7 @@ namespace ProcessDashboard.iOS
 			}
 			else
 			{
-				if (currentTask.CompletionDate != null)
+				if (currentTask.CompletionDate != null && currentTask.CompletionDate.HasValue)
 				{
 					completeBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
 				}
@@ -250,7 +250,7 @@ namespace ProcessDashboard.iOS
 				// set up start time customized UIpicker
 				newCompleteDatePicker();
 
-				if (timeLoggingController.IsTimerRunning())
+				if (timeLoggingController.IsTimerRunning() && timeLoggingController.GetTimingTaskId() == currentTask.Id)
 				{
 					pauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
 					playBtn.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Normal);

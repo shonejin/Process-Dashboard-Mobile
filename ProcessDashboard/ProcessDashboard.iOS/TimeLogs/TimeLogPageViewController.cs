@@ -116,7 +116,7 @@ namespace ProcessDashboard.iOS
 			{
 				timeLogId = "" + val.Value;
 
-				DeleteRoot tr = await c.DeleteTimeLog("INST-szewf0", timeLogId);
+				DeleteRoot tr = await c.DeleteTimeLog(AccountStorage.DataSet, timeLogId);
 				try
 				{
 					System.Diagnostics.Debug.WriteLine("** Delete the new Time Log entry **");
