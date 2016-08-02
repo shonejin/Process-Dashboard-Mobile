@@ -119,11 +119,13 @@ namespace ProcessDashboard.iOS
 			switch (editingStyle)
 			{
 				case UITableViewCellEditingStyle.Delete:
-					// remove the item from the underlying data source
-					//TimelogTableItem item = indexedTableItems[keys[indexPath.Section]][indexPath.Row];/
+					TimeLogEntry item = indexedTableItems[keys[indexPath.Section]][indexPath.Row];
+					owner.DeleteTask(item);
+
 					indexedTableItems[keys[indexPath.Section]].RemoveAt(indexPath.Row);
-					// delete the row from the table
 					tableView.DeleteRows(new NSIndexPath[] { indexPath }, UITableViewRowAnimation.Fade);
+					// save the time log entry deletion to server
+	
 					break;
 
 				case UITableViewCellEditingStyle.None:
@@ -201,7 +203,4 @@ namespace ProcessDashboard.iOS
 
 	}
 }
-
-	//}
-//}
 
