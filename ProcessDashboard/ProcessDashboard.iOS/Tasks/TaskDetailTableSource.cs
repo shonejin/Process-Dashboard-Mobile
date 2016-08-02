@@ -14,7 +14,7 @@ namespace ProcessDashboard.iOS
 		}
 		Task TaskItem;
 		protected string cellIdentifier = "Cell";
-		UIViewController owner;
+		//UIViewController owner;
 		public UITextField completeDateText, planTimeText;
 		DateTime completeTimeSelectedDate;
 		UIToolbar toolbar;
@@ -23,9 +23,9 @@ namespace ProcessDashboard.iOS
 		UIPickerView PlanTimePicker;
 		String saveButtonLabel = "Save";
 		string planSelectedHour, planSelectedMinute;
-		TaskDetailsViewController controller;
+		public TaskDetailsViewController owner;
 
-		public TaskDetailTableSource(Task items, UIViewController owner)
+		public TaskDetailTableSource(Task items, TaskDetailsViewController owner)
 		{
 			TaskItem = items;
 			this.owner = owner;
@@ -202,13 +202,15 @@ namespace ProcessDashboard.iOS
 
 			// Create a 'done' button for the toolbar and add it to the toolbar
 
-			saveButton = new UIBarButtonItem("Save", UIBarButtonItemStyle.Bordered,
-			(s, e) =>
+			saveButton = new UIBarButtonItem(saveButtonLabel, UIBarButtonItemStyle.Bordered, null);
+
+			saveButton.Clicked += (s, e) =>
 			{
 
 				this.planTimeText.Text = this.planSelectedHour + ":" + this.planSelectedMinute;
+				owner.DeleteTask(TaskItem.Id, int.Parse(this.planSelectedHour) * 60 + int.Parse(this.planSelectedMinute));
 				this.planTimeText.ResignFirstResponder();
-			});
+			};
 
 			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
 
@@ -223,7 +225,6 @@ namespace ProcessDashboard.iOS
 			this.planTimeText.InputView = PlanTimePicker;
 			this.planTimeText.InputAccessoryView = toolbar;
 		}
-
 
 		public void newCompleteDatePicker()
 		{
