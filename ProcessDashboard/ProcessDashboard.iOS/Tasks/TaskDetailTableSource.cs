@@ -14,6 +14,7 @@ namespace ProcessDashboard.iOS
 		}
 		Task TaskItem;
 		protected string cellIdentifier = "Cell";
+
 		TaskDetailsViewController owner;
 		public UITextField completeDateText, planTimeText;
 		DateTime completeTimeSelectedDate;
@@ -23,7 +24,6 @@ namespace ProcessDashboard.iOS
 		UIPickerView PlanTimePicker;
 		String saveButtonLabel = "Save";
 		string planSelectedHour, planSelectedMinute;
-		TaskDetailsViewController controller;
 
 		public TaskDetailTableSource(Task items, TaskDetailsViewController owner)
 		{
@@ -118,13 +118,14 @@ namespace ProcessDashboard.iOS
 
 				newCompleteDatePicker();
 
-				if (TaskItem.CompletionDate == null)
+				if (!TaskItem.CompletionDate.HasValue)
 				{
 					completeDateText.Text = "-:-";
 				}
 				else 
 				{
 					completeDateText.Text = TaskItem.CompletionDate.Value.ToShortDateString();
+
 				}
 			}
 
@@ -193,13 +194,15 @@ namespace ProcessDashboard.iOS
 
 			// Create a 'done' button for the toolbar and add it to the toolbar
 
-			saveButton = new UIBarButtonItem("Save", UIBarButtonItemStyle.Bordered,
-			(s, e) =>
+			saveButton = new UIBarButtonItem(saveButtonLabel, UIBarButtonItemStyle.Bordered, null);
+
+			saveButton.Clicked += (s, e) =>
 			{
 
 				this.planTimeText.Text = this.planSelectedHour + ":" + this.planSelectedMinute;
+				owner.DeleteTask(TaskItem.Id, int.Parse(this.planSelectedHour) * 60 + int.Parse(this.planSelectedMinute));
 				this.planTimeText.ResignFirstResponder();
-			});
+			};
 
 			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
 
@@ -215,7 +218,6 @@ namespace ProcessDashboard.iOS
 			this.planTimeText.InputAccessoryView = toolbar;
 		}
 
-
 		public void newCompleteDatePicker()
 		{
 			
@@ -224,7 +226,7 @@ namespace ProcessDashboard.iOS
 
 			CompleteTimePicker.UserInteractionEnabled = true;
 			CompleteTimePicker.Mode = UIDatePickerMode.DateAndTime;
-
+			CompleteTimePicker.MaximumDate = ConvertDateTimeToNSDate(DateTime.UtcNow.ToLocalTime());
 			//Setup the toolbar
 			toolbar = new UIToolbar();
 			toolbar.BarStyle = UIBarStyle.Default;

@@ -226,6 +226,7 @@ namespace ProcessDashboard.iOS
 
 			CompleteTimePicker.UserInteractionEnabled = true;
 			CompleteTimePicker.Mode = UIDatePickerMode.DateAndTime;
+			CompleteTimePicker.MaximumDate = ConvertDateTimeToNSDate(DateTime.UtcNow.ToLocalTime());
 
 			//Setup the toolbar
 			toolbar = new UIToolbar();
@@ -283,6 +284,41 @@ namespace ProcessDashboard.iOS
 
 		}
 
+		public async void DeleteTask(string id, double newTime)
+		{
+
+			//var oldTask = globalTimeLogCache.Find(t => t.Task.FullName.Equals(log.Task.FullName));
+			await TaskUpdateEstimatedTime(id, newTime);
+			//NavigationController.PopViewController(true);
+		}
+
+		public async System.Threading.Tasks.Task<int> TaskUpdateEstimatedTime(string taskId, double estimatedTime)
+		{
+			var apiService = new ApiTypes(null);
+			var service = new PDashServices(apiService);
+			Controller ctrl = new Controller(service);
+
+			var tr =await ctrl.UpdateATask("INST-szewf0", taskId, estimatedTime, null, false);
+
+			try
+			{
+				Console.WriteLine("** Updated the Task and changed the estimated time **");
+				Console.WriteLine(tr.Id);
+				Console.WriteLine(tr.FullName);
+				Console.WriteLine(tr.CompletionDate);
+				Console.WriteLine(tr.ActualTime);
+				Console.WriteLine(tr.EstimatedTime);
+				Console.WriteLine(tr.TaskNote);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine("We are in an error state :" + e);
+			}
+			return 0;
+
+		}
+
+
 		public static DateTime ConvertNSDateToDateTime(NSDate date)
 		{
 			DateTime reference = new DateTime(2001, 1, 1, 0, 0, 0);
@@ -301,7 +337,7 @@ namespace ProcessDashboard.iOS
 
 		public void changeCheckBoxImage(String imageName)
 		{
-			Console.WriteLine("hahaha");
+			//Console.WriteLine("hahaha");
 			this.TdCheckboxBtn.SetImage(UIImage.FromBundle(imageName), UIControlState.Normal);
 		}
 			

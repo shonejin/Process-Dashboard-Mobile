@@ -98,22 +98,9 @@ namespace ProcessDashboard.iOS
 
 			//cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
 
-			int newHour = (int)item.LoggedTime/60;
-			int newMin = (int)item.LoggedTime % 60;
-			string newM = null;
-
-			if (newMin < 10)
-			{
-				newM = "0" + newMin.ToString();
-			}
-			else {
-				newM = newMin.ToString();
-			}
-			string newLoggedTime= newHour + ":" + newM;
-
 			cell.UpdateCell(item.Task.FullName.ToString()
-			                , item.StartDate.ToShortTimeString()
-			                , newLoggedTime);
+			                , item.StartDate.ToLocalTime().ToShortTimeString()
+			                , TimeSpan.FromMinutes(item.LoggedTime).ToString(@"hh\:mm"));
 
 			Console.WriteLine("taks full name: " + item.Task.FullName.ToString());
 
@@ -132,19 +119,14 @@ namespace ProcessDashboard.iOS
 			switch (editingStyle)
 			{
 				case UITableViewCellEditingStyle.Delete:
-					// remove the item from the underlying data source
-					//TimelogTableItem item = indexedTableItems[keys[indexPath.Section]][indexPath.Row];/
-					indexedTableItems[keys[indexPath.Section]].RemoveAt(indexPath.Row);
-					// delete the row from the table
-					tableView.DeleteRows(new NSIndexPath[] { indexPath }, UITableViewRowAnimation.Fade);
-					break;
+					TimeLogEntry item = indexedTableItems[keys[indexPath.Section]][indexPath.Row];
+					owner.DeleteTask(item);
 
-				//case UITableViewCellEditingStyle.Insert:
-				//	//---- create a new item and add it to our underlying data
-				//	tableItems.Insert(indexPath.Row, new TableItem("(inserted)"));
-				//	//---- insert a new row in the table
-				//	tableView.InsertRows(new NSIndexPath[] { indexPath }, UITableViewRowAnimation.Fade);
-				//	break;
+					indexedTableItems[keys[indexPath.Section]].RemoveAt(indexPath.Row);
+					tableView.DeleteRows(new NSIndexPath[] { indexPath }, UITableViewRowAnimation.Fade);
+					// save the time log entry deletion to server
+	
+					break;
 
 				case UITableViewCellEditingStyle.None:
 					Console.WriteLine("CommitEditingStyle:None called");
@@ -221,7 +203,4 @@ namespace ProcessDashboard.iOS
 
 	}
 }
-
-	//}
-//}
 

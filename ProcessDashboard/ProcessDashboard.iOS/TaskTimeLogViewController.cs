@@ -108,6 +108,7 @@ namespace ProcessDashboard.iOS
 				newTimeLog.Task = task;
 				newTimeLog.StartDate = DateTime.Now;
 				controller.CreateTask(this, newTimeLog);
+				AddTaskTimelog(newTimeLog);
 
 			}
 
@@ -158,7 +159,7 @@ namespace ProcessDashboard.iOS
 			var service = new PDashServices(apiService);
 			Controller c = new Controller(service);
 
-			TimeLogEntry tr = await c.UpdateTimeLog("INST-szewf0", editedTimeLog.Id.ToString(), editedTimeLog.Comment, editedTimeLog.StartDate, editedTimeLog.Task.Id, editedTimeLog.InterruptTime, editedTimeLog.LoggedTime, true);
+			TimeLogEntry tr = await c.UpdateTimeLog("INST-szewf0", editedTimeLog.Id.ToString(), editedTimeLog.Comment, editedTimeLog.StartDate, editedTimeLog.Task.Id, editedTimeLog.LoggedTime, editedTimeLog.InterruptTime, true);
 			try
 			{
 				System.Diagnostics.Debug.WriteLine("** Updated the new Time Log entry **");
@@ -172,5 +173,47 @@ namespace ProcessDashboard.iOS
 			return 0;
 
 		}
+
+		public async void AddTaskTimelog(TimeLogEntry log)
+		{
+			await TestAddATimeLog(log);
+		}
+
+		public async Task<int> TestAddATimeLog(TimeLogEntry log)
+		{
+
+			var apiService = new ApiTypes(null);
+			var service = new PDashServices(apiService);
+			Controller ctrl = new Controller(service);
+
+			int id;
+			try
+			{
+				var tr = await ctrl.AddATimeLog("INST-szewf0", "No Comment", DateTime.UtcNow, log.Task.Id, log.LoggedTime, log.InterruptTime, true);
+				Console.WriteLine("** Added a new Time Log entry **");
+				Console.WriteLine(tr.Id);
+				id = tr.Id;
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine("We are in an error state :" + e);
+				id = 0;
+			}
+
+			// See if adding a new time log entry successfully
+
+			var value = await ctrl.GetTimeLog("INST-szewf0", "" + id);
+			Console.WriteLine("Task Name :" + value.Task.FullName);
+			Console.WriteLine(value.Id);
+			Console.WriteLine("Logged Time :" + value.LoggedTime);
+			Console.WriteLine("Interrupt Time :" + value.InterruptTime);
+			Console.WriteLine(Util.GetInstance().GetLocalTime(value.StartDate));
+			Console.WriteLine(Util.GetInstance().GetLocalTime(value.EndDate));
+			Console.WriteLine(value.Comment);
+
+			return id;
+
+		}
+
     }
 }

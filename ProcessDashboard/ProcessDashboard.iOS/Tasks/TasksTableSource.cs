@@ -63,7 +63,7 @@ namespace ProcessDashboard.iOS
 				cell = new UITableViewCell(UITableViewCellStyle.Default, cellIdentifier);
 
 
-			if (tableItems[indexPath.Row].CompletionDate != null)
+			if (!tableItems[indexPath.Row].CompletionDate.HasValue)
 			{
 				var attriStr = new NSAttributedString(tableItems[indexPath.Row].FullName, strikethroughStyle: NSUnderlineStyle.Single);
 				cell.TextLabel.AttributedText = attriStr;

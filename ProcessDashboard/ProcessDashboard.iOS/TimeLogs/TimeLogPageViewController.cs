@@ -90,13 +90,6 @@ namespace ProcessDashboard.iOS
 		
 		}
 
-		public void SaveTask(TimeLogEntry oldLog, TimeLogEntry newLog)
-		{
-			var oldTask = globalTimeLogCache.Find(temp => temp.Task.FullName.Equals(oldLog.Task.FullName));
-			globalTimeLogCache.Remove(oldTask);
-			globalTimeLogCache.Add(newLog);
-		}
-
 		public async void DeleteTask(TimeLogEntry log)
 		{
 

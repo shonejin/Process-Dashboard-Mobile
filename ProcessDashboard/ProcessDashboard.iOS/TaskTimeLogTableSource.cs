@@ -50,23 +50,11 @@ namespace ProcessDashboard.iOS
 			// if there are no cells to reuse, create a new one
 			if (cell == null)
 				cell = new UITableViewCell(UITableViewCellStyle.Value1, cellIdentifier);
-
-			int newHour = (int)tableItems[indexPath.Row].LoggedTime / 60;
-			int newMin = (int)tableItems[indexPath.Row].LoggedTime % 60;
-			string newM = null;
-
-			if (newMin < 10)
-			{
-				newM = "0" + newMin.ToString();
-			}
-			else {
-				newM = newMin.ToString();
-				                       
-			}
-			string newLoggedTime = newHour + ":" + newM;
-
-			cell.TextLabel.Text = tableItems[indexPath.Row].StartDate.ToShortDateString() + " " + tableItems[indexPath.Row].StartDate.ToShortTimeString();
-			cell.DetailTextLabel.Text = newLoggedTime;
+		
+			cell.TextLabel.Text = tableItems[indexPath.Row].StartDate.ToLocalTime().ToString("g");
+			Console.WriteLine("In table, the start date: " + tableItems[indexPath.Row].StartDate);
+			Console.WriteLine("In table, the start date (local time ): " + Util.GetInstance().GetLocalTime(tableItems[indexPath.Row].StartDate));
+			cell.DetailTextLabel.Text = TimeSpan.FromMinutes(tableItems[indexPath.Row].LoggedTime).ToString(@"hh\:mm"); ;
 			cell.TextLabel.Font = UIFont.SystemFontOfSize(12);
 			cell.DetailTextLabel.Font = UIFont.SystemFontOfSize(12);
 			cell.TextLabel.Lines = 1;

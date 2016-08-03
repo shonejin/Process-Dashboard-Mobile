@@ -144,7 +144,7 @@ namespace ProcessDashboard.iOS
 
 			CompleteTimePicker.UserInteractionEnabled = true;
 			CompleteTimePicker.Mode = UIDatePickerMode.DateAndTime;
-
+			CompleteTimePicker.MaximumDate = ConvertDateTimeToNSDate(DateTime.UtcNow.ToLocalTime());
 			//Setup the toolbar
 			toolbar = new UIToolbar();
 			toolbar.BarStyle = UIBarStyle.Default;
