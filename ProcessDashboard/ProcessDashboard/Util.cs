@@ -9,8 +9,7 @@ namespace ProcessDashboard
 
         private string _dateTimePattern = "yyyy-MM-dd\'T\'HH:mm:ssZ";
 
-        private bool fake = true;
-
+        
         private Util()
         {
         }
@@ -20,12 +19,14 @@ namespace ProcessDashboard
             return _instance ?? (_instance = new Util());
         }
 
+
         public DateTime GetLocalTime(DateTime dateTime)
         {
             if (dateTime.Kind == DateTimeKind.Local)
                 return dateTime;
             if (dateTime.Kind == DateTimeKind.Utc)
                 return dateTime.ToLocalTime();
+
             // Assuming that the input is in UTC time here
             return dateTime.ToLocalTime();
         }
@@ -35,20 +36,21 @@ namespace ProcessDashboard
             if (dateTime.Kind == DateTimeKind.Utc)
                 return dateTime;
             if (dateTime.Kind == DateTimeKind.Local)
-                return DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+                return dateTime.ToUniversalTime();
+
             // Assuming that the input is in local time here
-            return DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+            return dateTime.ToUniversalTime();
         }
 
         public string GetEditTimeStamp()
         {
-            if (fake)
-                return DateTime.UtcNow.Subtract(new TimeSpan(0, 0, 0, 0)).ToString(_dateTimePattern);
-            else
-                return DateTime.UtcNow.ToString(_dateTimePattern);
+           return DateTime.UtcNow.ToString(_dateTimePattern);
         }
 
-
+        public string GetLocalString(DateTime input)
+        {
+            return GetLocalTime(input).ToString(_dateTimePattern);
+        }
         
 
         /// <summary>

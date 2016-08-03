@@ -5,144 +5,112 @@
     android:layout_height="match_parent"
     android:minWidth="25px"
     android:minHeight="25px">
-    <RelativeLayout
+  <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:scrollbars="vertical"
+      android:scrollbarStyle="insideOverlay"
+      android:fadeScrollbars="true">
+    <TextView
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical"
-        android:scrollbarStyle="insideOverlay"
-        android:fadeScrollbars="true">
-        <TextView
-            android:text=""
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/TaskDetails_ProjectName" />
-        <TextView
-            android:text=""
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/TaskDetails_ProjectName"
-            android:id="@+id/TaskDetails_TaskName" />
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/TaskDetails_TaskName"
-            android:id="@+id/TaskDetails_PlayPauseLayout"
-            android:minWidth="25px"
-            android:minHeight="25px">
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" />
-            <Button
-                android:src="@drawable/Pause"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:id="@+id/TaskDetails_Play"
-                android:background="@drawable/pause"
-                android:gravity="center_horizontal|center_vertical" />
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" />
-            <Button
-                android:src="@drawable/Play"
-                android:layout_width="24dp"
-                android:layout_height="32dp"
-                android:background="@drawable/play"
-                android:id="@+id/TaskDetails_Pause"
-                android:gravity="center_horizontal|center_vertical" />
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" />
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:id="@+id/TaskDetails_TaskComplete"
-                android:gravity="center_horizontal|center_vertical" />
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" />
-        </LinearLayout>
-        <TextView
-            android:text="Planned time:"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/TaskDetails_PlannedTimeText"
-            android:layout_below="@id/TaskDetails_PlayPauseLayout" />
-      <TextView
-           android:text=""
-           android:textAppearance="?android:attr/textAppearanceMedium"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_toRightOf="@id/TaskDetails_PlannedTimeText"
-           android:id="@+id/TaskDetails_PlannedTime"
-           android:layout_below="@id/TaskDetails_PlayPauseLayout" />
-      
-      
-        <TextView
-            android:text="Actual time:"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/TaskDetails_PlannedTimeText"
-            android:id="@+id/TaskDetails_ActualTimeText" />
-       
-        <TextView
-            android:text=""
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/TaskDetails_ActualTimeText"
-            android:id="@+id/TaskDetails_ActualTime"
-            android:layout_below="@id/TaskDetails_PlannedTime" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:id="@+id/TaskDetails_ProjectName" />
+    <TextView
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_below="@id/TaskDetails_ProjectName"
+        android:id="@+id/TaskDetails_TaskName" />
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+         android:layout_marginBottom="15dp"
+        android:layout_below="@id/TaskDetails_TaskName"
+        android:id="@+id/TaskDetails_PlayPauseLayout"
+        android:minWidth="25px"
+        android:minHeight="25px">
+      <Space
+          android:layout_width="0dp"
+          android:layout_height="1dp"
+          android:layout_weight="1" />
+      <Button
+          android:src="@drawable/Pause"
+          android:layout_width="24dp"
+          android:layout_height="24dp"
+          android:id="@+id/TaskDetails_Play"
+          android:background="@drawable/pause"
+          android:gravity="center_horizontal|center_vertical" />
+      <Space
+          android:layout_width="0dp"
+          android:layout_height="1dp"
+          android:layout_weight="1" />
+      <Button
+          android:src="@drawable/Play"
+          android:layout_width="24dp"
+          android:layout_height="32dp"
+          android:background="@drawable/play"
+          android:id="@+id/TaskDetails_Pause"
+          android:gravity="center_horizontal|center_vertical" />
+      <Space
+          android:layout_width="0dp"
+          android:layout_height="1dp"
+          android:layout_weight="1" />
+      <CheckBox
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:id="@+id/TaskDetails_TaskComplete"
+          android:gravity="center_horizontal|center_vertical" />
+      <Space
+          android:layout_width="0dp"
+          android:layout_height="1dp"
+          android:layout_weight="1" />
+    </LinearLayout>
+    <ListView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/TaskDetails_TimeInfo"
+          android:layout_below="@id/TaskDetails_PlayPauseLayout"
+           android:layout_marginBottom="15dp"
+        />
 
-      <TextView
-        android:text="Completion Date:"
+    <TextView
+        android:text="Notes:"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/TaskDetails_CompletionDateText"
-        android:layout_below="@id/TaskDetails_ActualTimeText" />
+        android:id="@+id/TaskDetails_NotesText"
+        android:layout_below="@+id/TaskDetails_TimeInfo" />
+    <EditText
+        android:inputType="textMultiLine"
+        android:editable="false"
+        android:focusable="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/TaskDetails_NotesText"
+        android:id="@+id/TaskDetails_Notes"
+        android:text="" />
 
-      <TextView
-            android:text="--"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/TaskDetails_CompletionDateText"
-            android:id="@+id/TaskDetails_CompletionDate"
-            android:layout_below="@id/TaskDetails_ActualTime" />
+
+    <Button            
+      android:text="Time Log Entries"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/TaskDetails_Notes"
+      android:visibility="gone"
+      android:id="@+id/TaskDetails_TimeLogButton" />
 
 
-      <Button
-            android:text="Time Log Entries"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/TaskDetails_CompletionDateText"
-            android:id="@+id/TaskDetails_TimeLogButton" />
-
-      <TextView
-          android:text="Note:"
-          android:textAppearance="?android:attr/textAppearanceMedium"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:id="@+id/TaskDetails_NotesText"
-          android:layout_below="@+id/TaskDetails_TimeLogButton" />
-
-      <EditText
-            android:inputType="textMultiLine"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/TaskDetails_NotesText"
-            android:id="@+id/TaskDetails_Notes"
-            android:text="" />
-      
-    </RelativeLayout>
+  </RelativeLayout>
 </LinearLayout>

@@ -56,7 +56,7 @@ namespace ProcessDashboard
                     Debug.WriteLine(proj.EstimatedTime);
                     Debug.WriteLine(proj.FullName);
                     Debug.WriteLine(proj.Id);
-                    Debug.WriteLine(proj.TaskNote);
+                    Debug.WriteLine(proj.Note);
                     Debug.WriteLine("********************");
                     //  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
                 }
@@ -77,7 +77,7 @@ namespace ProcessDashboard
                 Debug.WriteLine(taskItem.FullName + " : " + taskItem.Id);
                 Debug.WriteLine(taskItem.EstimatedTime + " & " + taskItem.ActualTime);
                 Debug.WriteLine(taskItem.CompletionDate);
-                Debug.WriteLine(taskItem.TaskNote);
+                Debug.WriteLine(taskItem.Note);
                 Debug.WriteLine("*********");
             }
             catch (Exception e)
@@ -109,7 +109,7 @@ namespace ProcessDashboard
                     Debug.WriteLine(task.ActualTime);
                     Debug.WriteLine(task.EstimatedTime);
                     Debug.WriteLine(task.Id);
-                    Debug.WriteLine(task.TaskNote);
+                    Debug.WriteLine(task.Note);
                     Debug.WriteLine(task.Project);
                 }
             }
@@ -241,7 +241,10 @@ namespace ProcessDashboard
                     Debug.WriteLine("Task Name : " + entry.Task.FullName);
                     Debug.WriteLine("Start Date : " + entry.StartDate);
                     Debug.WriteLine("End Date : " + entry.EndDate);
-
+                    Debug.WriteLine("Start Date Kind :"+entry.StartDate.Kind);
+                    Debug.WriteLine("End Date Kind :" + entry.EndDate.Kind);
+                    Debug.WriteLine("Start Date Universal : " + entry.StartDate.ToUniversalTime());
+                    Debug.WriteLine("End Date Universal: " + entry.EndDate.ToUniversalTime());
                     Debug.WriteLine("Interrupt Time" + entry.InterruptTime);
                     Debug.WriteLine("Logged Time " + entry.LoggedTime);
                     Debug.WriteLine("ID " + entry.Id);
@@ -594,7 +597,7 @@ namespace ProcessDashboard
                 Debug.WriteLine(tr.CompletionDate);
                 Debug.WriteLine(tr.ActualTime);
                 Debug.WriteLine(tr.EstimatedTime);
-                Debug.WriteLine(tr.TaskNote);
+                Debug.WriteLine(tr.Note);
             }
             catch (Exception e)
             {
@@ -619,7 +622,7 @@ namespace ProcessDashboard
                 Debug.WriteLine(tr.CompletionDate);
                 Debug.WriteLine(tr.ActualTime);
                 Debug.WriteLine(tr.EstimatedTime);
-                Debug.WriteLine(tr.TaskNote);
+                Debug.WriteLine(tr.Note);
             }
             catch (Exception e)
             {
@@ -642,7 +645,7 @@ namespace ProcessDashboard
                 Debug.WriteLine(tr.CompletionDate);
                 Debug.WriteLine(tr.ActualTime);
                 Debug.WriteLine(tr.EstimatedTime);
-                Debug.WriteLine(tr.TaskNote);
+                Debug.WriteLine(tr.Note);
             }
             catch (Exception e)
             {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:id="@+id/linearLayout1"
@@ -8,44 +8,58 @@
     android:minHeight="25px">
 
   <Space
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_weight="1" >
+       android:layout_width="0dp"
+       android:layout_height="1dp"
+       android:layout_weight="1" >
   </Space>
-
   <TextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:id="@+id/gt_taskName"
       android:background="@null"
-      
+      android:layout_weight="1"
       android:ellipsize="start"
+      android:singleLine="true"
       />
 
-  <Space
-      android:layout_width="0dp"
-      android:layout_height="1dp"
-      android:layout_weight="1" >
-  </Space>
 
+  <Space
+       android:layout_width="0dp"
+       android:layout_height="1dp"
+       android:layout_weight="1" >
+  </Space>
   <TextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:id="@+id/gt_startTime"
+      android:layout_weight="1"
+      android:singleLine="true"
+      
       android:background="@null"
-      android:gravity="center_horizontal|center_vertical"
+      
       />
-
   <Space
-      android:layout_width="0dp"
-      android:layout_height="1dp"
-      android:layout_weight="1" >
+       android:layout_width="0dp"
+       android:layout_height="1dp"
+       android:layout_weight="1" >
   </Space>
   <TextView
      android:layout_width="wrap_content"
      android:layout_height="wrap_content"
      android:id="@+id/gt_delta"
+     android:layout_weight="1"
+     android:singleLine="true"
      android:background="@null"
-     android:gravity="center_horizontal|center_vertical"
+     
       />
 </LinearLayout>
+
+<!--
+
+
+  <Space
+      android:layout_width="0dp"
+      android:layout_height="1dp"
+      android:layout_weight="1" >
+  </Space>
+-->

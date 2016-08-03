@@ -2,6 +2,6 @@ namespace ProcessDashboard.Droid.Interfaces
 {
     internal interface IListOfProjectsInterface
     {
-        void ListOfProjectsCallback(string projectid);
+        void ListOfProjectsCallback(string projectid,string projectName);
     }
 }

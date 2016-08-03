@@ -6,18 +6,26 @@
 
   <TextView
     android:id="@+id/TimeLogEdit_ProjectName"
+    android:textAppearance="?android:attr/textAppearanceLarge"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_marginBottom="10dp"
     
     />
 
 
   <TextView
     android:id="@+id/TimeLogEdit_TaskName"
+    android:textAppearance="?android:attr/textAppearanceMedium"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+      android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_marginBottom="10dp"
     
-    /> 
+    />
 
 
   <TextView
@@ -25,6 +33,9 @@
     android:text="Start Time"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+      android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_marginBottom="10dp"
     
     />
 
@@ -34,6 +45,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     
+    android:focusable="false"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_marginBottom="10dp"
+    
     />
   <TextView
     android:id="@+id/TimeLogEdit_DeltaTimeText"
@@ -41,36 +57,50 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_marginBottom="10dp"
+    
     />
 
   <EditText
     android:id="@+id/TimeLogEdit_DeltaTime"
-    android:text=""
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    
+    android:hint="hh:mm"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_marginBottom="10dp"
     />
   <TextView
     android:id="@+id/TimeLogEdit_InterruptTimeText"
     android:text="Interrupt Time"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    
+      android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_marginBottom="10dp"
     />
 
   <EditText
    android:id="@+id/TimeLogEdit_InterruptTime"
+ 
    android:text=""
    android:layout_width="match_parent"
    android:layout_height="wrap_content"
-    
+   android:hint="hh:mm"
+   android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_marginBottom="10dp"
     />
   <TextView
    android:id="@+id/TimeLogEdit_CommentText"
    android:text="Comment"
    android:layout_width="match_parent"
    android:layout_height="wrap_content"
-    
+      android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_marginBottom="10dp"
     />
   <EditText
    
@@ -78,6 +108,8 @@
    android:text=""
    android:layout_width="match_parent"
    android:layout_height="wrap_content"
-    
+      android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_marginBottom="10dp"
     />
 </LinearLayout>

@@ -8,7 +8,12 @@ namespace ProcessDashboard
     public class StatusNotOkayException : Exception
     {
         private string _code;
-        private string message;
+        private string _message;
+
+        public string GetMessage()
+        {
+            return "Code :" + _code + " Message :" + _message;
+        }
 
         public StatusNotOkayException()
         {
@@ -16,13 +21,13 @@ namespace ProcessDashboard
 
         public StatusNotOkayException(string message, string code)
         {
-            this.message = message;
+            this._message = message;
             _code = code;
         }
 
         public StatusNotOkayException(string message)
         {
-            this.message = message;
+            this._message = message;
         }
 
         public StatusNotOkayException(SerializationInfo info, StreamingContext context)
@@ -37,13 +42,13 @@ namespace ProcessDashboard
         }
         //TODO: Check if these things can be removed
         //TODO: Static Analysis
-        public StreamingContext Context { get; }
-        public SerializationInfo Info { get; }
-        public new Exception InnerException { get; }
+        private StreamingContext Context { get; }
+        private SerializationInfo Info { get; }
+        private new Exception InnerException { get; }
 
         public override string ToString()
         {
-            return "Messsage : " + message + "Code :" + _code;
+            return GetMessage();
         }
     }
 }

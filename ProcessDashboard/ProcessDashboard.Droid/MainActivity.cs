@@ -58,9 +58,9 @@ namespace ProcessDashboard.Droid
 
         public Controller Ctrl;
 
-        public void ListOfProjectsCallback(string projectid)
+        public void ListOfProjectsCallback(string projectid,string projectName)
         {
-            _listOfTasksFragment.SetId(projectid);
+            _listOfTasksFragment.SetId(projectid,projectName);
             SwitchToFragment(FragmentTypes.Listoftasks);
         }
 
@@ -98,7 +98,7 @@ namespace ProcessDashboard.Droid
 
             // Init toolbar
             _toolbar = FindViewById<Toolbar>(Resource.Id.toolbar);
-            _toolbar.Title = "Process Dashboard";
+            _toolbar.Title = this.Resources.GetString(Resource.String.app_name);
             SetSupportActionBar(_toolbar);
             SupportActionBar.SetDisplayHomeAsUpEnabled(true);
             SupportActionBar.SetHomeButtonEnabled(true);
@@ -130,9 +130,9 @@ namespace ProcessDashboard.Droid
             _testFragment = new TestFragment();
 
             //for testing
-            _currentFragment = _testFragment;
+            //_currentFragment = _testFragment;
             // if logged in
-            //_currentFragment = _homeFragment;
+            _currentFragment = _homeFragment;
             // else 
             //CurrentFragment = ListOfProjectFragment;
 
@@ -153,17 +153,19 @@ namespace ProcessDashboard.Droid
             // FragmentManager.AddOnBackStackChangedListener(this);
             // shouldDisplayHomeUp();
 
-            // c.testProject();
-            //_ctrl.testTasks();
-            //_ctrl.testSingleTask();
-            //_ctrl.testAddATimeLog();
-            //Ctrl.TestUpdateATimeLog();
-            //Ctrl.TestDeleteATimeLog(-50);
+         
         }
 
         public void SetTitle(string title)
         {
-            _toolbar.Title = title;
+            try
+            {
+                _toolbar.Title = title;
+            }
+            catch (Exception e)
+            {
+                
+            }
         }
 
         private void NavigationView_NavigationItemSelected(object sender,

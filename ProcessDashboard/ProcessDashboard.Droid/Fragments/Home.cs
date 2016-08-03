@@ -1,7 +1,9 @@
 #region
+using System;
 using Android.App;
 using Android.Content;
 using Android.OS;
+using Android.Support.V4.Widget;
 using Android.Views;
 using Android.Widget;
 using ProcessDashboard.Droid.Adapter;
@@ -42,13 +44,13 @@ namespace ProcessDashboard.Droid.Fragments
         {
             base.OnCreate(savedInstanceState);
             RetainInstance = true;
-            _mActivity.SetTitle("Process Dasboard");
+            _mActivity.SetTitle("Process Dashboard");
         }
 
         public override void OnResume()
         {
             base.OnResume();
-            _mActivity.SetTitle("Process Dasboard");
+            _mActivity.SetTitle("Process Dashboard");
         }
 
         public override void OnListItemClick(ListView l, View v, int position, long id)
@@ -65,59 +67,188 @@ namespace ProcessDashboard.Droid.Fragments
 
             var v = inflater.Inflate(Resource.Layout.Home, container, false);
 
-            var pd = new ProgressDialog(_mActivity) {Indeterminate = true};
-            pd.SetTitle("Loading");
 
-            var recentTask = v.FindViewById<TextView>(Resource.Id.Home_RecentTask);
-            recentTask.Text = "Loading..";
-
-            var recentProject = v.FindViewById<TextView>(Resource.Id.Home_CurrentProject);
-            recentProject.Text = "Loading..";
-
-            pd.Show();
-            LoadData(pd, v, _mActivity.Ctrl);
+            LoadData(v, _mActivity.Ctrl);
 
             return v;
         }
 
-        private async void LoadData(ProgressDialog pb, View v, Controller ctrl)
+        private async void LoadData(View v, Controller ctrl)
         {
-            var output = await ctrl.GetRecentTasks(Settings.GetInstance().Dataset);
+            var pb = new ProgressDialog(_mActivity) {Indeterminate = true};
+            pb.SetTitle("Loading");
 
-            pb.Dismiss();
+            var recentTask = v.FindViewById<Button>(Resource.Id.Home_RecentTask);
+            recentTask.Text = "Loading..";
 
-            var recent = output[0];
-
-            var rt = v.FindViewById<TextView>(Resource.Id.Home_RecentTask);
-            var cp = v.FindViewById<TextView>(Resource.Id.Home_CurrentProject);
-
-            rt.Text = recent.FullName;
-            cp.Text = recent.Project.Name;
-
-            output.RemoveAt(0);
-
-            if (_mActivity == null)
+            var recentProject = v.FindViewById<Button>(Resource.Id.Home_CurrentProject);
+            recentProject.Text = "Loading..";
+            pb.SetCanceledOnTouchOutside(false);
+            pb.Show();
+            try
             {
-                Debug.WriteLine("Activity is null");
+                var output = await ctrl.GetRecentTasks(Settings.GetInstance().Dataset);
+
+                pb.Dismiss();
+
+                var recent = output[0];
+
+                recentTask.Text = recent.FullName;
+                recentProject.Text = recent.Project.Name;
+
+                output.RemoveAt(0);
+
+                if (_mActivity == null)
+                {
+                    Debug.WriteLine("Activity is null");
+                }
+
+                var listAdapter = new TaskAdapter(_mActivity, Android.Resource.Layout.SimpleListItem1, output.ToArray());
+                ListAdapter = listAdapter;
+
+                var refresher = v.FindViewById<SwipeRefreshLayout>(Resource.Id.refresher);
+
+                refresher.Refresh += async delegate
+                {
+                    try
+                    {
+                        output = await ctrl.GetRecentTasks(Settings.GetInstance().Dataset);
+
+                        recent = output[0];
+
+                        recentTask.Text = recent.FullName;
+                        recentProject.Text = recent.Project.Name;
+
+                        output.RemoveAt(0);
+                        listAdapter = new TaskAdapter(_mActivity, Android.Resource.Layout.SimpleListItem1,
+                            output.ToArray());
+                        ListAdapter = listAdapter;
+
+                        refresher.Refreshing = false;
+                    }
+                    catch (CannotReachServerException)
+                    {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                        builder.SetTitle("Unable to Connect")
+                            .SetMessage("Please check your network connection and try again")
+                              .SetNeutralButton("Okay", (sender, args) =>
+                              {
+                                  builder.Dispose();
+                              })
+                            .SetCancelable(false);
+                        AlertDialog alert = builder.Create();
+                        alert.Show();
+
+
+                    }
+                    catch (StatusNotOkayException se)
+                    {
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                        builder.SetTitle("An Error has occured")
+                            .SetMessage("Error :" + se.GetMessage())
+                            .SetNeutralButton("Okay", (sender, args) =>
+                            {
+                                builder.Dispose();
+                            })
+                            .SetCancelable(false);
+                        AlertDialog alert = builder.Create();
+                        alert.Show();
+
+
+                    }
+                    catch (Exception e)
+                    {
+                        // For any other weird exceptions
+                        AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                        builder.SetTitle("An Error has occured")
+                              .SetNeutralButton("Okay", (sender, args) =>
+                              {
+                                  builder.Dispose();
+                              })
+                            .SetMessage("Error :" + e.Message)
+                            .SetCancelable(false);
+                        AlertDialog alert = builder.Create();
+                        alert.Show();
+
+                    }
+
+                };
+
+                recentProject.Click += (sender, args) =>
+                {
+                    ((MainActivity) Activity).ListOfProjectsCallback(recent.Project.Id, recent.Project.Name);
+                };
+
+                recentTask.Click += (sender, args) =>
+                {
+                    ((MainActivity) Activity).PassTaskDetailsInfo(recent.Id, recent.FullName, recent.Project.Name,
+                        recent.CompletionDate,
+                        recent.EstimatedTime, recent.ActualTime);
+                };
             }
+            catch (CannotReachServerException)
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                builder.SetTitle("Unable to Connect")
+                    .SetMessage("Please check your network connection and try again")
+                      .SetNeutralButton("Okay", (sender, args) =>
+                      {
+                          builder.Dispose();
+                      })
+                    .SetCancelable(false);
+                AlertDialog alert = builder.Create();
+                alert.Show();
 
-            var listAdapter = new TaskAdapter(_mActivity, Android.Resource.Layout.SimpleListItem1, output.ToArray());
-            ListAdapter = listAdapter;
+
+            }
+            catch (StatusNotOkayException se)
+            {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                builder.SetTitle("An Error has occured")
+                    .SetMessage("Error :" + se.GetMessage())
+                    .SetNeutralButton("Okay", (sender, args) =>
+                    {
+                        builder.Dispose();
+                    })
+                    .SetCancelable(false);
+                AlertDialog alert = builder.Create();
+                alert.Show();
+
+
+            }
+            catch (Exception e)
+            {
+                // For any other weird exceptions
+                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                builder.SetTitle("An Error has occured")
+                      .SetNeutralButton("Okay", (sender, args) =>
+                      {
+                          builder.Dispose();
+                      })
+                    .SetMessage("Error :" + e.Message)
+                    .SetCancelable(false);
+                AlertDialog alert = builder.Create();
+                alert.Show();
+
+            }
+            /*
+                private void LoadDummyData(View v)
+                {
+
+                    ListView lv = v.FindViewById<ListView>(Android.Resource.Id.List);
+                    var items = new[] { "Vegetables", "Fruits", "Flower Buds", "Legumes", "Bulbs", "Tubers" };
+                    ArrayAdapter listAdapter = new ArrayAdapter<String>(_mActivity, Android.Resource.Layout.SimpleListItem1, items);
+                    ListAdapter = listAdapter;
+
+                    TextView recentTask = v.FindViewById<TextView>(Resource.Id.Home_RecentTask);
+                    recentTask.Text = "Project / Mobile App l1 / Iteration 1 / View Skeletons / Create Android Skeletons / Home Screen ";
+
+                }
+        */
         }
 
-/*
-        private void LoadDummyData(View v)
-        {
-
-            ListView lv = v.FindViewById<ListView>(Android.Resource.Id.List);
-            var items = new[] { "Vegetables", "Fruits", "Flower Buds", "Legumes", "Bulbs", "Tubers" };
-            ArrayAdapter listAdapter = new ArrayAdapter<String>(_mActivity, Android.Resource.Layout.SimpleListItem1, items);
-            ListAdapter = listAdapter;
-
-            TextView recentTask = v.FindViewById<TextView>(Resource.Id.Home_RecentTask);
-            recentTask.Text = "Project / Mobile App l1 / Iteration 1 / View Skeletons / Create Android Skeletons / Home Screen ";
-
-        }
-*/
+        
     }
 }
