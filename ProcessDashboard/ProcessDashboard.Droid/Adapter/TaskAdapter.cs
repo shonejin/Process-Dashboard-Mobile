@@ -22,16 +22,19 @@ namespace ProcessDashboard.Droid.Adapter
         {
             var v = base.GetView(position, convertView, parent);
             // If it has a completion date and that date is not the min value
+            var text = _taskList[position].FullName;
+            var tv = v.FindViewById<TextView>(Android.Resource.Id.Text1);
+            var spannable = new SpannableString(text);
+           spannable.SetSpan(new LeadingMarginSpanStandard(0, 15), 0, text.Length, 0);
+            
             if (_taskList[position].CompletionDate != null &&
                 !_taskList[position].CompletionDate.Equals(DateTime.MinValue))
             {
                 // Strike out the text
-                var text = _taskList[position].FullName;
-                var tv = v.FindViewById<TextView>(Android.Resource.Id.Text1);
-                var spannable = new SpannableString(text);
                 spannable.SetSpan(new StrikethroughSpan(), 0, text.Length, SpanTypes.InclusiveExclusive);
-                tv.TextFormatted = spannable;
+
             }
+            tv.TextFormatted = spannable;
             return v;
         }
 

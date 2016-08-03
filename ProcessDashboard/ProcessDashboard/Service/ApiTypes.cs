@@ -3,6 +3,7 @@ using System;
 using System.Net.Http;
 using Fusillade;
 using ModernHttpClient;
+using Newtonsoft.Json;
 using ProcessDashboard.Service.Interface;
 using Refit;
 #endregion
@@ -46,19 +47,18 @@ namespace ProcessDashboard.Service
                 };
 
                 // Return a concrete implementation of IPDashAPi
-                return RestService.For<IPDashApi>(client);
+                return RestService.For<IPDashApi>(client
 
-                //TODO: Check if JSON Serialization settings is required.
-                /*, new RefitSettings
+                , new RefitSettings
                 {
                     JsonSerializerSettings = new JsonSerializerSettings
                     {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver(),
                         
+                        DateTimeZoneHandling = DateTimeZoneHandling.Local
 
                     }
                 });
-                */
+                
             };
 
             // Use Native Message Handler to make use of ModernHttpClient

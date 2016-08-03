@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-  <item android:id="@+id/TimeLogSave"
-        android:icon="@drawable/ic_home_black_24dp"
+  <item android:id="@+id/TimeLog_Save"
         android:title="Save" />
+
+  <item android:id="@+id/TimeLog_Delete"
+        android:title="Delete"/>
+  
 </menu>

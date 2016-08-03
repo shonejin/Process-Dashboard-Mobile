@@ -18,7 +18,7 @@ namespace ProcessDashboard.DTO
         public DateTime? CompletionDate { get; set; }
         public double EstimatedTime { get; set; }
         public double ActualTime { get; set; }
-        public string TaskNote { get; set; }
+        public string Note { get; set; }
 
         public override string ToString()
         {

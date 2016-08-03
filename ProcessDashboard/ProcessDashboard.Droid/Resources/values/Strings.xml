@@ -5,4 +5,5 @@
   <string name="app_name">Process Dashboard</string>
   <string name="open_drawer">Open drawer</string>
   <string name="close_drawer">Close drawer</string>
+  <string name="no_content">No Content Available</string>
 </resources>

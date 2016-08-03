@@ -38,7 +38,7 @@ namespace ProcessDashboard.Droid.Fragments
             var v = inflater.Inflate(Resource.Layout.GlobalTimeLog, container, false);
 
             CreateExpendableListData(v);
-            Debug.WriteLine("We are proceeding");
+         //   Debug.WriteLine("We are proceeding");
 
             //var listView = v.FindViewById<ExpandableListView>(Resource.Id.myExpandableListview);
             //listView.SetAdapter(new ExpandableDataAdapter(this, Data.SampleData()));
@@ -52,11 +52,11 @@ namespace ProcessDashboard.Droid.Fragments
 
             var timelogEntries = await ctrl.GetTimeLogs(Settings.GetInstance().Dataset, 0, null, null, null, null);
 
-            Debug.WriteLine("Got the values : " + timelogEntries.Count);
+          //  Debug.WriteLine("Got the values : " + timelogEntries.Count);
             var count = 0;
             foreach (var te in timelogEntries)
             {
-                Debug.WriteLine(te);
+                //Debug.WriteLine(te);
             }
 
             foreach (var te in timelogEntries)
@@ -68,20 +68,20 @@ namespace ProcessDashboard.Droid.Fragments
                     _headings.TryGetValue(te.StartDate.ToShortDateString(), out children);
                     if (children == null)
                     {
-                        Debug.WriteLine("Children is null");
+                       // Debug.WriteLine("Children is null");
                         children = new List<TimeLogEntry>();
                         count++;
                         present = false;
                     }
-                    Debug.WriteLine("Going to add children");
+                  //  Debug.WriteLine("Going to add children");
                     children.Add(te);
 
                     if (present)
                     {
-                        Debug.WriteLine("Going to remove");
+                       // Debug.WriteLine("Going to remove");
                         _headings.Remove(te.StartDate.Date.ToShortDateString());
                     }
-                    Debug.WriteLine("Going to add to _headings");
+                    //Debug.WriteLine("Going to add to _headings");
                     _headings.Add(te.StartDate.Date.ToShortDateString(), children);
                 }
                 catch (Exception e)
@@ -90,7 +90,7 @@ namespace ProcessDashboard.Droid.Fragments
                 }
             }
 
-            Debug.WriteLine("Count :" + count);
+           // Debug.WriteLine("Count :" + count);
 
             _timelogs = new List<string>(_headings.Keys);
             var ctlExListBox = v.FindViewById<ExpandableListView>(Resource.Id.myExpandableListview);

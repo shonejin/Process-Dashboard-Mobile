@@ -109,6 +109,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Reactive.Core, Version=2.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Rx-Core.2.2.4\lib\portable-windows8+net45+wp8\System.Reactive.Core.dll</HintPath>
@@ -126,6 +127,7 @@
       <HintPath>..\..\packages\Rx-PlatformServices.2.2.4\lib\portable-windows8+net45+wp8\System.Reactive.PlatformServices.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -149,7 +151,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Adapter\GlobalTimeLogAdapter.cs" />
+    <Compile Include="Adapter\ProjectsAdapter.cs" />
     <Compile Include="Adapter\TaskAdapter.cs" />
+    <Compile Include="Adapter\TaskDetailsAdapter.cs" />
+    <Compile Include="Fragments\DatePickerFragment.cs" />
     <Compile Include="Fragments\GlobalTimeLogList.cs" />
     <Compile Include="Fragments\TimeLogDetail.cs" />
     <Compile Include="Fragments\Home.cs" />
@@ -190,7 +195,9 @@
     <AndroidResource Include="Resources\layout\ListProjectTasks.axml" />
     <AndroidResource Include="Resources\layout\Login.axml" />
     <AndroidResource Include="Resources\layout\Settings.axml" />
-    <AndroidResource Include="Resources\layout\TaskDetail.axml" />
+    <AndroidResource Include="Resources\layout\TaskDetail.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\layout\TaskTimeLogList.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
@@ -207,6 +214,12 @@
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\TimeLogEntry.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\TimeLogEntryListItem.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\PlannedTimeEditor.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

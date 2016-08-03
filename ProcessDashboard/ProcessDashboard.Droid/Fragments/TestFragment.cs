@@ -34,7 +34,7 @@ namespace ProcessDashboard.Droid.Fragments
                 //                ct.TestListOfTimeLogsWithprojectId();
                 //                ct.TestListOfTimeLogsWithstartDateFrom();
                 //                ct.TestListOfTimeLogsWithstartDateTo();
-                //                ct.TestListOfTimeLogsWithtaskId();
+                                ct.TestListOfTimeLogsWithtaskId();
                 //ct.TestAddATimeLog();
                 
                 //ct.TestGetATimeLog("-71");

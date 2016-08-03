@@ -87,7 +87,7 @@ namespace ProcessDashboard.DTO
                     EstimatedTime = tm.EstimatedTime,
                     FullName = tm.TaskName,
                     Project = p,
-                    TaskNote = tm.TaskNote
+                    Note = tm.TaskNote
                 };
                 output.Add(temp);
             }
@@ -114,7 +114,7 @@ namespace ProcessDashboard.DTO
                         EstimatedTime = tm.EstimatedTime,
                         TaskName = tm.FullName,
                         ProjectId = tm.Project.Id,
-                        TaskNote = tm.TaskNote
+                        TaskNote = tm.Note
                     };
                     output.Add(temp);
                 }
@@ -138,7 +138,7 @@ namespace ProcessDashboard.DTO
                 EstimatedTime = entry.EstimatedTime,
                 FullName = entry.TaskName,
                 Project = p,
-                TaskNote = entry.TaskNote
+                Note = entry.TaskNote
             };
         }
 
@@ -152,7 +152,7 @@ namespace ProcessDashboard.DTO
                 EstimatedTime = entry.EstimatedTime,
                 TaskName = entry.FullName,
                 ProjectId = entry.Project.Id,
-                TaskNote = entry.TaskNote
+                TaskNote = entry.Note
             };
         }
 

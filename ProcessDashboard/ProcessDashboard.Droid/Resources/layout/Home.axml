@@ -5,17 +5,18 @@
     android:layout_height="match_parent"
     android:minWidth="25px"
     android:minHeight="25px">
-    <TextView
+    <Button
         android:text="Current Project:"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:id="@+id/Home_CurrentProject"
+        android:gravity="center"
         android:layout_gravity="center_horizontal" />
-    <TextView
+    <Button
         android:text="Recent task.."
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="false"
@@ -23,6 +24,7 @@
         android:elegantTextHeight="true"
         android:ellipsize="none"
         android:layout_gravity="center_horizontal" />
+  
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -76,6 +78,12 @@
         android:elegantTextHeight="true"
         android:ellipsize="start"
         android:layout_margin="5dp" />
+
+  <android.support.v4.widget.SwipeRefreshLayout
+      android:id="@+id/refresher"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
     <ListView
         android:id="@id/android:list"
         android:layout_width="match_parent"
@@ -83,7 +91,10 @@
         android:layout_weight="1"
         android:drawSelectorOnTop="false"
         android:layout_margin="5dp" />
-    <TextView
+
+  </android.support.v4.widget.SwipeRefreshLayout>
+
+  <TextView
         android:id="@id/android:empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
