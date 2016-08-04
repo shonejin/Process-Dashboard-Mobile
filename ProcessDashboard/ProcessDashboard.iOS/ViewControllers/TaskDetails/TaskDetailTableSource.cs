@@ -237,6 +237,7 @@ namespace ProcessDashboard.iOS
 						DateTime newCompleteDate = ViewControllerHelper.NSDateToDateTimeUtc(CompleteTimePicker.Date);
 						await PDashAPI.Controller.UpdateATask(TaskItem.Id, null, newCompleteDate, false);
 						TaskItem.CompletionDate = newCompleteDate;
+						this.completeDateText.Text = Util.GetInstance().GetLocalTime(newCompleteDate).ToString("d");
 						owner.task = TaskItem;
 						owner.refreshControlButtons();
 					}
