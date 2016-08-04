@@ -81,6 +81,8 @@ namespace ProcessDashboard.iOS
 				NavigationController.NavigationBar.TopItem.Title = "Back";
 			}
 
+			TdPlayBtn.TouchUpInside += PlayBtnOnClick;
+			TdPauseBtn.TouchUpInside += PauseBtnOnClick;
 			refreshControlButtons();
 
 			TdCheckboxBtn.TouchUpInside += delegate
