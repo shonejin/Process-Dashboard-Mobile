@@ -203,8 +203,10 @@ namespace ProcessDashboard.iOS
 				{
 					try
 					{
+						completeTimeSelectedDate = ViewControllerHelper.NSDateToDateTimeUtc(CompleteTimePicker.Date);
 						await PDashAPI.Controller.UpdateATask(TaskItem.Id, null, completeTimeSelectedDate, false);
 						TaskItem.CompletionDate = completeTimeSelectedDate;
+						this.completeDateText.Text = Util.GetInstance().GetLocalTime(completeTimeSelectedDate).ToShortDateString();
 						owner.task = TaskItem;
 						owner.refreshControlButtons();
 					}
@@ -219,6 +221,7 @@ namespace ProcessDashboard.iOS
 					{
 						await PDashAPI.Controller.UpdateATask(TaskItem.Id, null, null, true);
 						TaskItem.CompletionDate = null;
+						this.completeDateText.Text = "-:-";
 						owner.task = TaskItem;
 						owner.refreshControlButtons();
 					}
@@ -242,8 +245,9 @@ namespace ProcessDashboard.iOS
 						ViewControllerHelper.ShowAlert(owner, "Change Completion Date", ex.Message + " Please try again later.");
 					}
 				}
-				this.completeDateText.Text = completeTimeSelectedDate.ToShortDateString();
+
 				this.completeDateText.ResignFirstResponder();
+				refreshPicker();
 			};
 
 			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
@@ -252,20 +256,12 @@ namespace ProcessDashboard.iOS
 			(s, e) =>
 			{
 				this.completeDateText.ResignFirstResponder();
+				refreshPicker();
 			});
 
 			toolbar.SetItems(new UIBarButtonItem[] { cancelButton, spacer, saveButton }, true);
 
-			if (TaskItem.CompletionDate == null)
-			{
-				saveButton.Title = "Mark Complete";
-				CompleteTimePicker.SetDate(ViewControllerHelper.DateTimeUtcToNSDate(DateTime.UtcNow), true);
-			}
-			else
-			{
-				saveButton.Title = "Mark Incomplete";
-				CompleteTimePicker.SetDate(ViewControllerHelper.DateTimeUtcToNSDate(Util.GetInstance().GetServerTime(TaskItem.CompletionDate.Value)), true);
-			}
+			refreshPicker();
 
 			CompleteTimePicker.ValueChanged += (Object s, EventArgs e) =>
 			{
@@ -281,6 +277,20 @@ namespace ProcessDashboard.iOS
 
 			this.completeDateText.InputView = CompleteTimePicker;
 			this.completeDateText.InputAccessoryView = toolbar;
+		}
+
+		private void refreshPicker()
+		{
+			if (TaskItem.CompletionDate == null)
+			{
+				saveButton.Title = "Mark Complete";
+				CompleteTimePicker.SetDate(ViewControllerHelper.DateTimeUtcToNSDate(DateTime.UtcNow), true);
+			}
+			else
+			{
+				saveButton.Title = "Mark Incomplete";
+				CompleteTimePicker.SetDate(ViewControllerHelper.DateTimeUtcToNSDate(Util.GetInstance().GetServerTime(TaskItem.CompletionDate.Value)), true);
+			}
 		}
 	}
 }

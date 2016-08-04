@@ -130,7 +130,7 @@ namespace ProcessDashboard.iOS
 			StartTimePicker.Mode = UIDatePickerMode.DateAndTime;
 			StartTimePicker.MaximumDate = ViewControllerHelper.DateTimeUtcToNSDate(DateTime.UtcNow);
 
-			startTimeSelectedDate = timeLogEntry.StartDate;
+			startTimeSelectedDate = Util.GetInstance().GetServerTime(timeLogEntry.StartDate);
 
 			StartTimePicker.ValueChanged += (Object sender, EventArgs e) =>
 			{
@@ -138,7 +138,7 @@ namespace ProcessDashboard.iOS
 			};
 
 			StartTimePicker.BackgroundColor = UIColor.White;
-			StartTimePicker.SetDate(ViewControllerHelper.DateTimeUtcToNSDate(timeLogEntry.StartDate), true);
+			StartTimePicker.SetDate(ViewControllerHelper.DateTimeUtcToNSDate(Util.GetInstance().GetServerTime(timeLogEntry.StartDate)), true);
 
 			//Setup the toolbar
 			toolbar = new UIToolbar();
@@ -363,7 +363,7 @@ namespace ProcessDashboard.iOS
 			base.ViewWillAppear(animated);
 
 			TaskNameLabel.Text = timeLogEntry.Task.FullName;
-			StartTimeText.Text = timeLogEntry.StartDate.ToLocalTime().ToString("g");
+			StartTimeText.Text = Util.GetInstance().GetLocalTime(timeLogEntry.StartDate).ToString("g");
 			DeltaText.Text = TimeSpan.FromMinutes(timeLogEntry.LoggedTime).ToString(@"hh\:mm");
 		}
 

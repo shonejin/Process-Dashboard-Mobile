@@ -227,6 +227,7 @@ namespace ProcessDashboard.iOS
 
 			saveButton.Clicked += async (s, e) =>
 			{
+				completeTimeSelectedDate = ViewControllerHelper.NSDateToDateTimeUtc(CompleteTimePicker.Date);
 				if (saveButton.Title.Equals("Mark Complete"))
 				{
 					try

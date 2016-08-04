@@ -27,7 +27,6 @@ namespace ProcessDashboard.iOS
 			UIAlertController okAlertController = UIAlertController.Create(title, msg, UIAlertControllerStyle.Alert);
 			okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
 			vc.PresentViewController(okAlertController, true, null);
-			vc.ViewDidAppear(false);
 		}
 
 		// requires UTC time both input and output
