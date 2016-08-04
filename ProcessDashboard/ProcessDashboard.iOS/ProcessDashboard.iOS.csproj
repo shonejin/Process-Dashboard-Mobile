@@ -133,28 +133,7 @@
     <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-60%403x.png">
       <InProject>false</InProject>
     </ImageAsset>
-    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-76.png">
-      <InProject>false</InProject>
-    </ImageAsset>
-    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-76%402x.png">
-      <InProject>false</InProject>
-    </ImageAsset>
-    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small.png">
-      <InProject>false</InProject>
-    </ImageAsset>
-    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small%402x.png">
-      <InProject>false</InProject>
-    </ImageAsset>
     <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small%403x.png">
-      <InProject>false</InProject>
-    </ImageAsset>
-    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small-40.png">
-      <InProject>false</InProject>
-    </ImageAsset>
-    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small-40%402x.png">
-      <InProject>false</InProject>
-    </ImageAsset>
-    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small-40%403x.png">
       <InProject>false</InProject>
     </ImageAsset>
     <ImageAsset Include="Resources\Images.xcassets\LaunchImage.launchimage\Contents.json">
@@ -175,10 +154,6 @@
     <ImageAsset Include="Resources\Images.xcassets\LaunchImage.launchimage\Default-Portrait%402x.png">
       <InProject>false</InProject>
     </ImageAsset>
-    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Untitled-1.png" />
-    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Untitled-1 2.png" />
-    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\180.png" />
-    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\180 2.png" />
     <ImageAsset Include="Resources\Images.xcassets\play-activated.imageset\Contents.json" />
     <ImageAsset Include="Resources\Images.xcassets\play-deactivated.imageset\Contents.json" />
     <ImageAsset Include="Resources\Images.xcassets\pause-activated.imageset\Contents.json" />
@@ -212,6 +187,24 @@
     <ImageAsset Include="Resources\Images.xcassets\log_tab_icon_2.imageset\tab-timelogs-3x.png" />
     <ImageAsset Include="Resources\Images.xcassets\log_tab_icon_2.imageset\tab-timelogs-2x.png" />
     <ImageAsset Include="Resources\Images.xcassets\checkbox-empty.imageset\checkbox-empty.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\29.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\58.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\87.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\80.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\120.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\57.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\114.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\180.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\40.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\50.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\100.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\72.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\144.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\76.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\152.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\167.png" />
+    <ImageAsset Include="Resources\Images.xcassets\LauchIcon.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\LauchIcon.imageset\Clock-2.png" />
   </ItemGroup>
   <ItemGroup>
     <ITunesArtwork Include="Resources\ITunesArtwork" />
@@ -308,6 +301,7 @@
     <Folder Include="ViewControllers\TimeLogs\TimeLogDetails\" />
     <Folder Include="ViewControllers\TimeLogs\TaskTimeLogs\" />
     <Folder Include="ViewControllers\CommonElements\" />
+    <Folder Include="Resources\Images.xcassets\LauchIcon.imageset\" />
   </ItemGroup>
   <Import Project="..\ProcessDashboard\ProcessDashboard.projitems" Label="Shared" Condition="Exists('..\ProcessDashboard\ProcessDashboard.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

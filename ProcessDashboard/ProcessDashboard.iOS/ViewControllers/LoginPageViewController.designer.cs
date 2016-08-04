@@ -38,13 +38,13 @@ namespace ProcessDashboard.iOS
         [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UITextField UserIDTextView { get; set; }
 
-        [Action ("LoginButton_TouchUpInside:")]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        partial void LoginButton_TouchUpInside (UIKit.UIButton sender);
-
         [Action ("InfoBtnOnClicked:")]
         [GeneratedCode ("iOS Designer", "1.0")]
         partial void InfoBtnOnClicked (UIKit.UIButton sender);
+
+        [Action ("LoginButton_TouchUpInside:")]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        partial void LoginButton_TouchUpInside (UIKit.UIButton sender);
 
         void ReleaseDesignerOutlets ()
         {
