@@ -221,6 +221,7 @@ namespace ProcessDashboard.iOS
 		public override void ViewDidAppear(bool animated)
 		{
 			base.ViewDidAppear(animated);
+			NavigationController.NavigationBar.TopItem.Title = "Process Dashboard";
 			refreshData();
 		}
 

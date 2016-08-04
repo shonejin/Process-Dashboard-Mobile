@@ -56,23 +56,6 @@ namespace ProcessDashboard.iOS
 
 			timeLogCache = timeLogEntries;
 
-			try
-			{
-				System.Diagnostics.Debug.WriteLine("** LIST OF Timelog **");
-				System.Diagnostics.Debug.WriteLine("Length is " + timeLogEntries.Count);
-
-				foreach (var proj in timeLogEntries)
-				{
-					System.Diagnostics.Debug.WriteLine("Task Name : " + proj.Task.FullName);
-					System.Diagnostics.Debug.WriteLine("Start Date : " + proj.StartDate);
-					System.Diagnostics.Debug.WriteLine("End Date : " + proj.EndDate);
-					//  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
-				}
-			}
-			catch (Exception e)
-			{
-				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
-			}
 			return 0;
 		}
 
@@ -132,7 +115,7 @@ namespace ProcessDashboard.iOS
 			{
 				timeLogId = "" + val.Value;
 
-				DeleteRoot tr = await c.DeleteTimeLog("INST-szewf0", timeLogId);
+				DeleteRoot tr = await c.DeleteTimeLog(AccountStorage.DataSet, timeLogId);
 				try
 				{
 					System.Diagnostics.Debug.WriteLine("** Delete the new Time Log entry **");
@@ -159,7 +142,7 @@ namespace ProcessDashboard.iOS
 			var service = new PDashServices(apiService);
 			Controller c = new Controller(service);
 
-			TimeLogEntry tr = await c.UpdateTimeLog("INST-szewf0", editedTimeLog.Id.ToString(), editedTimeLog.Comment, editedTimeLog.StartDate, editedTimeLog.Task.Id, editedTimeLog.LoggedTime, editedTimeLog.InterruptTime, true);
+			TimeLogEntry tr = await c.UpdateTimeLog(AccountStorage.DataSet, editedTimeLog.Id.ToString(), editedTimeLog.Comment, editedTimeLog.StartDate, editedTimeLog.Task.Id, editedTimeLog.LoggedTime, editedTimeLog.InterruptTime, true);
 			try
 			{
 				System.Diagnostics.Debug.WriteLine("** Updated the new Time Log entry **");
@@ -189,7 +172,7 @@ namespace ProcessDashboard.iOS
 			int id;
 			try
 			{
-				var tr = await ctrl.AddATimeLog("INST-szewf0", "No Comment", DateTime.UtcNow, log.Task.Id, log.LoggedTime, log.InterruptTime, true);
+				var tr = await ctrl.AddATimeLog(AccountStorage.DataSet, "No Comment", DateTime.UtcNow, log.Task.Id, log.LoggedTime, log.InterruptTime, true);
 				Console.WriteLine("** Added a new Time Log entry **");
 				Console.WriteLine(tr.Id);
 				id = tr.Id;
@@ -200,16 +183,7 @@ namespace ProcessDashboard.iOS
 				id = 0;
 			}
 
-			// See if adding a new time log entry successfully
-
-			var value = await ctrl.GetTimeLog("INST-szewf0", "" + id);
-			Console.WriteLine("Task Name :" + value.Task.FullName);
-			Console.WriteLine(value.Id);
-			Console.WriteLine("Logged Time :" + value.LoggedTime);
-			Console.WriteLine("Interrupt Time :" + value.InterruptTime);
-			Console.WriteLine(Util.GetInstance().GetLocalTime(value.StartDate));
-			Console.WriteLine(Util.GetInstance().GetLocalTime(value.EndDate));
-			Console.WriteLine(value.Comment);
+			var value = await ctrl.GetTimeLog(AccountStorage.DataSet, "" + id);
 
 			return id;
 

@@ -137,7 +137,7 @@ namespace ProcessDashboard.iOS
 			var service = new PDashServices(apiService);
 			Controller c = new Controller(service);
 
-			TimeLogEntry tr = await c.UpdateTimeLog("INST-szewf0", editedTimeLog.Id.ToString(), editedTimeLog.Comment, editedTimeLog.StartDate, editedTimeLog.Task.Id.ToString(),  editedTimeLog.InterruptTime, editedTimeLog.LoggedTime, true);
+			TimeLogEntry tr = await c.UpdateTimeLog(AccountStorage.DataSet, editedTimeLog.Id.ToString(), editedTimeLog.Comment, editedTimeLog.StartDate, editedTimeLog.Task.Id.ToString(),  editedTimeLog.InterruptTime, editedTimeLog.LoggedTime, true);
 			try
 			{
 				System.Diagnostics.Debug.WriteLine("** Updated the new Time Log entry **");
@@ -174,23 +174,6 @@ namespace ProcessDashboard.iOS
 
 			globalTimeLogCache = timeLogEntries;
 
-			try
-			{
-				System.Diagnostics.Debug.WriteLine("** LIST OF Timelog **");
-				System.Diagnostics.Debug.WriteLine("Global Length is " + globalTimeLogCache.Count);
-
-				foreach (var proj in timeLogEntries)
-				{
-					System.Diagnostics.Debug.WriteLine("Task Name : " + proj.Task.FullName);
-					System.Diagnostics.Debug.WriteLine("Start Date : " + proj.StartDate);
-					System.Diagnostics.Debug.WriteLine("End Date : " + proj.EndDate);
-					//  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
-				}
-			}
-			catch (Exception e)
-			{
-				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
-			}
 			return 0;
 		}
 

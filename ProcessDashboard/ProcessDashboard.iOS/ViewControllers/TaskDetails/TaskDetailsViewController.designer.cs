@@ -24,7 +24,7 @@ namespace ProcessDashboard.iOS
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UITextField TdNotesTf { get; set; }
+        UIKit.UITextView TdNotesTf { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]

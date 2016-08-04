@@ -228,7 +228,7 @@ namespace ProcessDashboard
 
 						Console.WriteLine("Calling UpdateTimeLog()");
 
-						await _controller.UpdateTimeLog(AccountStorage.DataSet, _timeLogEntryId, "", _stopwatch.Get_first_startTime(), _taskId,
+						await _controller.UpdateTimeLog(AccountStorage.DataSet, _timeLogEntryId, null, null, _taskId,
 						                               LoggedTimeDelta(), interruptTimeDelta(), _stopwatch.IsRunning());
 
 						Console.WriteLine(">>>> timelog update: delta: " + logged + ", int: " + interrupt);

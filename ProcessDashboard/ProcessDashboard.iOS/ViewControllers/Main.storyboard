@@ -7,7 +7,7 @@
         <!--Root Tab Bar Controller-->
         <scene sceneID="6">
             <objects>
-                <tabBarController storyboardIdentifier="rootTabBarViewController" definesPresentationContext="YES" id="7" sceneMemberID="viewController" customClass="UITabBarController">
+                <tabBarController storyboardIdentifier="rootTabBarViewController" definesPresentationContext="YES" id="7" customClass="RootTabBarController" sceneMemberID="viewController">
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="12">
                         <rect key="frame" x="0.0" y="618" width="375" height="49"/>

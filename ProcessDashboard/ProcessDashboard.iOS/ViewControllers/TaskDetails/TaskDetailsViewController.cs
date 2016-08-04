@@ -43,7 +43,6 @@ namespace ProcessDashboard.iOS
 				var controller = segue.DestinationViewController as TaskTimeLogViewController;
 				controller.taskId = task.Id;
 				controller.task = task;
-			
 			}
 			if (segue.Identifier == "showListofTasks")
 			{
@@ -96,9 +95,6 @@ namespace ProcessDashboard.iOS
 		{
 			if (task == null)
 			{
-				UIAlertController okAlertController = UIAlertController.Create("Oops", "Task is NULL. Service Access Layer not implemented", UIAlertControllerStyle.Alert);
-				okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
-				PresentViewController(okAlertController, true, null);
 				return;
 			}
 
@@ -110,6 +106,12 @@ namespace ProcessDashboard.iOS
 			var apiService = new ApiTypes(null);
 			var service = new PDashServices(apiService);
 			c = new Controller(service);
+
+			Console.WriteLine(NavigationController.NavigationBar.TopItem.Title);
+			if (NavigationController.NavigationBar.TopItem.Title.Equals("Process Dashboard"))
+			{
+				NavigationController.NavigationBar.TopItem.Title = "Back";
+			}
 
 			TdPauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
 			TdPauseBtn.Enabled = true;
@@ -124,21 +126,25 @@ namespace ProcessDashboard.iOS
 				((TaskDetailTableSource)PlanTable.Source).completeDateText.BecomeFirstResponder();
 			};
 
+
+			tdProjectNameBtn.SetTitle(task.Project != null ? task.Project.Name : "", UIControlState.Normal);
+			tdProjectNameBtn.SetTitleColor(UIColor.Black, UIControlState.Normal);
+			TdTaskNameLb.Text = task.FullName ?? "";
+
+			TdNotesTf.Layer.BorderColor = UIColor.LightGray.CGColor;
+			TdNotesTf.Layer.BorderWidth = 2.0f;
+			TdNotesTf.Layer.CornerRadius = 10.0f;
+			TdNotesTf.Text = task.Note ?? "";
+
 			TimeSpan estimated = TimeSpan.FromMinutes(task.EstimatedTime);
 			TimeSpan actual = TimeSpan.FromMinutes(task.ActualTime);
 			string[] tableItems = new string[]{estimated.ToString("hh\\:mm"), 
 				                                        actual.ToString("hh\\:mm"), 
 				                                        task.CompletionDate == null ? "-:-" : task.CompletionDate.Value.ToString("MM/dd/yyyy") };
-
-			refreshData();
+			// load data from previous screen. don't fetch update from the server now
+			// refreshData();
 
 			View.AddSubview(PlanTable);
-
-			TdTaskNameLb.Text = task.FullName ?? "";
-			tdProjectNameBtn.SetTitle(task.Project != null ? task.Project.Name : "",UIControlState.Normal);
-			tdProjectNameBtn.SetTitleColor(UIColor.Black, UIControlState.Normal);
-
-			TdNotesTf.Text = task.TaskNote ?? "";
 		}
 
 		private void refreshControlButtons()
@@ -259,6 +265,7 @@ namespace ProcessDashboard.iOS
 			if (task.CompletionDate == null)
 			{
 				saveButton.Title = "Mark Complete";
+				Console.WriteLine(DateTime.Now.ToString());
 				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(DateTime.Now), true);
 			}
 			else
@@ -298,22 +305,8 @@ namespace ProcessDashboard.iOS
 			var service = new PDashServices(apiService);
 			Controller ctrl = new Controller(service);
 
-			var tr =await ctrl.UpdateATask("INST-szewf0", taskId, estimatedTime, null, false);
+			var tr =await ctrl.UpdateATask(AccountStorage.DataSet, taskId, estimatedTime, null, false);
 
-			try
-			{
-				Console.WriteLine("** Updated the Task and changed the estimated time **");
-				Console.WriteLine(tr.Id);
-				Console.WriteLine(tr.FullName);
-				Console.WriteLine(tr.CompletionDate);
-				Console.WriteLine(tr.ActualTime);
-				Console.WriteLine(tr.EstimatedTime);
-				Console.WriteLine(tr.TaskNote);
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine("We are in an error state :" + e);
-			}
 			return 0;
 
 		}
@@ -321,16 +314,14 @@ namespace ProcessDashboard.iOS
 
 		public static DateTime ConvertNSDateToDateTime(NSDate date)
 		{
-			DateTime reference = new DateTime(2001, 1, 1, 0, 0, 0);
+			DateTime reference = new DateTime(2001, 1, 1, 0, 0, 0, DateTimeKind.Local);
 			DateTime currentDate = reference.AddSeconds(date.SecondsSinceReferenceDate);
-			DateTime localDate = currentDate.ToLocalTime();
-			return localDate;
+			return currentDate;
 		}
 
 		public static NSDate ConvertDateTimeToNSDate(DateTime date)
 		{
-			DateTime newDate = TimeZone.CurrentTimeZone.ToLocalTime(
-				new DateTime(2001, 1, 1, 0, 0, 0));
+			DateTime newDate = new DateTime(2001, 1, 1, 0, 0, 0, DateTimeKind.Local);
 			return NSDate.FromTimeIntervalSinceReferenceDate(
 				(date - newDate).TotalSeconds);
 		}

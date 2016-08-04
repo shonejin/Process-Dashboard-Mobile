@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
@@ -219,86 +218,75 @@
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
-    <InterfaceDefinition Include="LaunchScreen.storyboard" />
-    <InterfaceDefinition Include="Main.storyboard" />
+    <InterfaceDefinition Include="ViewControllers\LaunchScreen.storyboard" />
+    <InterfaceDefinition Include="ViewControllers\Main.storyboard" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
     <None Include="packages.config" />
-    <None Include="SharpMobileCode.ModalPicker\.DS_Store" />
-    <None Include="SharpMobileCode.ModalPicker\SharpMobileCode.ModalPicker.csproj" />
+    <Compile Include="SQLite.cs" />
+    <Compile Include="SQLiteAsync.cs" />
+    <Compile Include="ViewControllers\TimeLogs\GlobalTimeLogs\TimeLogPageViewController.cs" />
+    <Compile Include="ViewControllers\TimeLogs\GlobalTimeLogs\TimeLogPageViewController.designer.cs" >
+      <DependentUpon>TimeLogPageViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewControllers\TimeLogs\GlobalTimeLogs\TimelogTableSource.cs" />
+    <Compile Include="ViewControllers\TimeLogs\TimeLogDetails\CustomTimeLogCell.cs" />
+    <Compile Include="ViewControllers\TimeLogs\TimeLogDetails\TimelogDetailViewController.cs" />
+    <Compile Include="ViewControllers\TimeLogs\TimeLogDetails\TimelogDetailViewController.designer.cs" >
+      <DependentUpon>TimelogDetailViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewControllers\TimeLogs\TaskTimeLogs\TaskTimeLogTableSource.cs" />
+    <Compile Include="ViewControllers\TimeLogs\TaskTimeLogs\TaskTimeLogViewController.cs" />
+    <Compile Include="ViewControllers\TimeLogs\TaskTimeLogs\TaskTimeLogViewController.designer.cs" >
+      <DependentUpon>TaskTimeLogViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewControllers\CommonElements\StatusPickerViewModel.cs" />
+    <Compile Include="ViewControllers\ProjectsList\ProjectsTabNavigationController.cs" />
+    <Compile Include="ViewControllers\ProjectsList\ProjectsTableSource.cs" />
+    <Compile Include="ViewControllers\ProjectsList\ProjectsTableViewController.cs" />
+    <Compile Include="ViewControllers\ProjectsList\ProjectsTableViewController.designer.cs" >
+      <DependentUpon>ProjectsTableViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewControllers\CommonElements\SharpMobileCode.ModalPicker\CustomPickerModel.cs" />
+    <Compile Include="ViewControllers\CommonElements\SharpMobileCode.ModalPicker\ModalPickerAnimatedDismissed.cs" />
+    <Compile Include="ViewControllers\CommonElements\SharpMobileCode.ModalPicker\ModalPickerAnimatedTransitioning.cs" />
+    <Compile Include="ViewControllers\CommonElements\SharpMobileCode.ModalPicker\ModalPickerTransitionDelegate.cs" />
+    <Compile Include="ViewControllers\CommonElements\SharpMobileCode.ModalPicker\ModalPickerViewController.cs" />
+    <None Include="ViewControllers\CommonElements\SharpMobileCode.ModalPicker\SharpMobileCode.ModalPicker.csproj" />
+    <Compile Include="ViewControllers\CommonElements\SharpMobileCode.ModalPicker\Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="SQLite.cs" />
-    <Compile Include="SQLiteAsync.cs" />
-    <Compile Include="LoginPageViewController.cs" />
-    <Compile Include="LoginPageViewController.designer.cs">
-      <DependentUpon>LoginPageViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HomePageViewController.cs" />
-    <Compile Include="CustomTimeLogCell.cs" />
-    <Compile Include="TaskTimeLogViewController.cs" />
-    <Compile Include="HomePageViewController.designer.cs">
-      <DependentUpon>HomePageViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="RootTabBarController.cs" />
-    <Compile Include="RootTabBarController.designer.cs">
-      <DependentUpon>RootTabBarController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SettingsViewController.cs" />
-    <Compile Include="SettingsViewController.designer.cs">
-      <DependentUpon>.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TaskTimeLogViewController.designer.cs">
-      <DependentUpon>TaskTimeLogViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TimeLogs\TimelogTableItem.cs" />
-    <Compile Include="SharpMobileCode.ModalPicker\CustomPickerModel.cs" />
-    <Compile Include="SharpMobileCode.ModalPicker\ModalPickerAnimatedDismissed.cs" />
-    <Compile Include="SharpMobileCode.ModalPicker\ModalPickerAnimatedTransitioning.cs" />
-    <Compile Include="SharpMobileCode.ModalPicker\ModalPickerTransitionDelegate.cs" />
-    <Compile Include="SharpMobileCode.ModalPicker\ModalPickerViewController.cs" />
-    <Compile Include="SharpMobileCode.ModalPicker\Properties\AssemblyInfo.cs" />
-    <Compile Include="TimeLogs\TimelogDetailViewController.cs" />
-    <Compile Include="TimeLogs\TimelogDetailViewController.designer.cs">
-      <DependentUpon>TimeLogs\TimelogDetailViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TimeLogs\TimeLogPageViewController.cs" />
-    <Compile Include="TimeLogs\TimeLogPageViewController.designer.cs">
-      <DependentUpon>TimeLogs\TimeLogPageViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TimeLogs\TimelogTableItemGroup.cs" />
-    <Compile Include="TimeLogs\TimelogTableSource.cs" />
-    <Compile Include="TaskTimeLogTableSource.cs" />
-    <Compile Include="TaskTableSource.cs" />
-    <Compile Include="ProjectsTab\ProjectsTableSource.cs" />
-    <Compile Include="ProjectsTab\ProjectsTableViewController.cs" />
-    <Compile Include="ProjectsTab\ProjectsTableViewController.designer.cs">
-      <DependentUpon>ProjectsTableViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ProjectsTab\ProjectsTabNavigationController.cs" />
-    <Compile Include="Tasks\TaskDetailsViewController.cs" />
-    <Compile Include="Tasks\TaskDetailsViewController.designer.cs">
+    <Compile Include="ViewControllers\TaskDetails\TaskDetailsViewController.cs" />
+    <Compile Include="ViewControllers\TaskDetails\TaskDetailsViewController.designer.cs">
       <DependentUpon>TaskDetailsViewController.cs</DependentUpon>
     </Compile>
-    <Compile Include="Tasks\TasksTableSource.cs" />
-    <Compile Include="Tasks\TasksTableViewController.cs" />
-    <Compile Include="Tasks\TasksTableViewController.designer.cs">
+    <Compile Include="ViewControllers\TaskDetails\TaskDetailTableSource.cs" />
+    <Compile Include="ViewControllers\TasksList\TasksTableSource.cs" />
+    <Compile Include="ViewControllers\TasksList\TasksTableViewController.cs" />
+    <Compile Include="ViewControllers\TasksList\TasksTableViewController.designer.cs">
       <DependentUpon>TasksTableViewController.cs</DependentUpon>
     </Compile>
-    <Compile Include="TimeLogs\StatusPickerViewModel.cs" />
-    <Compile Include="Tasks\TaskDetailTableSource.cs" />
-    <Compile Include="TimeLogs\DateTimePickerViewModel.cs" />
-    <Compile Include="Tasks\SettingTableSource.cs" />
+    <Compile Include="ViewControllers\Home\TaskTableSource.cs" />
+    <Compile Include="ViewControllers\Home\HomePageViewController.cs" />
+    <Compile Include="ViewControllers\Home\HomePageViewController.designer.cs">
+      <DependentUpon>HomePageViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewControllers\LoginPageViewController.cs" />
+    <Compile Include="ViewControllers\LoginPageViewController.designer.cs">
+      <DependentUpon>LoginPageViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewControllers\Home\SettingTableSource.cs" />
+    <Compile Include="ViewControllers\Home\SettingsViewController.cs" />
+    <Compile Include="ViewControllers\Home\SettingsViewController.designer.cs">
+      <DependentUpon>SettingsViewController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="TimeLogs\" />
-    <Folder Include="ProjectsTab\" />
-    <Folder Include="Tasks\" />
     <Folder Include="Resources\Images.xcassets\play-activated.imageset\" />
     <Folder Include="Resources\Images.xcassets\play-deactivated.imageset\" />
     <Folder Include="Resources\Images.xcassets\pause-activated.imageset\" />
@@ -310,6 +298,14 @@
     <Folder Include="Resources\Images.xcassets\list_tab_icon.imageset\" />
     <Folder Include="Resources\Images.xcassets\log_tab_icon.imageset\" />
     <Folder Include="Resources\Images.xcassets\log_tab_icon_2.imageset\" />
+    <Folder Include="ViewControllers\" />
+    <Folder Include="ViewControllers\TaskDetails\" />
+    <Folder Include="ViewControllers\TasksList\" />
+    <Folder Include="ViewControllers\Home\" />
+    <Folder Include="ViewControllers\TimeLogs\" />
+    <Folder Include="ViewControllers\TimeLogs\TimeLogDetails\" />
+    <Folder Include="ViewControllers\TimeLogs\TaskTimeLogs\" />
+    <Folder Include="ViewControllers\CommonElements\" />
   </ItemGroup>
   <Import Project="..\ProcessDashboard\ProcessDashboard.projitems" Label="Shared" Condition="Exists('..\ProcessDashboard\ProcessDashboard.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
