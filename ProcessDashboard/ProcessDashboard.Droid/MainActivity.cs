@@ -1,6 +1,7 @@
 ﻿#region
 using System;
 using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Support.Design.Widget;
@@ -38,6 +39,15 @@ namespace ProcessDashboard.Droid
 
         private static bool _CrashHandlerRegistered = false;
 
+        public bool isBound = false; 
+    	public bool isConfigurationChange = false;
+
+        public TimerService.TimerServiceBinder binder;
+        public TimerServiceConnection timerServiceConnection;
+
+
+        
+            
         private Fragment _currentFragment;
         private DrawerLayout _drawerLayout;
         private GlobalTimeLogList _globalTimeLogFragment;
@@ -48,9 +58,11 @@ namespace ProcessDashboard.Droid
         private SettingsPage _settingsFragment;
         private TaskDetails _taskDetailFragment;
         private TaskTimeLogList _taskTimeLogDetailFragment;
-
+        private ActionBarDrawerToggle drawerToggle;
         private TestFragment _testFragment;
         private TimeLogDetail _timeLogDetailFragment;
+
+        private AccountStorage _accountStorage;
 
         private Toolbar _toolbar;
 
@@ -92,16 +104,20 @@ namespace ProcessDashboard.Droid
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
 
-            // Create UI
+            AccountStorage ase = new AccountStorage();
+            ase.SetContext(this);
+            //ase.Set("testing","testing","testing","mock");
+            //System.Diagnostics.Debug.WriteLine(ase.UserId);
+            
+            //System.Diagnostics.Debug.WriteLine("User id: "+ase.UserId);
 
+            // Create UI
             _drawerLayout = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
 
             // Init toolbar
             _toolbar = FindViewById<Toolbar>(Resource.Id.toolbar);
             _toolbar.Title = this.Resources.GetString(Resource.String.app_name);
             SetSupportActionBar(_toolbar);
-            SupportActionBar.SetDisplayHomeAsUpEnabled(true);
-            SupportActionBar.SetHomeButtonEnabled(true);
             //_toolbar.
 
             // Attach item selected handler to navigation view
@@ -112,11 +128,13 @@ namespace ProcessDashboard.Droid
             navigationView.NavigationItemSelected += NavigationView_NavigationItemSelected;
 
             // Create ActionBarDrawerToggle button and add it to the toolbar
-            var drawerToggle = new ActionBarDrawerToggle(this, _drawerLayout, _toolbar, Resource.String.open_drawer,
+            drawerToggle = new ActionBarDrawerToggle(this, _drawerLayout, _toolbar, Resource.String.open_drawer,
                 Resource.String.close_drawer);
             _drawerLayout.SetDrawerListener(drawerToggle);
+
+            //SetDrawerState(true);
             //  drawerToggle.SetHomeAsUpIndicator(null);
-            drawerToggle.SyncState();
+            //drawerToggle.SyncState();
 
             _loginFragment = new Login();
             _homeFragment = new Home();
@@ -129,10 +147,28 @@ namespace ProcessDashboard.Droid
             _listOfTasksFragment = new ListProjectTasks("");
             _testFragment = new TestFragment();
 
+            try
+            {
+                if (_accountStorage.UserId != null)
+                {
+                    SetDrawerState(true);
+                    _currentFragment = _homeFragment;
+                }
+                else
+                {
+                    SetDrawerState(false);
+                    _currentFragment = _loginFragment;
+                }
+            }
+            catch (Exception e)
+            {
+                SetDrawerState(false);
+                _currentFragment = _loginFragment;
+            }
             //for testing
             //_currentFragment = _testFragment;
             // if logged in
-            _currentFragment = _homeFragment;
+
             // else 
             //CurrentFragment = ListOfProjectFragment;
 
@@ -224,6 +260,34 @@ namespace ProcessDashboard.Droid
             }
         }
 
+        public void ModifyPlayPauseState(bool isPlaying)
+        {
+
+
+            if (_homeFragment.IsVisible)
+            {
+                _homeFragment.ModifyPlayPauseState(isPlaying);
+            }
+            else if (_taskDetailFragment.IsVisible)
+            {
+                _taskDetailFragment.ModifyPlayPauseState(isPlaying);
+            }
+
+
+
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            if (isBound)
+            {
+                UnbindService(timerServiceConnection);
+                isBound = false;
+            }
+            unregisterManagers();
+        }
         public void SwitchToFragment(FragmentTypes fragmentType)
         {
             switch (fragmentType)
@@ -258,6 +322,32 @@ namespace ProcessDashboard.Droid
                 case FragmentTypes.Tasktimelogdetails:
                     ShowFragment(_taskTimeLogDetailFragment);
                     break;
+            }
+        }
+
+
+        public void SetDrawerState(bool isEnabled)
+        {
+            if (isEnabled)
+            {
+                _drawerLayout.SetDrawerLockMode(DrawerLayout.LockModeUnlocked);
+                drawerToggle.OnDrawerStateChanged(DrawerLayout.LockModeUnlocked);
+                drawerToggle.DrawerIndicatorEnabled = (true);
+                SupportActionBar.SetDisplayHomeAsUpEnabled(true);
+                SupportActionBar.SetHomeButtonEnabled(true);
+
+                drawerToggle.SyncState();
+
+            }
+            else
+            {
+                _drawerLayout.SetDrawerLockMode(DrawerLayout.LockModeUnlocked);
+                drawerToggle.OnDrawerStateChanged(DrawerLayout.LockModeUnlocked);
+                drawerToggle.DrawerIndicatorEnabled = (false);
+                SupportActionBar.SetDisplayHomeAsUpEnabled(false);
+                SupportActionBar.SetHomeButtonEnabled(false);
+
+                drawerToggle.SyncState();
             }
         }
 
@@ -319,19 +409,7 @@ namespace ProcessDashboard.Droid
         }
         */
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            unregisterManagers();
-        }
-
-        protected override void OnPause()
-        {
-            base.OnPause();
-            unregisterManagers();
-        }
-
-        //HockeyApp
+     //HockeyApp
 
         private void CheckForCrashes()
         {
@@ -351,5 +429,39 @@ namespace ProcessDashboard.Droid
 
             // unregister other managers if necessary...
         }
+
+       
     }
+
+
+    public class TimerServiceConnection : Java.Lang.Object, IServiceConnection
+    {
+        MainActivity activity;
+        private TimerService.TimerServiceBinder binder;
+
+        public TimerServiceConnection(MainActivity activity)
+        {
+            this.activity = activity;
+        }
+
+        public void OnServiceConnected(ComponentName name, IBinder service)
+        {
+            var timerServiceBinder = service as TimerService.TimerServiceBinder;
+
+            if (timerServiceBinder != null)
+            {
+                activity.binder = timerServiceBinder;
+                activity.isBound = true;
+                this.binder = (TimerService.TimerServiceBinder) service;
+            }
+
+        }
+
+        public void OnServiceDisconnected(ComponentName name)
+        {
+           
+            activity.isBound = false;
+        }
+    }
+
 }

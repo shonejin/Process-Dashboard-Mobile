@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Linq;
 using Xamarin.Auth;
+#if __ANDROID__
+using Android.Content;
+#endif
 
 namespace ProcessDashboard
 {
@@ -8,44 +12,60 @@ namespace ProcessDashboard
 	 */
 	public class AccountStorage
 	{
-		private const String AppName = "Process_Dashboard";
+		private const string AppName = "Process_Dashboard";
 
-		public void Set(String userId, String password, String baseUrl, String dataSet)
+#if __ANDROID__
+	    private Context _context;
+
+	    public void SetContext(Context context)
+	    {
+	        _context = context;
+	    }
+
+#endif
+
+
+        public void Set(string userId, string password, string baseUrl, string dataSet)
 		{
 			ClearStorage();
 
-			if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(password) || String.IsNullOrEmpty(baseUrl) || String.IsNullOrEmpty(dataSet))
+			if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(baseUrl) || string.IsNullOrEmpty(dataSet))
 			{
 				throw new FormatException("input parameters contain null or empty strings");
 			}
-			else
-			{
-				Account account = new Account
-				{
-					Username = userId
-				};
-				account.Properties.Add("Password", password);
-				account.Properties.Add("BaseUrl", baseUrl);
-				account.Properties.Add("DataSet", dataSet);
+            Account account = new Account
+            {
+                Username = userId
+            };
+            account.Properties.Add("Password", password);
+            account.Properties.Add("BaseUrl", baseUrl);
+            account.Properties.Add("DataSet", dataSet);
 
-				#if __IOS__
+#if __IOS__
 				AccountStore.Create().Save(account, AppName);
-				#else
-				AccountStore.Create(Forms.Context.Save(Account, AppName);
-				#endif
-			}
+#else
+            AccountStore.Create(_context).Save(account, AppName);
+#endif
 		}
 
 		public void ClearStorage()
 		{
 			while (true)
 			{
-				Account account = (Account)AccountStore.Create().FindAccountsForService(AppName);
-				if (account != null)
+#if __ANDROID__
+			    var account = AccountStore.Create(_context).FindAccountsForService(AppName);
+#else
+                Account account = (Account)AccountStore.Create().FindAccountsForService(AppName);
+#endif
+                if (account.Count() > 0)
 				{
-					AccountStore.Create().Delete(account, AppName);
-				}
-				else
+#if __ANDROID__
+                    AccountStore.Create(_context).Delete(account.First(), AppName);
+#else
+                    AccountStore.Create().Delete(account, AppName);
+#endif
+                }
+                else
 				{
 					break;
 				}
@@ -56,8 +76,12 @@ namespace ProcessDashboard
 		{
 			get
 			{
-				Account account = (Account) AccountStore.Create().FindAccountsForService(AppName);
-				return (account != null) ? account.Username : null;
+#if __IOS__
+                Account account = (Account) AccountStore.Create().FindAccountsForService(AppName);
+#else
+                Account account =  AccountStore.Create(_context).FindAccountsForService(AppName).ElementAtOrDefault(0);
+#endif
+                return account?.Username;
 			}
 		}
 
@@ -65,8 +89,12 @@ namespace ProcessDashboard
 		{
 			get
 			{
-				Account account = (Account) AccountStore.Create().FindAccountsForService(AppName);
-				return (account != null) ? account.Properties["Password"] : null;
+#if __IOS__
+                Account account = (Account) AccountStore.Create().FindAccountsForService(AppName);
+#else
+                Account account = (Account)AccountStore.Create(_context).FindAccountsForService(AppName).ElementAtOrDefault(0);
+#endif
+                return account?.Properties["Password"];
 			}
 		}
 
@@ -74,8 +102,12 @@ namespace ProcessDashboard
 		{
 			get
 			{
-				Account account = (Account)AccountStore.Create().FindAccountsForService(AppName);
-				return (account != null) ? account.Properties["BaseUrl"] : null;
+#if __IOS__
+                Account account = (Account) AccountStore.Create().FindAccountsForService(AppName);
+#else
+                Account account = (Account)AccountStore.Create(_context).FindAccountsForService(AppName).ElementAtOrDefault(0);
+#endif
+                return account?.Properties["BaseUrl"];
 			}
 		}
 
@@ -83,8 +115,12 @@ namespace ProcessDashboard
 		{
 			get
 			{
-				Account account = (Account)AccountStore.Create().FindAccountsForService(AppName);
-				return (account != null) ? account.Properties["DataSet"] : null;
+#if __IOS__
+                Account account = (Account) AccountStore.Create().FindAccountsForService(AppName);
+#else
+                Account account = (Account)AccountStore.Create(_context).FindAccountsForService(AppName).ElementAtOrDefault(0);
+#endif
+                return account?.Properties["DataSet"];
 			}
 		}
 	}

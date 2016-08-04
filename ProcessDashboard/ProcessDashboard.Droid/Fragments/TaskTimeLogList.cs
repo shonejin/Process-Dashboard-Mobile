@@ -58,7 +58,7 @@ namespace ProcessDashboard.Droid.Fragments
             pn.Text = ProjectName;
             tn.Text = TaskName;
 
-            var pb = new ProgressDialog(this.Activity) { Indeterminate = true };
+            var pb = new ProgressDialog(Activity) { Indeterminate = true };
             pb.SetTitle("Loading");
             pb.SetCanceledOnTouchOutside(false);
             pb.Show();

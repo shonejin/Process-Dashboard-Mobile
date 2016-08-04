@@ -21,7 +21,7 @@ namespace ProcessDashboard.Droid.Fragments
             base.OnCreate(savedInstanceState);
             RetainInstance = true;
             // Create your fragment here
-            ((MainActivity) Activity).SetTitle("Global Time Log");
+            ((MainActivity)Activity).SetTitle("Global Time Log");
 
             // Create your fragment here
         }
@@ -29,7 +29,7 @@ namespace ProcessDashboard.Droid.Fragments
         public override void OnResume()
         {
             base.OnResume();
-            ((MainActivity) Activity).SetTitle("Global Time Log");
+            ((MainActivity)Activity).SetTitle("Global Time Log");
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -38,7 +38,7 @@ namespace ProcessDashboard.Droid.Fragments
             var v = inflater.Inflate(Resource.Layout.GlobalTimeLog, container, false);
 
             CreateExpendableListData(v);
-         //   Debug.WriteLine("We are proceeding");
+            //   Debug.WriteLine("We are proceeding");
 
             //var listView = v.FindViewById<ExpandableListView>(Resource.Id.myExpandableListview);
             //listView.SetAdapter(new ExpandableDataAdapter(this, Data.SampleData()));
@@ -48,61 +48,86 @@ namespace ProcessDashboard.Droid.Fragments
 
         private async void CreateExpendableListData(View v)
         {
-            var ctrl = ((MainActivity) Activity).Ctrl;
+            var ctrl = ((MainActivity)Activity).Ctrl;
 
-            var timelogEntries = await ctrl.GetTimeLogs(Settings.GetInstance().Dataset, 0, null, null, null, null);
-
-          //  Debug.WriteLine("Got the values : " + timelogEntries.Count);
-            var count = 0;
-            foreach (var te in timelogEntries)
+            try
             {
-                //Debug.WriteLine(te);
-            }
+                ProgressDialog pd = new ProgressDialog(this.Activity);
+                pd.SetMessage("Loading");
+                pd.Show();
 
-            foreach (var te in timelogEntries)
-            {
-                try
+                var timelogEntries = await ctrl.GetTimeLogs(Settings.GetInstance().Dataset, 0, null, null, null, null);
+
+                //  Debug.WriteLine("Got the values : " + timelogEntries.Count);
+                var count = 0;
+
+
+                foreach (var te in timelogEntries)
                 {
-                    var present = true;
-                    List<TimeLogEntry> children;
-                    _headings.TryGetValue(te.StartDate.ToShortDateString(), out children);
-                    if (children == null)
+                    try
                     {
-                       // Debug.WriteLine("Children is null");
-                        children = new List<TimeLogEntry>();
-                        count++;
-                        present = false;
-                    }
-                  //  Debug.WriteLine("Going to add children");
-                    children.Add(te);
+                        var present = true;
+                        List<TimeLogEntry> children;
+                        _headings.TryGetValue(te.StartDate.ToShortDateString(), out children);
+                        if (children == null)
+                        {
+                            // Debug.WriteLine("Children is null");
+                            children = new List<TimeLogEntry>();
+                            count++;
+                            present = false;
+                        }
+                        //  Debug.WriteLine("Going to add children");
+                        children.Add(te);
 
-                    if (present)
-                    {
-                       // Debug.WriteLine("Going to remove");
-                        _headings.Remove(te.StartDate.Date.ToShortDateString());
+                        if (present)
+                        {
+                            // Debug.WriteLine("Going to remove");
+                            _headings.Remove(te.StartDate.Date.ToShortDateString());
+                        }
+                        //Debug.WriteLine("Going to add to _headings");
+                        _headings.Add(te.StartDate.Date.ToShortDateString(), children);
                     }
-                    //Debug.WriteLine("Going to add to _headings");
-                    _headings.Add(te.StartDate.Date.ToShortDateString(), children);
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(e.Message);
+                    }
                 }
-                catch (Exception e)
+
+
+
+                // Debug.WriteLine("Count :" + count);
+
+                _timelogs = new List<string>(_headings.Keys);
+                var ctlExListBox = v.FindViewById<ExpandableListView>(Resource.Id.myExpandableListview);
+                ctlExListBox.SetAdapter(new GlobalTimeLogAdapter(Activity, _headings));
+
+                ctlExListBox.ChildClick += delegate (object sender, ExpandableListView.ChildClickEventArgs e)
                 {
-                    Debug.WriteLine(e.Message);
-                }
+                    var itmGroup = _timelogs[e.GroupPosition];
+                    var itmChild = _headings[itmGroup][e.ChildPosition];
+                    ((MainActivity)Activity).TimeLogEditCallBack(itmChild.Task.Project.Name, itmChild.Task.FullName,
+                        itmChild.Task.Id, itmChild);
+                };
+                pd.Dismiss();
             }
-
-           // Debug.WriteLine("Count :" + count);
-
-            _timelogs = new List<string>(_headings.Keys);
-            var ctlExListBox = v.FindViewById<ExpandableListView>(Resource.Id.myExpandableListview);
-            ctlExListBox.SetAdapter(new GlobalTimeLogAdapter(Activity, _headings));
-
-            ctlExListBox.ChildClick += delegate(object sender, ExpandableListView.ChildClickEventArgs e)
+            catch (CannotReachServerException)
             {
-                var itmGroup = _timelogs[e.GroupPosition];
-                var itmChild = _headings[itmGroup][e.ChildPosition];
-                ((MainActivity) Activity).TimeLogEditCallBack(itmChild.Task.Project.Name, itmChild.Task.FullName,
-                    itmChild.Task.Id, itmChild);
-            };
+
+                Toast.MakeText(Activity, "Please check your internet connection and try again.", ToastLength.Long).Show();
+            }
+            catch (StatusNotOkayException)
+            {
+
+
+                Toast.MakeText(Activity, "An error occured. Please try again.", ToastLength.Short).Show();
+            }
+            catch (Exception)
+            {
+                // For any other weird exceptions
+
+
+                Toast.MakeText(Activity, "Unable to make the change. Please try again.", ToastLength.Short).Show();
+            }
         }
     }
 }

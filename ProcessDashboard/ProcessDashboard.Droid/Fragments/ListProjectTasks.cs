@@ -151,7 +151,7 @@ namespace ProcessDashboard.Droid.Fragments
             proj.Text = _projectName;
             
             SwipeRefreshLayout srl = new SwipeRefreshLayout(inflater.Context);
-            srl.AddView(listContainer, ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
+            //srl.AddView(listContainer, ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
             srl.LayoutParameters = (
                 new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MatchParent,
@@ -172,7 +172,8 @@ namespace ProcessDashboard.Droid.Fragments
             ll.AddView(proj);
             ll.AddView(ruler,
              new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, 2));
-            ll.AddView(srl);
+            ll.AddView(listContainer);
+            //ll.AddView(srl);
 
             _si = new ListOfProjects.Scrollinput(srl);
             

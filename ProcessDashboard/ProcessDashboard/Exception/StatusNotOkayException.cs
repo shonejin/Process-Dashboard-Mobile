@@ -21,13 +21,13 @@ namespace ProcessDashboard
 
         public StatusNotOkayException(string message, string code)
         {
-            this._message = message;
+            _message = message;
             _code = code;
         }
 
         public StatusNotOkayException(string message)
         {
-            this._message = message;
+            _message = message;
         }
 
         public StatusNotOkayException(SerializationInfo info, StreamingContext context)

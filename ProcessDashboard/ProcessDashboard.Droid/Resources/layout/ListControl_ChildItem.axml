@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:id="@+id/linearLayout1"
     android:minWidth="25px"
     android:minHeight="25px">
 
-  <Space
-       android:layout_width="0dp"
-       android:layout_height="1dp"
-       android:layout_weight="1" >
-  </Space>
+
   <TextView
+    
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:id="@+id/gt_taskName"
@@ -22,36 +19,62 @@
       android:singleLine="true"
       />
 
+  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:orientation="horizontal"
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"
+      android:id="@+id/linearLayout1"
+      android:minWidth="25px"
+      android:minHeight="25px">
 
-  <Space
-       android:layout_width="0dp"
-       android:layout_height="1dp"
-       android:layout_weight="1" >
-  </Space>
-  <TextView
+    <TextView
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:id="@+id/gt_startTime"
-      android:layout_weight="1"
-      android:singleLine="true"
-      
-      android:background="@null"
+        android:layout_height="wrap_content"
+        android:text="Start Time :"
+        android:layout_gravity="left"
+        android:singleLine="true"
+        android:background="@null"
       
       />
-  <Space
-       android:layout_width="0dp"
-       android:layout_height="1dp"
-       android:layout_weight="1" >
-  </Space>
-  <TextView
-     android:layout_width="wrap_content"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gt_startTime"
+        android:layout_gravity="center"
+        android:singleLine="true"
+      
+        android:background="@null"
+      
+      />
+  </LinearLayout>
+  <LinearLayout
+          android:orientation="horizontal"
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"
+      android:id="@+id/linearLayout1"
+      android:minWidth="25px"
+      android:minHeight="25px">
+    
+    <TextView
+   android:layout_width="wrap_content"
      android:layout_height="wrap_content"
-     android:id="@+id/gt_delta"
-     android:layout_weight="1"
+     android:text="Delta Time :"
+     android:layout_gravity="left"
      android:singleLine="true"
      android:background="@null"
+      
+      />
+    
+    <TextView
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:id="@+id/gt_delta"
+       android:layout_gravity="center"
+       android:singleLine="true"
+       android:background="@null"
      
       />
+  </LinearLayout>
 </LinearLayout>
 
 <!--

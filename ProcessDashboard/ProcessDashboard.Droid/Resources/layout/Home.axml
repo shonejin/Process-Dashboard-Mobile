@@ -7,7 +7,6 @@
     android:minHeight="25px">
     <Button
         android:text="Current Project:"
-        
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
@@ -37,22 +36,22 @@
             android:layout_height="1dp"
             android:layout_weight="1" />
         <Button
-            android:src="@drawable/Pause"
+            
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:id="@+id/Home_Play"
-            android:background="@drawable/pause"
+            android:id="@+id/Home_Pause"
+            android:background="@drawable/pause_activated"
             android:gravity="center_horizontal|center_vertical" />
         <Space
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_weight="1" />
         <Button
-            android:src="@drawable/Play"
+            
             android:layout_width="24dp"
             android:layout_height="32dp"
-            android:background="@drawable/play"
-            android:id="@+id/Home_Pause"
+            android:background="@drawable/play_deactivated"
+            android:id="@+id/Home_Play"
             android:gravity="center_horizontal|center_vertical" />
         <Space
             android:layout_width="0dp"
@@ -62,6 +61,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/Home_TaskComplete"
+            
             android:gravity="center_horizontal|center_vertical" />
         <Space
             android:layout_width="0dp"

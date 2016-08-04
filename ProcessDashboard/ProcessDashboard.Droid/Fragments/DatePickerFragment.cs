@@ -1,16 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Runtime;
-using Android.Util;
-using Android.Views;
 using Android.Widget;
-
+using Debug = System.Diagnostics.Debug;
 namespace ProcessDashboard.Droid.Fragments
 {
     public class DatePickerFragment : DialogFragment,
@@ -53,7 +45,7 @@ namespace ProcessDashboard.Droid.Fragments
         {
             // Note: monthOfYear is a value between 0 and 11, not 1 and 12!
             DateTime selectedDate = new DateTime(year, monthOfYear + 1, dayOfMonth);
-            System.Diagnostics.Debug.WriteLine("Date Selected is :" + selectedDate.ToShortDateString());
+            Debug.WriteLine("Date Selected is :" + selectedDate.ToShortDateString());
             StartTime = selectedDate;
             //Log.Debug(TAG, selectedDate.ToLongDateString());
             _dateSelectedHandler(selectedDate);
@@ -94,7 +86,7 @@ namespace ProcessDashboard.Droid.Fragments
       
         public void OnTimeSet(TimePicker view, int hourOfDay, int minute)
         {
-            System.Diagnostics.Debug.WriteLine("Hour of day :" + hourOfDay + " Minute :" + minute);
+            Debug.WriteLine("Hour of day :" + hourOfDay + " Minute :" + minute);
             StartHour = hourOfDay;
             StartMinute = minute;
             _timeSelectedHandler(hourOfDay, minute);

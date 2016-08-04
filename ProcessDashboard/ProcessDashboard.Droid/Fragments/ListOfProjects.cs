@@ -38,7 +38,7 @@ namespace ProcessDashboard.Droid.Fragments
             ViewGroup listContainer = (ViewGroup)base.OnCreateView(inflater, container, savedInstanceState);
 
             SwipeRefreshLayout srl = new SwipeRefreshLayout(inflater.Context);
-            srl.AddView(listContainer, ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
+           // srl.AddView(listContainer, ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
             srl.LayoutParameters = (
                 new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MatchParent,
@@ -52,7 +52,8 @@ namespace ProcessDashboard.Droid.Fragments
 
             };
 
-            return srl;
+            //return srl;
+            return listContainer;
         }
 
 

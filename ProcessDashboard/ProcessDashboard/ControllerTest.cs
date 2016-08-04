@@ -8,15 +8,15 @@ namespace ProcessDashboard
 {
     internal class ControllerTest
     {
-        private Controller ctrl;
+        private Controller _ctrl;
 
         public ControllerTest(Controller ctrl)
         {
-            this.ctrl = ctrl;
+            _ctrl = ctrl;
         }
         public async void TestListOfProjects()
         {
-            var projectsList = await ctrl.GetProjects("mock");
+            var projectsList = await _ctrl.GetProjects("mock");
             try
             {
                 Debug.WriteLine("** LIST OF PROJECTS **");
@@ -42,7 +42,7 @@ namespace ProcessDashboard
 
         public async void TestRecentTasks()
         {
-            var projectsList = await ctrl.GetRecentTasks("mock");
+            var projectsList = await _ctrl.GetRecentTasks("mock");
             try
             {
                 Debug.WriteLine("** LIST OF RECENT TASKS **");
@@ -69,7 +69,7 @@ namespace ProcessDashboard
 
         public async void TestSingleTask()
         {
-            var taskItem = await ctrl.GetTask("mock", "iokdum2d:11401830");
+            var taskItem = await _ctrl.GetTask("mock", "iokdum2d:11401830");
             Debug.WriteLine("** TASK ENTRY **");
             try
             {
@@ -88,7 +88,7 @@ namespace ProcessDashboard
 
         public async void TestListOfTasks()
         {
-            var tasksList = await ctrl.GetTasks("mock", "iokdum2d");
+            var tasksList = await _ctrl.GetTasks("mock", "iokdum2d");
             try
             {
                 Debug.WriteLine("** LIST OF TASKS **");
@@ -123,7 +123,7 @@ namespace ProcessDashboard
         {
             try
             {
-                var timeLogEntries = await ctrl.GetTimeLogs("mock", null, null, null, null, null);
+                var timeLogEntries = await _ctrl.GetTimeLogs("mock", null, null, null, null, null);
 
                 Debug.WriteLine("** LIST OF Timelog **");
                 Debug.WriteLine("Length is " + timeLogEntries.Count);
@@ -150,7 +150,7 @@ namespace ProcessDashboard
         {
             try
             {
-                var timeLogEntries = await ctrl.GetTimeLogs("mock", 10, null, null, null, null);
+                var timeLogEntries = await _ctrl.GetTimeLogs("mock", 10, null, null, null, null);
 
                 Debug.WriteLine("** LIST OF TestListOfTimeLogsWithMaxResults **");
                 Debug.WriteLine("Length is " + timeLogEntries.Count);
@@ -178,7 +178,7 @@ namespace ProcessDashboard
             try
             {
                 var dt = new DateTime(2014, 3, 2).ToUniversalTime();
-                var timeLogEntries = await ctrl.GetTimeLogs("mock", null, dt, null, null, null);
+                var timeLogEntries = await _ctrl.GetTimeLogs("mock", null, dt, null, null, null);
                 Debug.WriteLine("** LIST OF TestListOfTimeLogsWithstartDateFrom **");
                 Debug.WriteLine("Length is " + timeLogEntries.Count);
 
@@ -205,7 +205,7 @@ namespace ProcessDashboard
             try
             {
                 var dt = new DateTime(2014, 3, 2).ToUniversalTime();
-                var timeLogEntries = await ctrl.GetTimeLogs("mock", null, null, dt, null, null);
+                var timeLogEntries = await _ctrl.GetTimeLogs("mock", null, null, dt, null, null);
                 Debug.WriteLine("** LIST OF TestListOfTimeLogsWithstartDateTo **");
                 Debug.WriteLine("Length is " + timeLogEntries.Count);
 
@@ -231,7 +231,7 @@ namespace ProcessDashboard
         {
             try
             {
-                var timeLogEntries = await ctrl.GetTimeLogs("mock", null, null, null, "i5ixdkxc:15565303", null);
+                var timeLogEntries = await _ctrl.GetTimeLogs("mock", null, null, null, "i5ixdkxc:15565303", null);
 
                 Debug.WriteLine("** LIST OF TestListOfTimeLogsWithtaskId **");
                 Debug.WriteLine("Length is " + timeLogEntries.Count);
@@ -261,7 +261,7 @@ namespace ProcessDashboard
         {
             try
             {
-                var timeLogEntries = await ctrl.GetTimeLogs("mock", null, null, null, null, "i5ixdkxc");
+                var timeLogEntries = await _ctrl.GetTimeLogs("mock", null, null, null, null, "i5ixdkxc");
                 Debug.WriteLine("** LIST OF TestListOfTimeLogsWithprojectId **");
                 Debug.WriteLine("Length is " + timeLogEntries.Count);
 
@@ -287,7 +287,7 @@ namespace ProcessDashboard
         {
             try
             {
-                var timeLogEntries = await ctrl.GetTimeLogs("mock", 0, null, null, taskId, null);
+                var timeLogEntries = await _ctrl.GetTimeLogs("mock", 0, null, null, taskId, null);
 
                 Debug.WriteLine("** LIST OF Timelog **");
                 Debug.WriteLine("Length is " + timeLogEntries.Count);
@@ -310,7 +310,7 @@ namespace ProcessDashboard
             int id;
             try
             {
-                var tr = await ctrl.AddATimeLog("INST-szewf0", "Testing a comment", DateTime.UtcNow.Subtract(new TimeSpan(5,0,0,0)), "305", 32, 6, true);
+                var tr = await _ctrl.AddATimeLog("INST-szewf0", "Testing a comment", DateTime.UtcNow.Subtract(new TimeSpan(5,0,0,0)), "305", 32, 6, true);
                 Debug.WriteLine("** Added a new Time Log entry **");
                 Debug.WriteLine(tr.Id);
                 id = tr.Id;
@@ -331,7 +331,7 @@ namespace ProcessDashboard
             try
             {
 
-                var value = await ctrl.GetTimeLog("INST-szewf0", timelogid);
+                var value = await _ctrl.GetTimeLog("INST-szewf0", timelogid);
                 Debug.WriteLine("Task Name :" + value.Task.FullName);
                 Debug.WriteLine(value.Id);
                 Debug.WriteLine("Logged Time :" + value.LoggedTime);
@@ -360,7 +360,7 @@ namespace ProcessDashboard
             else
                 timeLogId = "" + val.Value;
 
-            var tr = await ctrl.DeleteTimeLog("INST-szewf0", timeLogId);
+            var tr = await _ctrl.DeleteTimeLog("INST-szewf0", timeLogId);
             try
             {
                 Debug.WriteLine("** Deleting the Time Log entry **");
@@ -386,7 +386,7 @@ namespace ProcessDashboard
 
             var tr =
                 await
-                    ctrl.UpdateTimeLog("INST-szewf0", timeLogId, "Testing updating the comment", null, null,null,null,true);
+                    _ctrl.UpdateTimeLog("INST-szewf0", timeLogId, "Testing updating the comment", null, null,null,null,true);
             try
             {
                 Debug.WriteLine("** Updated the Time Log Comment **");
@@ -418,7 +418,7 @@ namespace ProcessDashboard
 
             var tr =
                 await
-                    ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, DateTime.UtcNow, null, null, null, true);
+                    _ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, DateTime.UtcNow, null, null, null, true);
             try
             {
                 Debug.WriteLine("** Updated the Time Log Start Date **");
@@ -447,7 +447,7 @@ namespace ProcessDashboard
 
             var tr =
                 await
-                    ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null,null, "306", null, null, true);
+                    _ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null,null, "306", null, null, true);
             try
             {
                 Debug.WriteLine("** Updated the Time Log Task Id **");
@@ -480,7 +480,7 @@ namespace ProcessDashboard
             {
                 var tr =
                await
-                   ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, null, null, 20, null, true);
+                   _ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, null, null, 20, null, true);
                 Debug.WriteLine("** Updated the Time Log Logged Time **");
                 Debug.WriteLine(tr.Id);
                 Debug.WriteLine(tr.LoggedTime);
@@ -506,7 +506,7 @@ namespace ProcessDashboard
 
             var tr =
                 await
-                    ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, null, null,null ,20, true);
+                    _ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, null, null,null ,20, true);
             try
             {
                 Debug.WriteLine("** Updated the Time Log Interrupt Time **");
@@ -536,7 +536,7 @@ namespace ProcessDashboard
 
             var tr =
                 await
-                    ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, null, null, 20, null, false);
+                    _ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, null, null, 20, null, false);
             try
             {
                 Debug.WriteLine("** Updated the Time Logged Time with False **");
@@ -564,7 +564,7 @@ namespace ProcessDashboard
 
             var tr =
                 await
-                    ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, null, null, null, 20, false);
+                    _ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, null, null, null, 20, false);
             try
             {
                 Debug.WriteLine("** Updated the Time Log Interrupt Time with False **");
@@ -587,7 +587,7 @@ namespace ProcessDashboard
 
             var tr =
                 await
-                    ctrl.UpdateATask("INST-szewf0", taskId, null, DateTime.UtcNow,false);
+                    _ctrl.UpdateATask("INST-szewf0", taskId, null, DateTime.UtcNow,false);
 
             try
             {
@@ -612,7 +612,7 @@ namespace ProcessDashboard
         {
             var tr =
              await
-                 ctrl.UpdateATask("INST-szewf0", taskId, null,null,true);
+                 _ctrl.UpdateATask("INST-szewf0", taskId, null,null,true);
 
             try
             {
@@ -635,7 +635,7 @@ namespace ProcessDashboard
         {
             var tr =
           await
-              ctrl.UpdateATask("INST-szewf0", taskId, estimatedTime, null,false);
+              _ctrl.UpdateATask("INST-szewf0", taskId, estimatedTime, null,false);
 
             try
             {

@@ -72,7 +72,7 @@ namespace ProcessDashboard.SyncLogic
         {
             var remoteTasks = await _pDashServices.GetRecentTasksRemote(Priority.UserInitiated, dataset)
                 .ConfigureAwait(false);
-            System.Diagnostics.Debug.WriteLine("We are under remote tasks :"+remoteTasks.Count);
+            Debug.WriteLine("We are under remote tasks :"+remoteTasks.Count);
             return remoteTasks;
         }
 

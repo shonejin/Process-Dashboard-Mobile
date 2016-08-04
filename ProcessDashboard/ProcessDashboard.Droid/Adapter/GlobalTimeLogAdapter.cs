@@ -1,11 +1,12 @@
 #region
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Android.App;
 using Android.Views;
 using Android.Widget;
-using Java.Lang;
 using ProcessDashboard.DTO;
+using Object = Java.Lang.Object;
 #endregion
 namespace ProcessDashboard.Droid.Adapter
 {
@@ -51,8 +52,9 @@ namespace ProcessDashboard.Droid.Adapter
             var startTime = convertView.FindViewById<TextView>(Resource.Id.gt_startTime);
 
             taskName.Text = item.Task.FullName;
-            delta.Text = "" + item.LoggedTime;
-            startTime.Text = "" + item.StartDate.TimeOfDay;
+            delta.Text = "" + TimeSpan.FromMinutes(item.LoggedTime).ToString(@"hh\:mm");
+
+            startTime.Text = "" + item.StartDate.ToString(@"hh\:mm");
 
             return convertView;
         }

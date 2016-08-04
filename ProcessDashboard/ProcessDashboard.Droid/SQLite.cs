@@ -200,7 +200,7 @@ namespace SQLite
 
 			Handle = handle;
 			if (r != SQLite3.Result.OK) {
-				throw SQLiteException.New (r, String.Format ("Could not open database file: {0} ({1})", DatabasePath, r));
+				throw SQLiteException.New (r, string.Format ("Could not open database file: {0} ({1})", DatabasePath, r));
 			}
 			_open = true;
 
@@ -421,7 +421,7 @@ namespace SQLite
         public int CreateIndex(string indexName, string tableName, string[] columnNames, bool unique = false)
         {
             const string sqlFormat = "create {2} index if not exists \"{3}\" on \"{0}\"(\"{1}\")";
-            var sql = String.Format(sqlFormat, tableName, string.Join ("\", \"", columnNames), unique ? "unique" : "", indexName);
+            var sql = string.Format(sqlFormat, tableName, string.Join ("\", \"", columnNames), unique ? "unique" : "", indexName);
             return Execute(sql);
         }
 
@@ -957,7 +957,7 @@ namespace SQLite
 			// Rolling back without a TO clause rolls backs all transactions 
 			//    and leaves the transaction stack empty.   
 			try {
-				if (String.IsNullOrEmpty (savepoint)) {
+				if (string.IsNullOrEmpty (savepoint)) {
 					if (Interlocked.Exchange (ref _transactionDepth, 0) > 0) {
 						Execute ("rollback");
 					}
@@ -1869,7 +1869,7 @@ namespace SQLite
 				return "bigint";
 			} else if (clrType == typeof(Single) || clrType == typeof(Double) || clrType == typeof(Decimal)) {
 				return "float";
-			} else if (clrType == typeof(String)) {
+			} else if (clrType == typeof(string)) {
 				int? len = p.MaxStringLength;
 
 				if (len.HasValue)
@@ -2162,7 +2162,7 @@ namespace SQLite
 			} else {
 				if (value is Int32) {
 					SQLite3.BindInt (stmt, index, (int)value);
-				} else if (value is String) {
+				} else if (value is string) {
 					SQLite3.BindText (stmt, index, (string)value, -1, NegativePointer);
 				} else if (value is Byte || value is UInt16 || value is SByte || value is Int16) {
 					SQLite3.BindInt (stmt, index, Convert.ToInt32 (value));
@@ -2213,7 +2213,7 @@ namespace SQLite
 			if (type == SQLite3.ColType.Null) {
 				return null;
 			} else {
-				if (clrType == typeof(String)) {
+				if (clrType == typeof(string)) {
 					return SQLite3.ColumnString (stmt, index);
 				} else if (clrType == typeof(Int32)) {
 					return (int)SQLite3.ColumnInt (stmt, index);

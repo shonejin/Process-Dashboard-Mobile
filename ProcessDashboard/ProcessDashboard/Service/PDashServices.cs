@@ -1,6 +1,7 @@
 ﻿#region
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Fusillade;
@@ -240,7 +241,7 @@ namespace ProcessDashboard.Service_Access_Layer
                 if (!task.Stat.Equals("ok"))
                 {
                     //TODO: Remove before production
-                    System.Diagnostics.Debug.WriteLine("Msg :" + task.Err.Msg + " Code :" + task.Err.Code);
+                    Debug.WriteLine("Msg :" + task.Err.Msg + " Code :" + task.Err.Code);
                     throw new StatusNotOkayException(task.Err.Msg, task.Err.Code);
                 }
 
@@ -262,7 +263,7 @@ namespace ProcessDashboard.Service_Access_Layer
             CheckConnection();
             try
             {
-                System.Diagnostics.Debug.WriteLine("1");
+                Debug.WriteLine("1");
                 var value = new Dictionary<string, object>
                 {
                     {"comment", comment},
@@ -274,9 +275,9 @@ namespace ProcessDashboard.Service_Access_Layer
                     {"interruptTime", interruptTime}
                 };
                 var addTimeLog = _apiService.GetApi(priority).AddTimeLog(_settings.AuthHeader, dataset, value);
-                System.Diagnostics.Debug.WriteLine("2");
+                Debug.WriteLine("2");
                 var timelogged = await addTimeLog;
-                System.Diagnostics.Debug.WriteLine("3");
+                Debug.WriteLine("3");
                 if (!timelogged.Stat.Equals("ok"))
                 {
                     throw new StatusNotOkayException(timelogged.Err.Msg, timelogged.Err.Code);
