@@ -49,11 +49,11 @@ namespace ProcessDashboard.iOS
 			UITableViewCell cell = tableView.DequeueReusableCell(cellIdentifier);
 			// if there are no cells to reuse, create a new one
 			if (cell == null)
+			{ 
 				cell = new UITableViewCell(UITableViewCellStyle.Value1, cellIdentifier);
+			}
 		
 			cell.TextLabel.Text = tableItems[indexPath.Row].StartDate.ToLocalTime().ToString("g");
-			Console.WriteLine("In table, the start date: " + tableItems[indexPath.Row].StartDate);
-			Console.WriteLine("In table, the start date (local time ): " + Util.GetInstance().GetLocalTime(tableItems[indexPath.Row].StartDate));
 			cell.DetailTextLabel.Text = TimeSpan.FromMinutes(tableItems[indexPath.Row].LoggedTime).ToString(@"hh\:mm"); ;
 			cell.TextLabel.Font = UIFont.SystemFontOfSize(12);
 			cell.DetailTextLabel.Font = UIFont.SystemFontOfSize(12);

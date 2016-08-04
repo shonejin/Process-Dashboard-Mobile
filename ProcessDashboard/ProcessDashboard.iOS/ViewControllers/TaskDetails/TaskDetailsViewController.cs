@@ -16,12 +16,10 @@ using ProcessDashboard.APIRoot;
 using ProcessDashboard.DBWrapper;
 using System.Drawing;
 
-
-
 namespace ProcessDashboard.iOS
 {
-    public partial class TaskDetailsViewController : UIViewController
-    {
+	public partial class TaskDetailsViewController : UIViewController
+	{
 		public Task task;
 		TimeLoggingController timeLoggingController;
 		DateTime completeTimeSelectedDate;
@@ -30,9 +28,9 @@ namespace ProcessDashboard.iOS
 		UIDatePicker CompleteTimePicker;
 		String saveButtonLabel = "Save";
 
-		public TaskDetailsViewController (IntPtr handle) : base (handle)
-        {
-        }
+		public TaskDetailsViewController(IntPtr handle) : base(handle)
+		{
+		}
 
 		public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)
 		{
@@ -60,28 +58,10 @@ namespace ProcessDashboard.iOS
 				PlanTable.ReloadData();
 				refreshControlButtons();
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				;
+				ViewControllerHelper.ShowAlert(this, null, ex.Message + " Please try again later.");
 			}
-
-		}
-
-		public void MarkComplete(DateTime date)
-		{ 
-			TdCheckboxBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
-			PDashAPI.Controller.UpdateATask(task.Id, task.EstimatedTime, date, false);
-		}
-
-		public void MarkIncomplete()
-		{ 
-			TdCheckboxBtn.SetImage(UIImage.FromBundle("checkbox-unchecked"), UIControlState.Normal);
-			PDashAPI.Controller.UpdateATask(task.Id, task.EstimatedTime, null, true);
-		}
-
-		public void ChangeCompleteDate(DateTime date)
-		{ 
-			PDashAPI.Controller.UpdateATask(task.Id, task.EstimatedTime, date, false);
 		}
 
 		public override void ViewDidLoad()
@@ -96,7 +76,6 @@ namespace ProcessDashboard.iOS
 			timeLoggingController = TimeLoggingController.GetInstance();
 			timeLoggingController.TimeLoggingStateChanged += new StateChangedEventHandler(timeLoggingStateChanged);
 
-			Console.WriteLine(NavigationController.NavigationBar.TopItem.Title);
 			if (NavigationController.NavigationBar.TopItem.Title.Equals("Process Dashboard"))
 			{
 				NavigationController.NavigationBar.TopItem.Title = "Back";
@@ -120,16 +99,13 @@ namespace ProcessDashboard.iOS
 
 			TimeSpan estimated = TimeSpan.FromMinutes(task.EstimatedTime);
 			TimeSpan actual = TimeSpan.FromMinutes(task.ActualTime);
-			string[] tableItems = new string[]{estimated.ToString("hh\\:mm"), 
-				                                        actual.ToString("hh\\:mm"), 
-				                                        task.CompletionDate == null ? "-:-" : task.CompletionDate.Value.ToString("MM/dd/yyyy") };
 			PlanTable.Source = new TaskDetailTableSource(task, this);
-			refreshData();
-
 			View.AddSubview(PlanTable);
+
+			refreshData();
 		}
 
-		private void refreshControlButtons()
+		public void refreshControlButtons()
 		{
 			if (task == null)
 			{
@@ -204,111 +180,5 @@ namespace ProcessDashboard.iOS
 				return;
 			}
 		}
-
-
-		public void newCompleteDatePicker()
-		{
-
-			CompleteTimePicker = new UIDatePicker(new CoreGraphics.CGRect(0, 300, 400, 200f));
-			CompleteTimePicker.BackgroundColor = UIColor.FromRGB(220, 220, 220);
-
-			CompleteTimePicker.UserInteractionEnabled = true;
-			CompleteTimePicker.Mode = UIDatePickerMode.DateAndTime;
-			CompleteTimePicker.MaximumDate = ConvertDateTimeToNSDate(DateTime.UtcNow.ToLocalTime());
-
-			//Setup the toolbar
-			toolbar = new UIToolbar();
-			toolbar.BarStyle = UIBarStyle.Default;
-			toolbar.BackgroundColor = UIColor.FromRGB(220, 220, 220);
-			toolbar.Translucent = true;
-			toolbar.SizeToFit();
-
-			// Create a 'done' button for the toolbar and add it to the toolbar
-			saveButton = new UIBarButtonItem(saveButtonLabel, UIBarButtonItemStyle.Bordered,
-			(s, e) =>
-			{
-				((TaskDetailTableSource)PlanTable.Source).completeDateText.Text = completeTimeSelectedDate.ToShortDateString();
-				((TaskDetailTableSource)PlanTable.Source).completeDateText.ResignFirstResponder();
-			});
-
-
-			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
-
-			cancelButton = new UIBarButtonItem("Cancel", UIBarButtonItemStyle.Bordered,
-			(s, e) =>
-			{
-				((TaskDetailTableSource)PlanTable.Source).completeDateText.ResignFirstResponder();
-			});
-
-			toolbar.SetItems(new UIBarButtonItem[] { cancelButton, spacer, saveButton }, true);
-
-			completeTimeSelectedDate = task.CompletionDate.Value;
-
-			if (task.CompletionDate == null)
-			{
-				saveButton.Title = "Mark Complete";
-				Console.WriteLine(DateTime.Now.ToString());
-				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(DateTime.Now), true);
-			}
-			else
-			{
-				saveButton.Title = "Mark Incomplete";
-				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(task.CompletionDate.Value), true);
-			}
-
-			CompleteTimePicker.ValueChanged += (Object s, EventArgs e) =>
-			{
-				if (task.CompletionDate != null)
-				{
-					saveButton.Title = "Change Completion Date";
-
-				}
-				completeTimeSelectedDate = ConvertNSDateToDateTime((s as UIDatePicker).Date);
-			};
-
-			CompleteTimePicker.BackgroundColor = UIColor.White;
-
-			((TaskDetailTableSource)PlanTable.Source).completeDateText.InputView = CompleteTimePicker;
-			((TaskDetailTableSource)PlanTable.Source).completeDateText.InputAccessoryView = toolbar;
-
-		}
-
-		public async void DeleteTask(string id, double newTime)
-		{
-
-			//var oldTask = globalTimeLogCache.Find(t => t.Task.FullName.Equals(log.Task.FullName));
-			await TaskUpdateEstimatedTime(id, newTime);
-			//NavigationController.PopViewController(true);
-		}
-
-		public async System.Threading.Tasks.Task<int> TaskUpdateEstimatedTime(string taskId, double estimatedTime)
-		{
-			var tr =await PDashAPI.Controller.UpdateATask(taskId, estimatedTime, null, false);
-
-			return 0;
-
-		}
-
-
-		public static DateTime ConvertNSDateToDateTime(NSDate date)
-		{
-			DateTime reference = new DateTime(2001, 1, 1, 0, 0, 0, DateTimeKind.Local);
-			DateTime currentDate = reference.AddSeconds(date.SecondsSinceReferenceDate);
-			return currentDate;
-		}
-
-		public static NSDate ConvertDateTimeToNSDate(DateTime date)
-		{
-			DateTime newDate = new DateTime(2001, 1, 1, 0, 0, 0, DateTimeKind.Local);
-			return NSDate.FromTimeIntervalSinceReferenceDate(
-				(date - newDate).TotalSeconds);
-		}
-
-		public void changeCheckBoxImage(String imageName)
-		{
-			//Console.WriteLine("hahaha");
-			this.TdCheckboxBtn.SetImage(UIImage.FromBundle(imageName), UIControlState.Normal);
-		}
-			
-    }
+	}
 }

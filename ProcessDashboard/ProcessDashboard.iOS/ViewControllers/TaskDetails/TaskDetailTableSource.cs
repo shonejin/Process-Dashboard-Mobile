@@ -31,22 +31,13 @@ namespace ProcessDashboard.iOS
 			this.owner = owner;
 		}
 
-		/// <summary>
-		/// Called by the TableView to determine how many cells to create for that particular section.
-		/// </summary>
 		public override nint RowsInSection(UITableView tableview, nint section)
 		{
-			// TODO: handling NULL
 			return 3;
 		}
 
-		/// <summary>
-		/// Called when a row is touched
-		/// </summary>
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 		{
-			tableView.DeselectRow(indexPath, true);
-
 			if (indexPath.Row == 1)
 			{
 				owner.PerformSegue("TaskTimeLogsSegue", owner);
@@ -54,9 +45,6 @@ namespace ProcessDashboard.iOS
 			tableView.DeselectRow(indexPath, true);
 		}
 
-		/// <summary>
-		/// Called by the TableView to get the actual UITableViewCell to render for the particular row
-		/// </summary>
 		public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
 		{
 			UITableViewCell cell = tableView.DequeueReusableCell(cellIdentifier);
@@ -65,7 +53,6 @@ namespace ProcessDashboard.iOS
 
 			if (indexPath.Row == 0)
 			{
-				
 				cell.TextLabel.Text = "Planned Time";
 				planTimeText = new UITextField(new CGRect(0, 300, 150, 30));
 				cell.AccessoryView = planTimeText;
@@ -74,42 +61,18 @@ namespace ProcessDashboard.iOS
 
 				newPlanTimePicker();
 
-				int newHour = (int)TaskItem.EstimatedTime / 60;
-				int newMin = (int)TaskItem.EstimatedTime % 60;
-				string newM = null;
-
-				if (newMin < 10)
-				{
-					newM = "0" + newMin.ToString();
-				}
-				else {
-					newM = newMin.ToString();
-				}
-
-				string newEstimatedTime = newHour + ":" + newM;
-
-				planTimeText.Text = newEstimatedTime;
-
+				TimeSpan estimated = TimeSpan.FromMinutes(TaskItem.EstimatedTime);
+				planTimeText.Text = estimated.ToString("hh\\:mm");
 			}
 			else if (indexPath.Row == 1)
 			{
 				cell.TextLabel.Text = "Actual Time";
-				int newHour = (int)TaskItem.ActualTime / 60;
-				int newMin = (int)TaskItem.ActualTime % 60;
-				string newM = null;
-				if (newMin < 10)
-				{
-					newM = "0" + newMin.ToString();
-				}
-				else {
-					newM = newMin.ToString();
-				}
-				string newActualTime = newHour + ":" + newM;
-				cell.DetailTextLabel.Text = newActualTime;
+
+				TimeSpan actual = TimeSpan.FromMinutes(TaskItem.ActualTime);
+				cell.DetailTextLabel.Text = actual.ToString("hh\\:mm");
 				cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
 			}
 			else {
-				
 				cell.TextLabel.Text = "Completed Date";
 				completeDateText = new UITextField(new CGRect(0, 400, 150, 30));
 				cell.AccessoryView = completeDateText;
@@ -118,14 +81,13 @@ namespace ProcessDashboard.iOS
 
 				newCompleteDatePicker();
 
-				if (!TaskItem.CompletionDate.HasValue)
+				if (TaskItem.CompletionDate == null)
 				{
 					completeDateText.Text = "-:-";
 				}
 				else 
 				{
-					completeDateText.Text = TaskItem.CompletionDate.Value.ToShortDateString();
-
+					completeDateText.Text = Util.GetInstance().GetLocalTime(TaskItem.CompletionDate.Value).ToString("MM/dd/yyyy");
 				}
 			}
 
@@ -146,17 +108,10 @@ namespace ProcessDashboard.iOS
 			for (int i = 0; i < hours.Length; i++)
 			{
 				hours[i] = i.ToString();
-
 			}
 			for (int i = 0; i < minutes.Length; i++)
 			{
-				if (i < 10)
-				{
-					minutes[i] = "0" + i.ToString();
-				}
-				else {
-					minutes[i] = i.ToString();
-				}
+				minutes[i] = i.ToString("00");
 			}
 
 			StatusPickerViewModel planModel = new StatusPickerViewModel(hours, minutes);
@@ -164,20 +119,12 @@ namespace ProcessDashboard.iOS
 			int h = (int)TaskItem.EstimatedTime / 60;
 			int m = (int)TaskItem.EstimatedTime % 60;
 			this.planSelectedHour = h.ToString();
-
-			if (m < 10)
-			{
-				this.planSelectedMinute = "0" + m.ToString();
-			}
-			else {
-				this.planSelectedMinute = m.ToString();
-			}
+			this.planSelectedMinute = m.ToString("00");
 
 			planModel.NumberSelected += (Object sender, EventArgs e) =>
 			{
 				this.planSelectedHour = planModel.selectedHour;
 				this.planSelectedMinute = planModel.selectedMinute;
-
 			};
 
 			PlanTimePicker.Model = planModel;
@@ -196,12 +143,25 @@ namespace ProcessDashboard.iOS
 
 			saveButton = new UIBarButtonItem(saveButtonLabel, UIBarButtonItemStyle.Bordered, null);
 
-			saveButton.Clicked += (s, e) =>
+			saveButton.Clicked += async (s, e) =>
 			{
-
-				this.planTimeText.Text = this.planSelectedHour + ":" + this.planSelectedMinute;
-				owner.DeleteTask(TaskItem.Id, int.Parse(this.planSelectedHour) * 60 + int.Parse(this.planSelectedMinute));
-				this.planTimeText.ResignFirstResponder();
+				try
+				{
+					double planTime = int.Parse(this.planSelectedHour) * 60 + int.Parse(this.planSelectedMinute);
+					// TODO:
+					// service access Layer should provide nullable markTimeInComplete field!
+					// otherwise, this value may be updated unexpectedly
+					await PDashAPI.Controller.UpdateATask(TaskItem.Id, planTime, null, TaskItem.CompletionDate == null);
+					this.planTimeText.Text = this.planSelectedHour + ":" + this.planSelectedMinute;
+				}
+				catch (Exception ex)
+				{
+					ViewControllerHelper.ShowAlert(owner, "Change Planed Time", ex.Message + " Please try again later.");
+				}
+				finally
+				{
+					this.planTimeText.ResignFirstResponder(); 
+				}
 			};
 
 			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
@@ -220,13 +180,13 @@ namespace ProcessDashboard.iOS
 
 		public void newCompleteDatePicker()
 		{
-			
+
 			CompleteTimePicker = new UIDatePicker(new CoreGraphics.CGRect(0, 300, 400, 200f));
 			CompleteTimePicker.BackgroundColor = UIColor.FromRGB(220, 220, 220);
 
 			CompleteTimePicker.UserInteractionEnabled = true;
 			CompleteTimePicker.Mode = UIDatePickerMode.DateAndTime;
-			CompleteTimePicker.MaximumDate = ConvertDateTimeToNSDate(DateTime.UtcNow.ToLocalTime());
+			CompleteTimePicker.MaximumDate = ViewControllerHelper.DateTimeUtcToNSDate(DateTime.UtcNow);
 			//Setup the toolbar
 			toolbar = new UIToolbar();
 			toolbar.BarStyle = UIBarStyle.Default;
@@ -237,28 +197,55 @@ namespace ProcessDashboard.iOS
 			// Create a 'done' button for the toolbar and add it to the toolbar
 			saveButton = new UIBarButtonItem(saveButtonLabel, UIBarButtonItemStyle.Bordered, null);
 
-			saveButton.Clicked += (s, e) =>
+			saveButton.Clicked += async (s, e) =>
 			{
-				Console.WriteLine(saveButton.Title.ToString());
-				if (saveButton.Title.ToString().Equals("Mark Complete"))
+				if (saveButton.Title.Equals("Mark Complete"))
 				{
-					DateTime reference = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(2001, 1, 1, 0, 0, 0));
-					reference.AddSeconds(CompleteTimePicker.Date.SecondsSinceReferenceDate);
-					owner.MarkComplete(reference);
+					try
+					{
+						await PDashAPI.Controller.UpdateATask(TaskItem.Id, null, completeTimeSelectedDate, false);
+						TaskItem.CompletionDate = completeTimeSelectedDate;
+						owner.task = TaskItem;
+						owner.refreshControlButtons();
+					}
+					catch (Exception ex)
+					{
+						ViewControllerHelper.ShowAlert(owner, "Mark Complete", ex.Message + " Please try again later.");
+					}
 				}
-				else if (saveButton.Title.ToString().Equals("Mark Incomplete"))
+				else if (saveButton.Title.Equals("Mark Incomplete"))
 				{
-					owner.MarkIncomplete();
+					try
+					{
+						await PDashAPI.Controller.UpdateATask(TaskItem.Id, null, null, true);
+						TaskItem.CompletionDate = null;
+						owner.task = TaskItem;
+						owner.refreshControlButtons();
+					}
+					catch (Exception ex)
+					{
+						ViewControllerHelper.ShowAlert(owner, "Mark Incomplete", ex.Message + " Please try again later.");
+					}
 				}
 				else {
-					DateTime reference = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(2001, 1, 1, 0, 0, 0));
-					reference.AddSeconds(CompleteTimePicker.Date.SecondsSinceReferenceDate);
-					owner.ChangeCompleteDate(reference);
+					// Change Completion Date
+					try
+					{
+						DateTime newCompleteDate = ViewControllerHelper.NSDateToDateTimeUtc(CompleteTimePicker.Date);
+						await PDashAPI.Controller.UpdateATask(TaskItem.Id, null, newCompleteDate, false);
+						TaskItem.CompletionDate = newCompleteDate;
+						owner.task = TaskItem;
+						owner.refreshControlButtons();
+					}
+					catch (Exception ex)
+					{
+						ViewControllerHelper.ShowAlert(owner, "Change Completion Date", ex.Message + " Please try again later.");
+					}
 				}
 				this.completeDateText.Text = completeTimeSelectedDate.ToShortDateString();
 				this.completeDateText.ResignFirstResponder();
-
 			};
+
 			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
 
 			cancelButton = new UIBarButtonItem("Cancel", UIBarButtonItemStyle.Bordered,
@@ -272,12 +259,12 @@ namespace ProcessDashboard.iOS
 			if (TaskItem.CompletionDate == null)
 			{
 				saveButton.Title = "Mark Complete";
-				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(DateTime.Now), true);
+				CompleteTimePicker.SetDate(ViewControllerHelper.DateTimeUtcToNSDate(DateTime.UtcNow), true);
 			}
 			else
 			{
 				saveButton.Title = "Mark Incomplete";
-				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(TaskItem.CompletionDate.Value), true);
+				CompleteTimePicker.SetDate(ViewControllerHelper.DateTimeUtcToNSDate(Util.GetInstance().GetServerTime(TaskItem.CompletionDate.Value)), true);
 			}
 
 			CompleteTimePicker.ValueChanged += (Object s, EventArgs e) =>
@@ -285,32 +272,15 @@ namespace ProcessDashboard.iOS
 				if (TaskItem.CompletionDate != null)
 				{
 					saveButton.Title = "Change Completion Date";
-
 				}
-				completeTimeSelectedDate = ConvertNSDateToDateTime((s as UIDatePicker).Date);
+
+				completeTimeSelectedDate = ViewControllerHelper.NSDateToDateTimeUtc((s as UIDatePicker).Date);
 			};
 
 			CompleteTimePicker.BackgroundColor = UIColor.White;
 
 			this.completeDateText.InputView = CompleteTimePicker;
 			this.completeDateText.InputAccessoryView = toolbar;
-
-		}
-
-		public static DateTime ConvertNSDateToDateTime(NSDate date)
-		{
-			DateTime reference = new DateTime(2001, 1, 1, 0, 0, 0);
-			DateTime currentDate = reference.AddSeconds(date.SecondsSinceReferenceDate);
-			DateTime localDate = currentDate.ToLocalTime();
-			return localDate;
-		}
-
-		public static NSDate ConvertDateTimeToNSDate(DateTime date)
-		{
-			DateTime newDate = TimeZone.CurrentTimeZone.ToLocalTime(
-				new DateTime(2001, 1, 1, 0, 0, 0));
-			return NSDate.FromTimeIntervalSinceReferenceDate(
-				(date - newDate).TotalSeconds);
 		}
 	}
 }

@@ -190,8 +190,7 @@ namespace ProcessDashboard
 						int logged = Round(_stopwatch.GetLoggedMinutes());
 						int interrupt = Round(_stopwatch.GetInterruptMinutes());
 
-
-						var value = await _controller.AddATimeLog(AccountStorage.DataSet, "", _stopwatch.Get_first_startTime(), _taskId, logged, interrupt, _stopwatch.IsRunning());
+						var value = await _controller.AddATimeLog(AccountStorage.DataSet, null, _stopwatch.Get_first_startTime(), _taskId, logged, interrupt, _stopwatch.IsRunning());
 
 						_timeLogEntryId = "" + value.Id;
 

@@ -40,21 +40,17 @@ namespace ProcessDashboard.iOS
 		}
 		private async void refreshData()
 		{
-			await getTimeLogsOfTask();
-
-			TaskTimeLogTable.Source = new TaskTimeLogTableSource(timeLogCache, this);
-			TaskTimeLogTable.ReloadData();
+			try
+			{
+				timeLogCache = await PDashAPI.Controller.GetTimeLogs(0, null, null, taskId, null);
+				TaskTimeLogTable.Source = new TaskTimeLogTableSource(timeLogCache, this);
+				TaskTimeLogTable.ReloadData();
+			}
+			catch (Exception ex)
+			{
+				ViewControllerHelper.ShowAlert(this, null, ex.Message + " Please try again later.");
+			}
 		}
-
-		public async System.Threading.Tasks.Task<int> getTimeLogsOfTask()
-		{
-			List<TimeLogEntry> timeLogEntries = await PDashAPI.Controller.GetTimeLogs(0, null, null,taskId, null);
-
-			timeLogCache = timeLogEntries;
-
-			return 0;
-		}
-
 
 		public override void ViewDidLoad()
 		{
@@ -69,104 +65,22 @@ namespace ProcessDashboard.iOS
 
 			if (segue.Identifier == "eachTimeLogSegue")
 			{
-				var navctlr = segue.DestinationViewController as TimelogDetailViewController;
-				if (navctlr != null)
-				{
-					var source = TaskTimeLogTable.Source as TaskTimeLogTableSource;
-					var rowPath = TaskTimeLogTable.IndexPathForSelectedRow;
-
-					navctlr.SetTaskforTaskTimelog(this, timeLogCache[rowPath.Row]); // to be defined on the TaskDetailViewController
-				}
+				var destVc = segue.DestinationViewController as TimelogDetailViewController;
+				var rowPath = TaskTimeLogTable.IndexPathForSelectedRow;
+				destVc.isAddingMode = false;
+				destVc.owner = this;
+				destVc.timeLogEntry = timeLogCache[rowPath.Row];
 			}
 			if (segue.Identifier == "AddTimeLogSegue")
 			{
-
-				var controller = segue.DestinationViewController as TimelogDetailViewController;
+				var destVc = segue.DestinationViewController as TimelogDetailViewController;
 				TimeLogEntry newTimeLog = new TimeLogEntry();
 				newTimeLog.Task = task;
-				newTimeLog.StartDate = DateTime.Now;
-				controller.CreateTask(this, newTimeLog);
-				AddTaskTimelog(newTimeLog);
-
+				newTimeLog.StartDate = DateTime.UtcNow;
+				destVc.timeLogEntry = newTimeLog;
+				destVc.isAddingMode = true;
+				destVc.owner = this;
 			}
-
 		}
-
-		public async void DeleteTask(TimeLogEntry log)
-		{
-
-			await DeleteATimeLog(log.Id);
-			NavigationController.PopViewController(true);
-		}
-
-		public async System.Threading.Tasks.Task<int> DeleteATimeLog(int? val)
-		{
-			string timeLogId;
-			if (val.HasValue)
-			{
-				timeLogId = "" + val.Value;
-
-				DeleteRoot tr = await PDashAPI.Controller.DeleteTimeLog(timeLogId);
-				try
-				{
-					System.Diagnostics.Debug.WriteLine("** Delete the new Time Log entry **");
-					System.Diagnostics.Debug.WriteLine("Status :" + tr.Stat);
-
-				}
-				catch (System.Exception e)
-				{
-					System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
-				}
-			}
-			return 0;
-		}
-
-		public async void UpdateTaskTimelog(TimeLogEntry log)
-		{
-			await UpdateATimeLog(log);
-		}
-
-		public async System.Threading.Tasks.Task<int> UpdateATimeLog(TimeLogEntry editedTimeLog)
-		{
-			TimeLogEntry tr = await PDashAPI.Controller.UpdateTimeLog(editedTimeLog.Id.ToString(), editedTimeLog.Comment, editedTimeLog.StartDate, editedTimeLog.Task.Id, editedTimeLog.LoggedTime, editedTimeLog.InterruptTime, true);
-			try
-			{
-				System.Diagnostics.Debug.WriteLine("** Updated the new Time Log entry **");
-				System.Diagnostics.Debug.WriteLine("Updated Logged Time :" + tr.LoggedTime);
-
-			}
-			catch (System.Exception e)
-			{
-				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
-			}
-			return 0;
-
-		}
-
-		public async void AddTaskTimelog(TimeLogEntry log)
-		{
-			await TestAddATimeLog(log);
-		}
-
-		public async Task<int> TestAddATimeLog(TimeLogEntry log)
-		{
-			int id;
-			try
-			{
-				var tr = await PDashAPI.Controller.AddATimeLog("No Comment", DateTime.UtcNow, log.Task.Id, log.LoggedTime, log.InterruptTime, true);
-				Console.WriteLine("** Added a new Time Log entry **");
-				Console.WriteLine(tr.Id);
-				id = tr.Id;
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine("We are in an error state :" + e);
-				id = 0;
-			}
-
-			return id;
-
-		}
-
     }
 }

@@ -53,6 +53,7 @@ namespace ProcessDashboard.iOS
 
 		public void PauseBtnOnClick(object sender, EventArgs ea)
 		{
+			// we don't need to await here, because timeLoggingController will retry upon failure and will not throw exceptions here
 			timeLoggingController.StopTiming();
 			pauseBtn.SetImage(UIImage.FromBundle("pause-activated"), UIControlState.Normal);
 			pauseBtn.Enabled = false;
@@ -64,6 +65,7 @@ namespace ProcessDashboard.iOS
 		{
 			if (timeLoggingController.WasNetworkAvailable)
 			{
+				// we don't need to await here, because timeLoggingController will retry upon failure and will not throw exceptions here
 				timeLoggingController.StartTiming(currentTask.Id);
 				pauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
 				pauseBtn.Enabled = true;
@@ -79,9 +81,9 @@ namespace ProcessDashboard.iOS
 			}
 		}
 
-
 		private void timeLoggingStateChanged(object sender, StateChangedEventArgs ea)
 		{
+			// instead of re-throws an exception, the timeLoggingController will call this handler when it received the cancelTimeLog exception
 			if (ea.NewState.Equals(TimeLoggingControllerStates.TimeLogCanceled))
 			{
 				refreshControlButtons();
@@ -102,16 +104,9 @@ namespace ProcessDashboard.iOS
 			activityView.HidesWhenStopped = true;
 			View.AddSubview(activityView);
 
-			pauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
-			pauseBtn.Enabled = true;
-			pauseBtn.TouchUpInside += PauseBtnOnClick;
-
-			playBtn.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Normal);
-			playBtn.Enabled = false;
-			playBtn.TouchUpInside += PlayBtnOnClick;
-
 			completeBtn.TouchUpInside += delegate
 			{
+				newCompleteDatePicker();
 				completedDateText.BecomeFirstResponder();
 			};
 
@@ -125,99 +120,49 @@ namespace ProcessDashboard.iOS
 
 			projectNameBtn.TouchUpInside += ProjectNameBtnOnClick;
 			taskNameBtn.TouchUpInside += TaskNameBtnOnClick;
-
-			refreshData();
-		}
-
-		public void newCompleteDatePicker()
-		{
-			completedDateText = new UITextField(new CGRect(0, 0, 0, 0));
-			View.Add(completedDateText);
-
-			CompleteTimePicker = new UIDatePicker(new CoreGraphics.CGRect(0, this.View.Frame.Height - 250, this.View.Frame.Width, 200f));
-			CompleteTimePicker.BackgroundColor = UIColor.FromRGB(220, 220, 220);
-
-			CompleteTimePicker.UserInteractionEnabled = true;
-			CompleteTimePicker.Mode = UIDatePickerMode.DateAndTime;
-			CompleteTimePicker.MaximumDate = ConvertDateTimeToNSDate(DateTime.UtcNow.ToLocalTime());
-			//Setup the toolbar
-			toolbar = new UIToolbar();
-			toolbar.BarStyle = UIBarStyle.Default;
-			toolbar.BackgroundColor = UIColor.FromRGB(220, 220, 220);
-			toolbar.Translucent = true;
-			toolbar.SizeToFit();
-
-			saveButton = new UIBarButtonItem(saveButtonLabel, UIBarButtonItemStyle.Bordered, null);
-
-			saveButton.Clicked += (s, e) =>
-			{
-				Console.WriteLine(saveButton.Title.ToString());
-				if (saveButton.Title.ToString().Equals("Mark Complete"))
-				{
-					completeBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
-
-					DateTime reference = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(2001, 1, 1, 0, 0, 0));
-					reference.AddSeconds(CompleteTimePicker.Date.SecondsSinceReferenceDate);
-					PDashAPI.Controller.UpdateATask(currentTask.Id, currentTask.EstimatedTime, reference, false);
-				}
-				else if (saveButton.Title.ToString().Equals("Mark Incomplete"))
-				{
-					completeBtn.SetImage(UIImage.FromBundle("checkbox-unchecked"), UIControlState.Normal);
-					PDashAPI.Controller.UpdateATask(currentTask.Id, currentTask.EstimatedTime, null, true);
-				}
-				else { // saveButton.Title.ToString().Equals("Change Completion Date")
-					completeBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
-					DateTime reference = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(2001, 1, 1, 0, 0, 0));
-					reference.AddSeconds(CompleteTimePicker.Date.SecondsSinceReferenceDate);
-					PDashAPI.Controller.UpdateATask(currentTask.Id, currentTask.EstimatedTime, reference, false);
-				}
-				this.completedDateText.ResignFirstResponder();
-			};
-
-			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
-
-			cancelButton = new UIBarButtonItem("Cancel", UIBarButtonItemStyle.Bordered,
-			(s, e) =>
-			{
-				Console.WriteLine("Cancel");
-				this.completedDateText.ResignFirstResponder();
-			});
-
-			toolbar.SetItems(new UIBarButtonItem[] { cancelButton, spacer, saveButton }, true);
-
-			if (currentTask.CompletionDate == null)
-			{
-				saveButton.Title = "Mark Complete";
-				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate(DateTime.Now), true);
-			}
-			else
-			{
-				saveButton.Title = "Mark Incomplete";
-				CompleteTimePicker.SetDate(ConvertDateTimeToNSDate((DateTime)currentTask.CompletionDate), true);
-			}
-
-			CompleteTimePicker.ValueChanged += (Object s, EventArgs e) =>
-			{
-				if (currentTask.CompletionDate != null)
-				{
-					saveButton.Title = "Change Completion Date";
-
-				}
-				completeTimeSelectedDate = ConvertNSDateToDateTime((s as UIDatePicker).Date);
-			};
-
-			CompleteTimePicker.BackgroundColor = UIColor.White;
-
-			this.completedDateText.InputView = CompleteTimePicker;
-			this.completedDateText.InputAccessoryView = toolbar;
-
+			pauseBtn.TouchUpInside += PauseBtnOnClick;
+			playBtn.TouchUpInside += PlayBtnOnClick;
 		}
 
 		public override void ViewDidAppear(bool animated)
 		{
 			base.ViewDidAppear(animated);
+
 			NavigationController.NavigationBar.TopItem.Title = "Process Dashboard";
 			refreshData();
+		}
+
+		public async void refreshData()
+		{
+			activityView.StartAnimating();
+
+			projectNameBtn.SetTitle("loading current project ...", UIControlState.Normal);
+			taskNameBtn.SetTitle("loading current task ...", UIControlState.Normal);
+
+			try
+			{
+				List<DTO.Task> projectsList = await PDashAPI.Controller.GetRecentTasks();
+
+				RecentTaskItems = projectsList;
+				currentProject = RecentTaskItems[0].Project;
+				currentTask = RecentTaskItems[0];
+
+				projectNameBtn.SetTitle(currentProject.Name, UIControlState.Normal);
+				taskNameBtn.SetTitle(currentTask.FullName, UIControlState.Normal);
+
+				refreshControlButtons();
+
+				recentTaskTableView.Source = new TaskTableSource(RecentTaskItems.GetRange(1, RecentTaskItems.Count - 1), this);
+				recentTaskTableView.ReloadData();
+			}
+			catch (Exception ex)
+			{
+				ViewControllerHelper.ShowAlert(this, null, ex.Message + " Please try again later.");
+			}
+			finally
+			{ 
+				activityView.StopAnimating();
+			}
 		}
 
 		private void refreshControlButtons()
@@ -233,7 +178,7 @@ namespace ProcessDashboard.iOS
 			}
 			else
 			{
-				if (currentTask.CompletionDate != null && currentTask.CompletionDate.HasValue)
+				if (currentTask.CompletionDate != null)
 				{
 					completeBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
 				}
@@ -243,9 +188,6 @@ namespace ProcessDashboard.iOS
 				}
 				completeBtn.Enabled = true;
 
-				// set up start time customized UIpicker
-				newCompleteDatePicker();
-
 				if (timeLoggingController.IsTimerRunning() && timeLoggingController.GetTimingTaskId() == currentTask.Id)
 				{
 					pauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
@@ -254,7 +196,7 @@ namespace ProcessDashboard.iOS
 					playBtn.Enabled = false;
 				}
 				else
-				{ 
+				{
 					pauseBtn.SetImage(UIImage.FromBundle("pause-activated"), UIControlState.Normal);
 					playBtn.SetImage(UIImage.FromBundle("play-deactivated"), UIControlState.Normal);
 					pauseBtn.Enabled = false;
@@ -263,59 +205,105 @@ namespace ProcessDashboard.iOS
 			}
 		}
 
-		public async void refreshData()
+		public void newCompleteDatePicker()
 		{
-			activityView.StartAnimating();
+			completedDateText = new UITextField(new CGRect(0, 0, 0, 0));
+			View.Add(completedDateText);
 
-			projectNameBtn.SetTitle("loading current project ...", UIControlState.Normal);
-			taskNameBtn.SetTitle("loading current task ...", UIControlState.Normal);
+			CompleteTimePicker = new UIDatePicker(new CoreGraphics.CGRect(0, this.View.Frame.Height - 250, this.View.Frame.Width, 200f));
+			CompleteTimePicker.BackgroundColor = UIColor.FromRGB(220, 220, 220);
 
-			try
+			CompleteTimePicker.UserInteractionEnabled = true;
+			CompleteTimePicker.Mode = UIDatePickerMode.DateAndTime;
+			CompleteTimePicker.MaximumDate = ViewControllerHelper.DateTimeUtcToNSDate(DateTime.UtcNow);
+			//Setup the toolbar
+			toolbar = new UIToolbar();
+			toolbar.BarStyle = UIBarStyle.Default;
+			toolbar.BackgroundColor = UIColor.FromRGB(220, 220, 220);
+			toolbar.Translucent = true;
+			toolbar.SizeToFit();
+
+			saveButton = new UIBarButtonItem(saveButtonLabel, UIBarButtonItemStyle.Bordered, null);
+
+			saveButton.Clicked += async (s, e) =>
 			{
-				await GetRecentTasksData();
+				if (saveButton.Title.Equals("Mark Complete"))
+				{
+					try
+					{
+						await PDashAPI.Controller.UpdateATask(currentTask.Id, null, completeTimeSelectedDate, false);
+						currentTask.CompletionDate = completeTimeSelectedDate;
+						completeBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
+					}
+					catch (Exception ex)
+					{
+						ViewControllerHelper.ShowAlert(this, "Mark Complete", ex.Message + " Please try again later.");
+					}
+				}
+				else if (saveButton.Title.Equals("Mark Incomplete"))
+				{
+					try
+					{
+						await PDashAPI.Controller.UpdateATask(currentTask.Id, null, null, true);
+						currentTask.CompletionDate = null;
+						completeBtn.SetImage(UIImage.FromBundle("checkbox-unchecked"), UIControlState.Normal);
+					}
+					catch (Exception ex)
+					{ 
+						ViewControllerHelper.ShowAlert(this, "Mark Incomplete", ex.Message + " Please try again later.");
+					}
+				}
+				else { 
+					// Change Completion Date
+					try
+					{
+						DateTime newCompleteDate = ViewControllerHelper.NSDateToDateTimeUtc(CompleteTimePicker.Date);
+						await PDashAPI.Controller.UpdateATask(currentTask.Id, null, newCompleteDate, false);
+						currentTask.CompletionDate = newCompleteDate;
+					}
+					catch (Exception ex)
+					{
+						ViewControllerHelper.ShowAlert(this, "Change Completion Date", ex.Message + " Please try again later.");
+					}
+				}
+				this.completedDateText.ResignFirstResponder();
+			};
 
-				currentProject = RecentTaskItems[0].Project;
-				currentTask = RecentTaskItems[0];
+			var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace) { Width = 50 };
 
-				projectNameBtn.SetTitle(currentProject.Name, UIControlState.Normal);
-				taskNameBtn.SetTitle(currentTask.FullName, UIControlState.Normal);
-
-				refreshControlButtons();
-
-				recentTaskTableView.Source = new TaskTableSource(RecentTaskItems.GetRange(1, RecentTaskItems.Count - 1), this);
-				recentTaskTableView.ReloadData();
-			}
-			catch (Exception e)
+			cancelButton = new UIBarButtonItem("Cancel", UIBarButtonItemStyle.Bordered,
+			(s, e) =>
 			{
-				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
-			}
-			finally
+				this.completedDateText.ResignFirstResponder();
+			});
+
+			toolbar.SetItems(new UIBarButtonItem[] { cancelButton, spacer, saveButton }, true);
+
+			if (currentTask.CompletionDate == null)
 			{
-				activityView.StopAnimating();
+				saveButton.Title = "Mark Complete";
+				CompleteTimePicker.SetDate(ViewControllerHelper.DateTimeUtcToNSDate(DateTime.UtcNow), true);
 			}
-		}
+			else
+			{
+				saveButton.Title = "Mark Incomplete";
+				CompleteTimePicker.SetDate(ViewControllerHelper.DateTimeUtcToNSDate(Util.GetInstance().GetServerTime(currentTask.CompletionDate.Value)), true);
+			}
 
-		public async System.Threading.Tasks.Task<int> GetRecentTasksData()
-		{
-			List<DTO.Task> projectsList = await PDashAPI.Controller.GetRecentTasks();
-			RecentTaskItems = projectsList;
-			return 0;
-		}
+			CompleteTimePicker.ValueChanged += (Object s, EventArgs e) =>
+			{
+				if (currentTask.CompletionDate != null)
+				{
+					saveButton.Title = "Change Completion Date";
+				}
 
-		public static DateTime ConvertNSDateToDateTime(NSDate date)
-		{
-			DateTime reference = new DateTime(2001, 1, 1, 0, 0, 0);
-			DateTime currentDate = reference.AddSeconds(date.SecondsSinceReferenceDate);
-			DateTime localDate = currentDate.ToLocalTime();
-			return localDate;
-		}
+				completeTimeSelectedDate = ViewControllerHelper.NSDateToDateTimeUtc((s as UIDatePicker).Date);
+			};
 
-		public static NSDate ConvertDateTimeToNSDate(DateTime date)
-		{
-			DateTime newDate = TimeZone.CurrentTimeZone.ToLocalTime(
-				new DateTime(2001, 1, 1, 0, 0, 0));
-			return NSDate.FromTimeIntervalSinceReferenceDate(
-				(date - newDate).TotalSeconds);
+			CompleteTimePicker.BackgroundColor = UIColor.White;
+
+			this.completedDateText.InputView = CompleteTimePicker;
+			this.completedDateText.InputAccessoryView = toolbar;
 		}
 
 		public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)

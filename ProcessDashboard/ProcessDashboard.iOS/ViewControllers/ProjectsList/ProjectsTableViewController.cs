@@ -56,42 +56,29 @@ namespace ProcessDashboard.iOS
 			{
 				this.RefreshControl.BeginRefreshing();
 			}
-			await getDataOfProject();
-			//Console.WriteLine("HAHAH Length is " + projectsCache.Count);
-			projectsTableView.Source = new ProjectsTableSource(projectsCache, this);
-
-			String refreshTime = DateTime.Now.ToString("g");
-			String subTitle = "Last refresh: " + refreshTime;
-			this.RefreshControl.AttributedTitle = new Foundation.NSAttributedString(subTitle);
-
-			projectsTableView.ReloadData();
-			if (this.RefreshControl.Refreshing)
-			{
-				this.RefreshControl.EndRefreshing();
-			}
-		}
-
-		public async System.Threading.Tasks.Task<int> getDataOfProject()
-		{
-			// TODO: should this line be wrapped in try-catch?
-			List<Project> projectsList = await PDashAPI.Controller.GetProjects();
-
-			// TODO: add exception handling logic
-			projectsCache = projectsList;
 
 			try
 			{
-				foreach (var proj in projectsList.Select(x => x.Name))
-				{
-					System.Diagnostics.Debug.WriteLine(proj);
-				}
+				List<Project> projectsList = await PDashAPI.Controller.GetProjects();
+				projectsCache = projectsList;
+				projectsTableView.Source = new ProjectsTableSource(projectsCache, this);
 				projectsTableView.ReloadData();
+
+				String refreshTime = DateTime.Now.ToString("g");
+				String subTitle = "Last refresh: " + refreshTime;
+				this.RefreshControl.AttributedTitle = new Foundation.NSAttributedString(subTitle);
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
+				ViewControllerHelper.ShowAlert(this, null, ex.Message + " Please try again later.");
 			}
-			return 0;
+			finally
+			{
+				if (this.RefreshControl.Refreshing)
+				{
+					this.RefreshControl.EndRefreshing();
+				}
+			}
 		}
     }
 }

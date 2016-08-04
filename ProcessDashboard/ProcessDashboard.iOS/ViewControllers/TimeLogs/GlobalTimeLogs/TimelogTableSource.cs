@@ -114,18 +114,39 @@ namespace ProcessDashboard.iOS
 
 		#region -= editing methods =-
 
-		public override void CommitEditingStyle(UITableView tableView, UITableViewCellEditingStyle editingStyle, NSIndexPath indexPath)
+		private bool isActiveTimeLog(TimeLogEntry log)
+		{
+			TimeLoggingController tlc = TimeLoggingController.GetInstance();
+			return tlc.IsTimerRunning() && tlc.GetActiveTimeLogEntryId().Equals(log.Id.ToString());
+		}
+
+		public override async void CommitEditingStyle(UITableView tableView, UITableViewCellEditingStyle editingStyle, NSIndexPath indexPath)
 		{
 			switch (editingStyle)
 			{
 				case UITableViewCellEditingStyle.Delete:
 					TimeLogEntry item = indexedTableItems[keys[indexPath.Section]][indexPath.Row];
-					owner.DeleteTask(item);
+
+					if (isActiveTimeLog(item))
+					{
+						ViewControllerHelper.ShowAlert(owner, "Oops", "You are currently logging time to this time log. Please stop the timmer first.");
+					}
+					else
+					{
+						try
+						{
+							await PDashAPI.Controller.DeleteTimeLog(item.Id.ToString());
+						}
+						catch (Exception ex)
+						{
+							ViewControllerHelper.ShowAlert(owner, "Delete Time Log", ex.Message + " Please try again later.");
+						}
+					}
 
 					indexedTableItems[keys[indexPath.Section]].RemoveAt(indexPath.Row);
 					tableView.DeleteRows(new NSIndexPath[] { indexPath }, UITableViewRowAnimation.Fade);
 					// save the time log entry deletion to server
-	
+
 					break;
 
 				case UITableViewCellEditingStyle.None:

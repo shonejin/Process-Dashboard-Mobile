@@ -258,6 +258,7 @@
     <None Include="ViewControllers\CommonElements\SharpMobileCode.ModalPicker\SharpMobileCode.ModalPicker.csproj" />
     <Compile Include="ViewControllers\CommonElements\SharpMobileCode.ModalPicker\Properties\AssemblyInfo.cs" />
     <Compile Include="PDashAPI.cs" />
+    <Compile Include="ViewControllers\ViewControllerHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />

@@ -35,9 +35,11 @@ namespace ProcessDashboard.iOS
 		{
 			base.ViewDidLoad();
 
+			NavigationItem.Title = "Tasks";
+
 			StaticLabel = new UILabel(new CGRect(0, 60, View.Bounds.Width, 42))
 			{
-				Text = " ",
+				Text = projectName,
 				Font = UIFont.SystemFontOfSize(12),
 				TextColor = UIColor.Black,
 				TextAlignment = UITextAlignment.Center,
@@ -48,6 +50,7 @@ namespace ProcessDashboard.iOS
 			tasksTableView.Frame = new CGRect(0, 42, View.Bounds.Width, View.Bounds.Height - 42);
 			StaticLabel.AutoresizingMask = UIViewAutoresizing.All;
 			View.AddSubview(StaticLabel);
+
 			// TODO: Fixed the Refreshcontrol, refreshing the list of tasks.
 			//RefreshControl = new UIRefreshControl();
 			//tasksTableView.Add(RefreshControl);
@@ -80,68 +83,51 @@ namespace ProcessDashboard.iOS
 			//	RefreshControl.BeginRefreshing();
 			//}
 
-			await getDataOfTask();
-
-			TasksTableSource source = new TasksTableSource(tasksCache, this);
-			tasksTableView.Source = source;
-			NavigationItem.Title = "Tasks";
-			StaticLabel.Text = projectName;
-
-			int pos = 0;
-			for (int i = 0; i < tasksCache.Count; i++)
+			try
 			{
-				if (tasksCache[i].CompletionDate == null)
-				{
-					if (i <= 4)
-					{
-						pos = i;
-					}
-					else {
-						pos = i - 4;
-					}
-					break;
-				}
+				List<Task> tasksList = await PDashAPI.Controller.GetTasks(projectId);
 
+				tasksCache = tasksList;
+				TasksTableSource source = new TasksTableSource(tasksCache, this);
+				tasksTableView.Source = source;
+				tasksTableView.ReloadData();
+
+				String refreshTime = DateTime.Now.ToString("g");
+				String subTitle = "Last refresh: " + refreshTime;
 			}
-			String refreshTime = DateTime.Now.ToString("g");
-			String subTitle = "Last refresh: " + refreshTime;
+			catch (Exception ex)
+			{
+				ViewControllerHelper.ShowAlert(this, null, ex.Message + " Please try again later.");
+			}
+
+			// TODO: fix dirty implementation
+			// exception will thrown when there are only 4 tasks and they are all completed
+			try
+			{
+				int pos = 0;
+				int i = 0;
+				while (i < tasksCache.Count && tasksCache[i].CompletionDate != null) { i++; }
+				pos = i <= 4 ? i : i - 4;
+
+				// The scroll bar should be scrolled so that the first incomplete task is the first task in the screen.
+				if (tasksCache.Count != 0)
+				{
+					tasksTableView.ScrollToRow(NSIndexPath.FromRowSection(pos, 0), UITableViewScrollPosition.Top, true);
+				}
+			}
+			catch (Exception ex)
+			{
+				;
+			}
+
 			// TODO: Fixed the Refreshcontrol, refreshing the list of tasks.
 			//RefreshControl.AttributedTitle = new Foundation.NSAttributedString(subTitle);
 
-			tasksTableView.ReloadData();
-			// The scroll bar should be scrolled so that the first incomplete task is the first task in the screen.
-			if (tasksCache.Count != 0)
-			{
-				tasksTableView.ScrollToRow(NSIndexPath.FromRowSection(pos, 0), UITableViewScrollPosition.Top, true);
-			}
 			// TODO: Fixed the Refreshcontrol, refreshing the list of tasks.
 			//if (this.RefreshControl.Refreshing)
 			//{
 			//	this.RefreshControl.EndRefreshing();
 			//}
-		}
-
-
-		public async System.Threading.Tasks.Task<int> getDataOfTask()
-		{
-			List<Task> tasksList = await PDashAPI.Controller.GetTasks(projectId);
-			tasksCache = tasksList;
-
-			try
-			{
-				foreach (var task in tasksList)  //.Select(x => x.estimatedTime)
-				{
-					System.Diagnostics.Debug.WriteLine(task.FullName);
-
-				}
-
-			}
-			catch (Exception e)
-			{
-				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
-			}
-
-			return 0;
 		}
 	}
 }
