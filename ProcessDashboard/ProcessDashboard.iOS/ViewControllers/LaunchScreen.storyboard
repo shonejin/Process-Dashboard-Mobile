@@ -20,7 +20,7 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" id="3" translatesAutoresizingMaskIntoConstraints="NO" image="LauchIcon">
                                 <rect key="frame" x="127" y="320" width="160" height="240"/>
                                 <variation key="heightClass=regular-widthClass=compact">
-                                    <rect key="frame" x="1" y="235" width="350" height="500"/>
+                                    <rect key="frame" x="1" y="166" width="350" height="500"/>
                                     <mask key="constraints">
                                         <include reference="11"/>
                                         <include reference="12"/>
@@ -47,7 +47,7 @@
                                 <color key="textColor" colorSpace="calibratedRGB" red="0" green="0.50196078431372548" blue="1" alpha="1"/>
                                 <nil key="highlightedColor"/>
                                 <variation key="heightClass=regular-widthClass=compact">
-                                    <rect key="frame" x="125.5" y="90" width="253.5" height="33.5"/>
+                                    <rect key="frame" x="86.5" y="90" width="253.5" height="33"/>
                                     <mask key="constraints">
                                         <include reference="17"/>
                                     </mask>
@@ -68,7 +68,7 @@
                                 <color key="textColor" colorSpace="calibratedRGB" red="0" green="0.50196078431372548" blue="1" alpha="1"/>
                                 <nil key="highlightedColor"/>
                                 <variation key="heightClass=regular-widthClass=compact">
-                                    <rect key="frame" x="219.5" y="129" width="159.5" height="23"/>
+                                    <rect key="frame" x="180.5" y="128" width="159.5" height="23"/>
                                 </variation>
                             </label>
                         </subviews>
@@ -131,6 +131,6 @@
         <image name="LauchIcon" width="935" height="982"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedScreenMetrics key="destination" type="retina55"/>
+        <simulatedScreenMetrics key="destination" type="retina47"/>
     </simulatedMetricsContainer>
 </document>
