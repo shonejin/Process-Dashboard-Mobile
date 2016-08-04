@@ -72,7 +72,7 @@ namespace ProcessDashboard.iOS
 
 			if (indexPath.Row == 0)
 			{
-				cell.TextLabel.Text = "Logged in as";
+				cell.TextLabel.Text = "Log out";
 				UIToolbar logoutToolbar = new UIToolbar(new CGRect(0, 0, 65, 30));
 				logoutToolbar.BarStyle = UIBarStyle.Default;
 				logoutToolbar.BackgroundColor = UIColor.White;
@@ -83,8 +83,12 @@ namespace ProcessDashboard.iOS
 				{
 					UIAlertController actionSheetAlert = UIAlertController.Create(null, "Are you sure you want to log out?", UIAlertControllerStyle.ActionSheet);
 
-					// TODO: logout this user
-					actionSheetAlert.AddAction(UIAlertAction.Create("Log out", UIAlertActionStyle.Destructive, (action) => Console.WriteLine("Logout"))); 
+					actionSheetAlert.AddAction(UIAlertAction.Create("Log out", UIAlertActionStyle.Destructive, (action) => {
+						AccountStorage.ClearStorage();
+						var mainStoryboard = UIStoryboard.FromName("Main", NSBundle.MainBundle);
+						var loginPageViewController = mainStoryboard.InstantiateViewController("LoginPageViewController");
+						UIApplication.SharedApplication.KeyWindow.RootViewController = loginPageViewController;
+					})); 
 
 					actionSheetAlert.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, (action) => Console.WriteLine("Cancel button pressed.")));
 

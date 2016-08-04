@@ -7,7 +7,7 @@
         <!--Root Tab Bar Controller-->
         <scene sceneID="6">
             <objects>
-                <tabBarController storyboardIdentifier="rootTabBarViewController" definesPresentationContext="YES" id="7" customClass="RootTabBarController" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="rootTabBarViewController" definesPresentationContext="YES" id="7" sceneMemberID="viewController" customClass="UITabBarController">
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="12">
                         <rect key="frame" x="0.0" y="618" width="375" height="49"/>
@@ -245,12 +245,12 @@
                                     <segue destination="V3A-tS-Ves" kind="show" identifier="showListofTasks" id="gRp-Rl-eg5"/>
                                 </connections>
                             </button>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="3603" translatesAutoresizingMaskIntoConstraints="NO" fixedFrame="YES" showsHorizontalScrollIndicator="NO" text="Notes, notes. This is the place holder of a note." customClass="UITextView" editable="NO">
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="3603" translatesAutoresizingMaskIntoConstraints="NO" showsHorizontalScrollIndicator="NO" text="Notes, notes. This is the place holder of a note." customClass="UITextView" editable="NO" misplaced="YES">
                                 <rect key="frame" x="35" y="466" width="309" height="130"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Notes:" lineBreakMode="tailTruncation" minimumFontSize="10" id="3604" translatesAutoresizingMaskIntoConstraints="NO" fixedFrame="YES">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Notes:" lineBreakMode="tailTruncation" minimumFontSize="10" id="3604" translatesAutoresizingMaskIntoConstraints="NO" misplaced="YES">
                                 <rect key="frame" x="20" y="437" width="74" height="21"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -274,6 +274,13 @@
                             <constraint id="3086" firstItem="1989" firstAttribute="top" secondItem="1474" secondAttribute="bottom" constant="20"/>
                             <constraint id="3087" firstItem="292" firstAttribute="trailing" secondItem="1989" secondAttribute="trailing" constant="10"/>
                             <constraint id="3088" firstItem="1989" firstAttribute="leading" secondItem="292" secondAttribute="leading" constant="10"/>
+                            <constraint id="3627" firstItem="333" firstAttribute="top" secondItem="aip-pl-Wq7" secondAttribute="bottom" constant="10"/>
+                            <constraint id="3628" firstItem="3604" firstAttribute="leading" secondItem="292" secondAttribute="leading" constant="10"/>
+                            <constraint id="3629" firstItem="3604" firstAttribute="top" secondItem="1989" secondAttribute="bottom" constant="15"/>
+                            <constraint id="3630" firstItem="3603" firstAttribute="top" secondItem="3604" secondAttribute="bottom" constant="5"/>
+                            <constraint id="3631" firstItem="292" firstAttribute="trailing" secondItem="3603" secondAttribute="trailing" constant="25"/>
+                            <constraint id="3632" firstItem="3603" firstAttribute="leading" secondItem="292" secondAttribute="leading" constant="25"/>
+                            <constraint id="3633" firstItem="289" firstAttribute="top" secondItem="3603" secondAttribute="bottom" constant="25"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="vOe-1N-01m"/>
@@ -289,7 +296,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="293" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1220" y="30"/>
+            <point key="canvasLocation" x="1069" y="-33"/>
         </scene>
         <!--Task Time Log View Controller-->
         <scene sceneID="585">
@@ -304,18 +311,18 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="2444" misplaced="YES">
-                                <rect key="frame" x="0.0" y="280" width="300" height="318"/>
+                                <rect key="frame" x="0.0" y="304" width="375" height="319"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="44" id="2449" style="IBUITableViewCellStyleDefault" textLabel="3338">
-                                        <rect key="frame" x="0.0" y="28" width="300" height="44"/>
+                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2449" id="2450">
-                                            <rect key="frame" x="0.0" y="0.0" width="300" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="3338">
-                                                    <rect key="frame" x="15" y="0.0" width="270" height="43.5"/>
+                                                    <rect key="frame" x="15" y="0.0" width="345" height="43.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -379,10 +386,11 @@
                             <constraint id="3320" firstItem="2444" firstAttribute="leading" secondItem="589" secondAttribute="leading">
                                 <variation key="heightClass=regular-widthClass=compact"/>
                             </constraint>
-                            <constraint id="3321" firstItem="589" firstAttribute="bottom" secondItem="2444" secondAttribute="bottom"/>
                             <constraint id="3342" firstItem="2444" firstAttribute="top" secondItem="3267" secondAttribute="bottom" constant="-40">
                                 <variation key="heightClass=regular-widthClass=compact" constant="-40"/>
                             </constraint>
+                            <constraint id="3622" firstItem="593" firstAttribute="top" secondItem="2444" secondAttribute="bottom"/>
+                            <constraint id="3624" firstItem="3267" firstAttribute="bottom" secondItem="2444" secondAttribute="top" constant="5"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
@@ -1038,19 +1046,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="aKn-2O-aey" misplaced="YES">
-                                <rect key="frame" x="0.0" y="100" width="600" height="481"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="aKn-2O-aey">
+                                <rect key="frame" x="0.0" y="80" width="375" height="538"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="TableCell" editingAccessoryType="disclosureIndicator" textLabel="1440" rowHeight="44" style="IBUITableViewCellStyleDefault" id="5l8-M9-pbR">
-                                        <rect key="frame" x="0.0" y="55.5" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="55.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="5l8-M9-pbR" id="Qpp-OE-k3h">
-                                            <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="342" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="1440">
-                                                    <rect key="frame" x="15" y="0.0" width="550" height="43.5"/>
+                                                    <rect key="frame" x="15" y="0.0" width="325" height="43.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -1138,14 +1146,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="uXc-6d-FFW" misplaced="YES">
-                                <rect key="frame" x="0.0" y="40" width="600" height="580"/>
+                                <rect key="frame" x="0.0" y="40" width="375" height="580"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" rowHeight="44" id="0Sj-Uy-CzN">
-                                        <rect key="frame" x="0.0" y="28" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="0Sj-Uy-CzN" id="bZY-vb-bq0">
-                                            <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="342" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                         <connections>
@@ -1179,7 +1187,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Jwi-2K-clW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="904" y="788"/>
+            <point key="canvasLocation" x="944" y="791"/>
         </scene>
         <!--Time Log Details-->
         <scene sceneID="WfZ-9M-cZb">

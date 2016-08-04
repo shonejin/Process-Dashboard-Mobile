@@ -48,11 +48,7 @@ namespace ProcessDashboard.iOS
 
 		public async System.Threading.Tasks.Task<int> getTimeLogsOfTask()
 		{
-			var apiService = new ApiTypes(null);
-			var service = new PDashServices(apiService);
-			Controller c = new Controller(service);
-
-			List<TimeLogEntry> timeLogEntries = await c.GetTimeLogs(AccountStorage.DataSet, 0, null, null,taskId, null);
+			List<TimeLogEntry> timeLogEntries = await PDashAPI.Controller.GetTimeLogs(0, null, null,taskId, null);
 
 			timeLogCache = timeLogEntries;
 
@@ -64,8 +60,7 @@ namespace ProcessDashboard.iOS
 		{
 			base.ViewDidLoad();
 			ProjectNameLabel.Text = task.Project != null ? task.Project.Name : "";
-			TaskNameLabel.Text = task.FullName.ToString();
-
+			TaskNameLabel.Text = task.FullName;
 		}
 
 		public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)
@@ -106,16 +101,12 @@ namespace ProcessDashboard.iOS
 
 		public async System.Threading.Tasks.Task<int> DeleteATimeLog(int? val)
 		{
-			var apiService = new ApiTypes(null);
-			var service = new PDashServices(apiService);
-			Controller c = new Controller(service);
-
 			string timeLogId;
 			if (val.HasValue)
 			{
 				timeLogId = "" + val.Value;
 
-				DeleteRoot tr = await c.DeleteTimeLog(AccountStorage.DataSet, timeLogId);
+				DeleteRoot tr = await PDashAPI.Controller.DeleteTimeLog(timeLogId);
 				try
 				{
 					System.Diagnostics.Debug.WriteLine("** Delete the new Time Log entry **");
@@ -137,12 +128,7 @@ namespace ProcessDashboard.iOS
 
 		public async System.Threading.Tasks.Task<int> UpdateATimeLog(TimeLogEntry editedTimeLog)
 		{
-
-			var apiService = new ApiTypes(null);
-			var service = new PDashServices(apiService);
-			Controller c = new Controller(service);
-
-			TimeLogEntry tr = await c.UpdateTimeLog(AccountStorage.DataSet, editedTimeLog.Id.ToString(), editedTimeLog.Comment, editedTimeLog.StartDate, editedTimeLog.Task.Id, editedTimeLog.LoggedTime, editedTimeLog.InterruptTime, true);
+			TimeLogEntry tr = await PDashAPI.Controller.UpdateTimeLog(editedTimeLog.Id.ToString(), editedTimeLog.Comment, editedTimeLog.StartDate, editedTimeLog.Task.Id, editedTimeLog.LoggedTime, editedTimeLog.InterruptTime, true);
 			try
 			{
 				System.Diagnostics.Debug.WriteLine("** Updated the new Time Log entry **");
@@ -164,15 +150,10 @@ namespace ProcessDashboard.iOS
 
 		public async Task<int> TestAddATimeLog(TimeLogEntry log)
 		{
-
-			var apiService = new ApiTypes(null);
-			var service = new PDashServices(apiService);
-			Controller ctrl = new Controller(service);
-
 			int id;
 			try
 			{
-				var tr = await ctrl.AddATimeLog(AccountStorage.DataSet, "No Comment", DateTime.UtcNow, log.Task.Id, log.LoggedTime, log.InterruptTime, true);
+				var tr = await PDashAPI.Controller.AddATimeLog("No Comment", DateTime.UtcNow, log.Task.Id, log.LoggedTime, log.InterruptTime, true);
 				Console.WriteLine("** Added a new Time Log entry **");
 				Console.WriteLine(tr.Id);
 				id = tr.Id;
@@ -182,8 +163,6 @@ namespace ProcessDashboard.iOS
 				Console.WriteLine("We are in an error state :" + e);
 				id = 0;
 			}
-
-			var value = await ctrl.GetTimeLog(AccountStorage.DataSet, "" + id);
 
 			return id;
 

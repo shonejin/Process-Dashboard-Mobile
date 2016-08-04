@@ -84,6 +84,7 @@ namespace ProcessDashboard.iOS
 					else if (responseStr.Contains("dataset"))
 					{
 						AccountStorage.Set(userId, password, baseUrl, dataSet);
+						PDashAPI.Controller.RefreshDataset();
 						if (OnLoginSuccess != null)
 						{
 							OnLoginSuccess(sender, new EventArgs());

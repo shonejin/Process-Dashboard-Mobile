@@ -100,26 +100,11 @@ namespace ProcessDashboard.iOS
 
 		public async System.Threading.Tasks.Task<int> DeleteATimeLog(int? val)
 		{
-			var apiService = new ApiTypes(null);
-			var service = new PDashServices(apiService);
-			Controller c = new Controller(service);
-
 			string timeLogId;
 			if (val.HasValue)
 			{
 				timeLogId = "" + val.Value;
-
-				DeleteRoot tr = await c.DeleteTimeLog(AccountStorage.DataSet, timeLogId);
-				try
-				{
-					System.Diagnostics.Debug.WriteLine("** Delete the new Time Log entry **");
-					System.Diagnostics.Debug.WriteLine("Status :" + tr.Stat);
-
-				}
-				catch (System.Exception e)
-				{
-					System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
-				}
+				DeleteRoot tr = await PDashAPI.Controller.DeleteTimeLog(timeLogId);
 			}
 			return 0;
 		}
@@ -132,22 +117,7 @@ namespace ProcessDashboard.iOS
 
 		public async System.Threading.Tasks.Task<int> UpdateATimeLog(TimeLogEntry editedTimeLog)
 		{
-
-			var apiService = new ApiTypes(null);
-			var service = new PDashServices(apiService);
-			Controller c = new Controller(service);
-
-			TimeLogEntry tr = await c.UpdateTimeLog(AccountStorage.DataSet, editedTimeLog.Id.ToString(), editedTimeLog.Comment, editedTimeLog.StartDate, editedTimeLog.Task.Id.ToString(),  editedTimeLog.InterruptTime, editedTimeLog.LoggedTime, true);
-			try
-			{
-				System.Diagnostics.Debug.WriteLine("** Updated the new Time Log entry **");
-				System.Diagnostics.Debug.WriteLine("Updated Logged Time :" + tr.LoggedTime);
-
-			}
-			catch (System.Exception e)
-			{
-				System.Diagnostics.Debug.WriteLine("We are in an error state :" + e);
-			}
+			TimeLogEntry tr = await PDashAPI.Controller.UpdateTimeLog(editedTimeLog.Id.ToString(), editedTimeLog.Comment, editedTimeLog.StartDate, editedTimeLog.Task.Id.ToString(),  editedTimeLog.InterruptTime, editedTimeLog.LoggedTime, true);
 			return 0;
 
 		}
@@ -166,11 +136,7 @@ namespace ProcessDashboard.iOS
 
 		public async System.Threading.Tasks.Task<int> getGlobalTimeLogs()
 		{
-			var apiService = new ApiTypes(null);
-			var service = new PDashServices(apiService);
-			Controller c = new Controller(service);
-
-			List<TimeLogEntry> timeLogEntries = await c.GetTimeLogs(AccountStorage.DataSet, 0, null, null, null, null);
+			List<TimeLogEntry> timeLogEntries = await PDashAPI.Controller.GetTimeLogs(0, null, null, null, null);
 
 			globalTimeLogCache = timeLogEntries;
 

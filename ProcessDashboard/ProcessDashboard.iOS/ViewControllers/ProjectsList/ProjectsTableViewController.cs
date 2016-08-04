@@ -47,7 +47,6 @@ namespace ProcessDashboard.iOS
 				TasksTableViewController controller = (TasksTableViewController)segue.DestinationViewController;
 				controller.projectId = ((ProjectsTableSource)projectsTableView.Source).selectedProjectId;
 				controller.projectName = ((ProjectsTableSource)projectsTableView.Source).selectedProjectName;
-
 			}
 		}
 
@@ -74,29 +73,19 @@ namespace ProcessDashboard.iOS
 
 		public async System.Threading.Tasks.Task<int> getDataOfProject()
 		{
-			var apiService = new ApiTypes(null);
-			var service = new PDashServices(apiService);
-
-			// TODO: make controller a global singelton for better performance
-			Controller c = new Controller(service);
-
 			// TODO: should this line be wrapped in try-catch?
-			List<Project> projectsList = await c.GetProjects(AccountStorage.DataSet);
+			List<Project> projectsList = await PDashAPI.Controller.GetProjects();
 
 			// TODO: add exception handling logic
 			projectsCache = projectsList;
 
 			try
 			{
-				System.Diagnostics.Debug.WriteLine("** GET PROJECTS **");
-				System.Diagnostics.Debug.WriteLine("Length is " + projectsCache.Count);
-
 				foreach (var proj in projectsList.Select(x => x.Name))
 				{
 					System.Diagnostics.Debug.WriteLine(proj);
 				}
 				projectsTableView.ReloadData();
-				System.Diagnostics.Debug.WriteLine("Projects Tab: data reloaded");
 			}
 			catch (Exception e)
 			{

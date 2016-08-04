@@ -44,11 +44,9 @@ namespace ProcessDashboard.iOS
 		/// </summary>
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 		{
-			
 			selectedTask = tableItems[indexPath.Row];
 			tableView.DeselectRow(indexPath, true);
 			owner.PerformSegue("task2TaskDetail", owner);
-
 		}
 
 		/// <summary>
@@ -63,7 +61,7 @@ namespace ProcessDashboard.iOS
 				cell = new UITableViewCell(UITableViewCellStyle.Default, cellIdentifier);
 
 
-			if (!tableItems[indexPath.Row].CompletionDate.HasValue)
+			if (tableItems[indexPath.Row].CompletionDate != null)
 			{
 				var attriStr = new NSAttributedString(tableItems[indexPath.Row].FullName, strikethroughStyle: NSUnderlineStyle.Single);
 				cell.TextLabel.AttributedText = attriStr;

@@ -69,7 +69,6 @@ namespace ProcessDashboard.iOS
 			{
 				TaskDetailsViewController controller = (TaskDetailsViewController)segue.DestinationViewController;
 				controller.task = ((TasksTableSource)tasksTableView.Source).selectedTask;
-				//controller.project = ((TasksTableSource)tasksTableView.Source).project;
 			}
 		}
 
@@ -125,18 +124,11 @@ namespace ProcessDashboard.iOS
 
 		public async System.Threading.Tasks.Task<int> getDataOfTask()
 		{
-			var apiService = new ApiTypes(null);
-			var service = new PDashServices(apiService);
-			Controller c = new Controller(service);
-			List<Task> tasksList = await c.GetTasks(AccountStorage.DataSet, projectId);
+			List<Task> tasksList = await PDashAPI.Controller.GetTasks(projectId);
 			tasksCache = tasksList;
-
 
 			try
 			{
-				System.Diagnostics.Debug.WriteLine("** GET TASKS **");
-				System.Diagnostics.Debug.WriteLine("Length is " + tasksList.Count);
-
 				foreach (var task in tasksList)  //.Select(x => x.estimatedTime)
 				{
 					System.Diagnostics.Debug.WriteLine(task.FullName);

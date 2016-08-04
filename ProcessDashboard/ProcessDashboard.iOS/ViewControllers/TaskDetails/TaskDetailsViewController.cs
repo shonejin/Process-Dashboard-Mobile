@@ -24,7 +24,6 @@ namespace ProcessDashboard.iOS
     {
 		public Task task;
 		TimeLoggingController timeLoggingController;
-		Controller c;
 		DateTime completeTimeSelectedDate;
 		UIToolbar toolbar;
 		UIBarButtonItem saveButton, cancelButton;
@@ -52,17 +51,11 @@ namespace ProcessDashboard.iOS
 			}
 		}
 
-		public override void ViewDidAppear(bool animated)
-		{
-			base.ViewDidAppear(animated);
-			refreshData();
-		}
-
 		public async void refreshData()
 		{
 			try
 			{
-				task = await c.GetTask(AccountStorage.DataSet, task.Id);
+				task = await PDashAPI.Controller.GetTask(task.Id);
 				PlanTable.Source = new TaskDetailTableSource(task, this);
 				PlanTable.ReloadData();
 				refreshControlButtons();
@@ -77,35 +70,31 @@ namespace ProcessDashboard.iOS
 		public void MarkComplete(DateTime date)
 		{ 
 			TdCheckboxBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
-			c.UpdateATask(AccountStorage.DataSet, task.Id, task.EstimatedTime, date, false);
+			PDashAPI.Controller.UpdateATask(task.Id, task.EstimatedTime, date, false);
 		}
 
 		public void MarkIncomplete()
 		{ 
 			TdCheckboxBtn.SetImage(UIImage.FromBundle("checkbox-unchecked"), UIControlState.Normal);
-			c.UpdateATask(AccountStorage.DataSet, task.Id, task.EstimatedTime, null, true);
+			PDashAPI.Controller.UpdateATask(task.Id, task.EstimatedTime, null, true);
 		}
 
 		public void ChangeCompleteDate(DateTime date)
 		{ 
-			c.UpdateATask(AccountStorage.DataSet, task.Id, task.EstimatedTime, date, false);
+			PDashAPI.Controller.UpdateATask(task.Id, task.EstimatedTime, date, false);
 		}
 
 		public override void ViewDidLoad()
 		{
+			base.ViewDidLoad();
+
 			if (task == null)
 			{
 				return;
 			}
 
-			base.ViewDidLoad();
-
 			timeLoggingController = TimeLoggingController.GetInstance();
 			timeLoggingController.TimeLoggingStateChanged += new StateChangedEventHandler(timeLoggingStateChanged);
-
-			var apiService = new ApiTypes(null);
-			var service = new PDashServices(apiService);
-			c = new Controller(service);
 
 			Console.WriteLine(NavigationController.NavigationBar.TopItem.Title);
 			if (NavigationController.NavigationBar.TopItem.Title.Equals("Process Dashboard"))
@@ -113,19 +102,12 @@ namespace ProcessDashboard.iOS
 				NavigationController.NavigationBar.TopItem.Title = "Back";
 			}
 
-			TdPauseBtn.SetImage(UIImage.FromBundle("pause-deactivated"), UIControlState.Normal);
-			TdPauseBtn.Enabled = true;
-			TdPauseBtn.TouchUpInside += PauseBtnOnClick;
-
-			TdPlayBtn.SetImage(UIImage.FromBundle("play-activated"), UIControlState.Normal);
-			TdPlayBtn.Enabled = false;
-			TdPlayBtn.TouchUpInside += PlayBtnOnClick;
+			refreshControlButtons();
 
 			TdCheckboxBtn.TouchUpInside += delegate
 			{
 				((TaskDetailTableSource)PlanTable.Source).completeDateText.BecomeFirstResponder();
 			};
-
 
 			tdProjectNameBtn.SetTitle(task.Project != null ? task.Project.Name : "", UIControlState.Normal);
 			tdProjectNameBtn.SetTitleColor(UIColor.Black, UIControlState.Normal);
@@ -141,8 +123,8 @@ namespace ProcessDashboard.iOS
 			string[] tableItems = new string[]{estimated.ToString("hh\\:mm"), 
 				                                        actual.ToString("hh\\:mm"), 
 				                                        task.CompletionDate == null ? "-:-" : task.CompletionDate.Value.ToString("MM/dd/yyyy") };
-			// load data from previous screen. don't fetch update from the server now
-			// refreshData();
+			PlanTable.Source = new TaskDetailTableSource(task, this);
+			refreshData();
 
 			View.AddSubview(PlanTable);
 		}
@@ -160,13 +142,13 @@ namespace ProcessDashboard.iOS
 			}
 			else
 			{
-				if (task.CompletionDate.HasValue)
+				if (task.CompletionDate == null)
 				{
-					TdCheckboxBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
+					TdCheckboxBtn.SetImage(UIImage.FromBundle("checkbox-unchecked"), UIControlState.Normal);
 				}
 				else
 				{
-					TdCheckboxBtn.SetImage(UIImage.FromBundle("checkbox-unchecked"), UIControlState.Normal);
+					TdCheckboxBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
 				}
 				TdCheckboxBtn.Enabled = true;
 
@@ -301,11 +283,7 @@ namespace ProcessDashboard.iOS
 
 		public async System.Threading.Tasks.Task<int> TaskUpdateEstimatedTime(string taskId, double estimatedTime)
 		{
-			var apiService = new ApiTypes(null);
-			var service = new PDashServices(apiService);
-			Controller ctrl = new Controller(service);
-
-			var tr =await ctrl.UpdateATask(AccountStorage.DataSet, taskId, estimatedTime, null, false);
+			var tr =await PDashAPI.Controller.UpdateATask(taskId, estimatedTime, null, false);
 
 			return 0;
 

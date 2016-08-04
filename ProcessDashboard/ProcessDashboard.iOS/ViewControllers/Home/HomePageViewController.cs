@@ -24,7 +24,6 @@ namespace ProcessDashboard.iOS
 		DTO.Task currentTask;
 		List<DTO.Task> RecentTaskItems;
 		TimeLoggingController timeLoggingController;
-		Controller c;
 		UIActivityIndicatorView activityView;
 		DateTime completeTimeSelectedDate ;
 		UIToolbar toolbar;
@@ -96,10 +95,6 @@ namespace ProcessDashboard.iOS
 			timeLoggingController = TimeLoggingController.GetInstance();
 			timeLoggingController.TimeLoggingStateChanged += new StateChangedEventHandler(timeLoggingStateChanged);
 
-			var apiService = new ApiTypes(null);
-			var service = new PDashServices(apiService);
-			c = new Controller(service);
-
 			activityView = new UIActivityIndicatorView(UIActivityIndicatorViewStyle.WhiteLarge);
 			activityView.Frame = View.Frame;
 			activityView.BackgroundColor = UIColor.FromRGBA(0, 0, 0, 0.6f);
@@ -163,18 +158,18 @@ namespace ProcessDashboard.iOS
 
 					DateTime reference = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(2001, 1, 1, 0, 0, 0));
 					reference.AddSeconds(CompleteTimePicker.Date.SecondsSinceReferenceDate);
-					c.UpdateATask(AccountStorage.DataSet, currentTask.Id, currentTask.EstimatedTime, reference, false);
+					PDashAPI.Controller.UpdateATask(currentTask.Id, currentTask.EstimatedTime, reference, false);
 				}
 				else if (saveButton.Title.ToString().Equals("Mark Incomplete"))
 				{
 					completeBtn.SetImage(UIImage.FromBundle("checkbox-unchecked"), UIControlState.Normal);
-					c.UpdateATask(AccountStorage.DataSet, currentTask.Id, currentTask.EstimatedTime, null, true);
+					PDashAPI.Controller.UpdateATask(currentTask.Id, currentTask.EstimatedTime, null, true);
 				}
 				else { // saveButton.Title.ToString().Equals("Change Completion Date")
 					completeBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
 					DateTime reference = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(2001, 1, 1, 0, 0, 0));
 					reference.AddSeconds(CompleteTimePicker.Date.SecondsSinceReferenceDate);
-					c.UpdateATask(AccountStorage.DataSet, currentTask.Id, currentTask.EstimatedTime, reference, false);
+					PDashAPI.Controller.UpdateATask(currentTask.Id, currentTask.EstimatedTime, reference, false);
 				}
 				this.completedDateText.ResignFirstResponder();
 			};
@@ -302,7 +297,7 @@ namespace ProcessDashboard.iOS
 
 		public async System.Threading.Tasks.Task<int> GetRecentTasksData()
 		{
-			List<DTO.Task> projectsList = await c.GetRecentTasks(AccountStorage.DataSet);
+			List<DTO.Task> projectsList = await PDashAPI.Controller.GetRecentTasks();
 			RecentTaskItems = projectsList;
 			return 0;
 		}
