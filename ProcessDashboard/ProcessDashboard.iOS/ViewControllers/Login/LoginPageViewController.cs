@@ -8,8 +8,20 @@ namespace ProcessDashboard.iOS
 	partial class LoginPageViewController : UIViewController
 	{
 		//Create an event when a authentication is successful
-		public event EventHandler OnLoginSuccess;
+		public static event EventHandler OnLoginSuccess;
 		private DataSetLocationResolver _resolver;
+
+		public override void ViewWillAppear(bool animated)
+		{
+			NavigationController.SetNavigationBarHidden(true, false);
+			base.ViewWillAppear(animated);
+		}
+
+		public override void ViewWillDisappear(bool animated)
+		{
+			NavigationController.SetNavigationBarHidden(false, true);
+			base.ViewWillDisappear(animated);
+		}
 
 		public LoginPageViewController(IntPtr handle) : base(handle)
 		{
@@ -99,9 +111,19 @@ namespace ProcessDashboard.iOS
 			}
 		}
 
-		partial void InfoBtnOnClicked(UIButton sender)
+		public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)
 		{
-			UIApplication.SharedApplication.OpenUrl(new NSUrl("http://www.processdash.com/mobile-login"));
+			if (segue.Identifier.Equals("login2help"))
+			{
+				UIViewController vc = segue.DestinationViewController;
+				var webView = new UIWebView(vc.View.Bounds);
+				View.AddSubview(webView);
+				var url = "http://www.processdash.com/mobile-login"; // NOTE: https secure request
+				webView.LoadRequest(new NSUrlRequest(new NSUrl(url)));
+				webView.ScalesPageToFit = true;
+				vc.View.Add(webView);
+			}
+			base.PrepareForSegue(segue, sender);
 		}
 	}
 }

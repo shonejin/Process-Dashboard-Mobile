@@ -265,6 +265,10 @@
       <DependentUpon>SettingsViewController.cs</DependentUpon>
     </Compile>
     <Compile Include="ViewControllers\Settings\SettingTableSource.cs" />
+    <Compile Include="ViewControllers\Login\LoginPageViewController.cs" />
+    <Compile Include="ViewControllers\Login\LoginPageViewController.designer.cs">
+      <DependentUpon>LoginPageViewController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
@@ -283,10 +287,6 @@
     <Compile Include="ViewControllers\Home\HomePageViewController.cs" />
     <Compile Include="ViewControllers\Home\HomePageViewController.designer.cs">
       <DependentUpon>HomePageViewController.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ViewControllers\LoginPageViewController.cs" />
-    <Compile Include="ViewControllers\LoginPageViewController.designer.cs">
-      <DependentUpon>LoginPageViewController.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -311,6 +311,7 @@
     <Folder Include="ViewControllers\CommonElements\" />
     <Folder Include="Resources\Images.xcassets\LauchIcon.imageset\" />
     <Folder Include="ViewControllers\Settings\" />
+    <Folder Include="ViewControllers\Login\" />
   </ItemGroup>
   <Import Project="..\ProcessDashboard\ProcessDashboard.projitems" Label="Shared" Condition="Exists('..\ProcessDashboard\ProcessDashboard.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

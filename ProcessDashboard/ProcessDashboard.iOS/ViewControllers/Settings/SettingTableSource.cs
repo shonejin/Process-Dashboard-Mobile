@@ -54,9 +54,8 @@ namespace ProcessDashboard.iOS
 					actionSheetAlert.AddAction(UIAlertAction.Create("Log Out", UIAlertActionStyle.Destructive, (action) =>
 					{
 						AccountStorage.ClearStorage();
-						var mainStoryboard = UIStoryboard.FromName("Main", NSBundle.MainBundle);
-						var loginPageViewController = mainStoryboard.InstantiateViewController("LoginPageViewController");
-						UIApplication.SharedApplication.KeyWindow.RootViewController = loginPageViewController;
+						AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
+						del.BindLoginViewController();
 					}));
 
 					actionSheetAlert.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));

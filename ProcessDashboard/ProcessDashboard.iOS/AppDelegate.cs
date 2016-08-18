@@ -55,11 +55,16 @@ namespace ProcessDashboard.iOS
 			else
 			{
 				// Haven't logged in even once
-				var loginViewController = GetViewController(MainStoryboard, "LoginPageViewController") as LoginPageViewController;
-				loginViewController.OnLoginSuccess += LoginViewController_OnLoginSuccess;
-				SetRootViewController(loginViewController, false);
+				BindLoginViewController();
 			}
 			return true;
+		}
+
+		public void BindLoginViewController()
+		{
+			LoginPageViewController.OnLoginSuccess += LoginViewController_OnLoginSuccess;
+			var loginNavigationController = GetViewController(MainStoryboard, "LoginNavigationController") as UINavigationController;
+			SetRootViewController(loginNavigationController, false);
 		}
 
 		void LoginViewController_OnLoginSuccess(object sender, EventArgs e)
