@@ -28,6 +28,8 @@ namespace ProcessDashboard.iOS
 		UIDatePicker CompleteTimePicker;
 		String saveButtonLabel = "Save";
 
+		StateChangedEventHandler stateHandler;
+
 		public TaskDetailsViewController(IntPtr handle) : base(handle)
 		{
 		}
@@ -66,8 +68,15 @@ namespace ProcessDashboard.iOS
 
 		public override void ViewDidAppear(bool animated)
 		{
+			TimeLoggingController.TimeLoggingStateChanged += stateHandler;
 			refreshData();
 			base.ViewDidAppear(animated);
+		}
+
+		public override void ViewWillDisappear(bool animated)
+		{
+			TimeLoggingController.TimeLoggingStateChanged -= stateHandler;
+			base.ViewWillDisappear(animated);
 		}
 
 		public override void ViewDidLoad()
@@ -80,7 +89,7 @@ namespace ProcessDashboard.iOS
 			}
 
 			timeLoggingController = TimeLoggingController.GetInstance();
-			TimeLoggingController.TimeLoggingStateChanged += new StateChangedEventHandler(timeLoggingStateChanged);
+			stateHandler = new StateChangedEventHandler(timeLoggingStateChanged);
 
 			if (NavigationController.NavigationBar.TopItem.Title.Equals("Process Dashboard"))
 			{

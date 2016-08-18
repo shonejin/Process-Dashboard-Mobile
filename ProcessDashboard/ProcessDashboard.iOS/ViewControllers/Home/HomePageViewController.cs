@@ -31,6 +31,7 @@ namespace ProcessDashboard.iOS
 		UIDatePicker CompleteTimePicker;
 		UITextField completedDateText;
 		String saveButtonLabel = "Save";
+		StateChangedEventHandler stateHandler;
 
 		public HomePageViewController(IntPtr handle) : base(handle)
 		{}
@@ -44,12 +45,7 @@ namespace ProcessDashboard.iOS
 		}
 
 		public void TaskNameBtnOnClick(object sender, EventArgs ea)
-		{
-			String baseUrl = AccountStorage.BaseUrl;
-			String dataset = AccountStorage.DataSet;
-			AccountStorage.ClearStorage();
-			AccountStorage.Set("hehe", "test", baseUrl, dataset);
-			              
+		{     
 			if (currentTask != null)
 			{
 				PerformSegue("homeTask2TaskDetails", this);
@@ -88,7 +84,6 @@ namespace ProcessDashboard.iOS
 
 		private void timeLoggingStateChanged(object sender, StateChangedEventArgs ea)
 		{
-			// instead of re-throws an exception, the timeLoggingController will call this handler when it received the cancelTimeLog exception
 			if (ea.NewState.Equals(TimeLoggingControllerStates.TimeLogCanceled))
 			{
 				refreshControlButtons();
@@ -100,7 +95,7 @@ namespace ProcessDashboard.iOS
 			base.ViewDidLoad();
 
 			timeLoggingController = TimeLoggingController.GetInstance();
-			TimeLoggingController.TimeLoggingStateChanged += new StateChangedEventHandler(timeLoggingStateChanged);
+			stateHandler = new StateChangedEventHandler(timeLoggingStateChanged);
 
 			activityView = new UIActivityIndicatorView(UIActivityIndicatorViewStyle.WhiteLarge);
 			activityView.Frame = View.Frame;
@@ -132,9 +127,15 @@ namespace ProcessDashboard.iOS
 		public override void ViewDidAppear(bool animated)
 		{
 			base.ViewDidAppear(animated);
-
+			TimeLoggingController.TimeLoggingStateChanged += stateHandler;
 			NavigationController.NavigationBar.TopItem.Title = "Process Dashboard";
 			refreshData();
+		}
+
+		public override void ViewWillDisappear(bool animated)
+		{
+			TimeLoggingController.TimeLoggingStateChanged -= stateHandler;
+			base.ViewWillDisappear(animated);
 		}
 
 		public async void refreshData()

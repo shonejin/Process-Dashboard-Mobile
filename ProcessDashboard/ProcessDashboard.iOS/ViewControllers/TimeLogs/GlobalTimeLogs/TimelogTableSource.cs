@@ -102,8 +102,6 @@ namespace ProcessDashboard.iOS
 			                , item.StartDate.ToLocalTime().ToShortTimeString()
 			                , TimeSpan.FromMinutes(item.LoggedTime).ToString(@"hh\:mm"));
 
-			Console.WriteLine("taks full name: " + item.Task.FullName.ToString());
-
 			return cell;
 		}
 

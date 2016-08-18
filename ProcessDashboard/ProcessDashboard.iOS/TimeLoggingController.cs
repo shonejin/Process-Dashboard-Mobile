@@ -3,6 +3,7 @@ using System;
 using ProcessDashboard.Service;
 using ProcessDashboard.Service_Access_Layer;
 using ProcessDashboard.SyncLogic;
+using UIKit;
 #endregion
 namespace ProcessDashboard
 {
@@ -149,7 +150,6 @@ namespace ProcessDashboard
 
 		private async System.Threading.Tasks.Task Save()
 		{
-			Console.WriteLine("save() called");
 			try
 			{
 				await SaveIfNeeded();
@@ -158,6 +158,7 @@ namespace ProcessDashboard
 				if (!WasNetworkAvailable)
 				{
 					OnNetworkAvailabilityChanged(NetworkAvailabilityStates.BecameAvailable, String.Empty);
+
 					WasNetworkAvailable = true;
 				}
 			}
@@ -169,8 +170,6 @@ namespace ProcessDashboard
 
 				OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogUpdateFailed, String.Empty);
 
-				Console.WriteLine("save() catched CannotReachServerException. Background ping enabled.");
-
 				if (WasNetworkAvailable)
 				{
 					OnNetworkAvailabilityChanged(NetworkAvailabilityStates.BecameUnavailable, String.Empty);
@@ -181,8 +180,6 @@ namespace ProcessDashboard
 
 		private async System.Threading.Tasks.Task SaveIfNeeded()
 		{
-			Console.WriteLine("saveIfNeeded() called");
-
 			if (_timeLogEntryId == null)
 			{
 				if (_stopwatch.IsRunning() || TimeIsDiscrepant())
@@ -196,7 +193,6 @@ namespace ProcessDashboard
 
 						_timeLogEntryId = "" + value.Id;
 
-						Console.WriteLine("timelogentryid: " + _timeLogEntryId);
 						_savedLoggedTime = logged;
 						_savedInterruptTime = interrupt;
 
@@ -205,7 +201,10 @@ namespace ProcessDashboard
 					catch (CancelTimeLoggingException e)
 					{
 						await HandleCancelTimeLoggingException(e);
-						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogCanceled, String.Empty);
+						UIApplication.SharedApplication.InvokeOnMainThread(() =>
+						{
+							OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogCanceled, String.Empty);
+						});
 					}
 				}
 			}
@@ -213,12 +212,13 @@ namespace ProcessDashboard
 			{
 				if (_stopwatch.IsPaused() && _stopwatch.GetLoggedMinutes() < 0.5)
 				{
-					Console.WriteLine("Calling DeleteTimeLog(). Minutes: " + _stopwatch.GetTrailingLoggedMinutes());
-
 					await _controller.DeleteTimeLog(AccountStorage.DataSet, _timeLogEntryId);
 					ReleaseTimeLogEntry(false);
 
-					OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogUpdated, "Time log deleted because it is too short.");
+					UIApplication.SharedApplication.InvokeOnMainThread(() =>
+					{
+						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogUpdated, "Time log deleted because it is too short.");
+					});
 				}
 				else if (TimeIsDiscrepant())
 				{
@@ -227,21 +227,23 @@ namespace ProcessDashboard
 						int logged = Round(_stopwatch.GetLoggedMinutes());
 						int interrupt = Round(_stopwatch.GetInterruptMinutes());
 
-						Console.WriteLine("Calling UpdateTimeLog()");
-
 						await _controller.UpdateTimeLog(AccountStorage.DataSet, _timeLogEntryId, null, null, _taskId,
 						                               LoggedTimeDelta(), interruptTimeDelta(), _stopwatch.IsRunning());
 
-						Console.WriteLine(">>>> timelog update: delta: " + logged + ", int: " + interrupt);
-
 						_savedLoggedTime = logged;
 						_savedInterruptTime = interrupt;
-						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogUpdated, "Time log updated");
+						UIApplication.SharedApplication.InvokeOnMainThread(() =>
+						{
+							OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogUpdated, "Time log updated");
+						});
 					}
 					catch (CancelTimeLoggingException e)
 					{
-						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogCanceled, String.Empty);
 						await HandleCancelTimeLoggingException(e);
+						UIApplication.SharedApplication.InvokeOnMainThread(() =>
+						{
+							OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogCanceled, String.Empty);
+						});
 					}
 				}
 			}
@@ -253,8 +255,13 @@ namespace ProcessDashboard
 			Console.WriteLine("handleCancelTimeLoggingException() called");
 
 			_stopwatch.CancelTimingAsOf(e.GetStopTime());
+
+			Console.WriteLine("canceltimingasof called");
+
 			await SaveIfNeeded();
 			ReleaseTimeLogEntry(true);
+
+			Console.WriteLine("handle finished");
 		}
 
 		private void ReleaseTimeLogEntry(Boolean resetStopwatch)
