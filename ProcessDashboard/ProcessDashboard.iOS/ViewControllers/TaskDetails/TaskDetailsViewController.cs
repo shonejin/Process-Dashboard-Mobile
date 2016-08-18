@@ -80,7 +80,7 @@ namespace ProcessDashboard.iOS
 			}
 
 			timeLoggingController = TimeLoggingController.GetInstance();
-			timeLoggingController.TimeLoggingStateChanged += new StateChangedEventHandler(timeLoggingStateChanged);
+			TimeLoggingController.TimeLoggingStateChanged += new StateChangedEventHandler(timeLoggingStateChanged);
 
 			if (NavigationController.NavigationBar.TopItem.Title.Equals("Process Dashboard"))
 			{

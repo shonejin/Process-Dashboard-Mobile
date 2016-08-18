@@ -55,14 +55,12 @@ namespace ProcessDashboard.iOS
 			//RefreshControl = new UIRefreshControl();
 			//tasksTableView.Add(RefreshControl);
 			//RefreshControl.ValueChanged += (sender, e) => { refreshData(); };
-			refreshData();
-
 		}
 
 		public override void ViewDidAppear(bool animated)
 		{
 			base.ViewDidAppear(animated);
-			//refreshData();
+			refreshData();
 		}
 
 		public override void PrepareForSegue(UIKit.UIStoryboardSegue segue, Foundation.NSObject sender)
@@ -100,8 +98,6 @@ namespace ProcessDashboard.iOS
 				ViewControllerHelper.ShowAlert(this, null, ex.Message + " Please try again later.");
 			}
 
-			// TODO: fix dirty implementation
-			// exception will thrown when there are only 4 tasks and they are all completed
 			try
 			{
 				int pos = 0;

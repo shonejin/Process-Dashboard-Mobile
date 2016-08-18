@@ -309,8 +309,8 @@ namespace ProcessDashboard.iOS
 
 			IntPicker.Model = intModel;
 
-			IntPicker.Select(h, 0, true);
-			IntPicker.Select(m, 1, true);
+			IntPicker.Select((int)timeLogEntry.InterruptTime / 60, 0, true);
+			IntPicker.Select((int)timeLogEntry.InterruptTime % 60, 1, true);
 
 			//Setup the toolbar
 			toolbar = new UIToolbar();

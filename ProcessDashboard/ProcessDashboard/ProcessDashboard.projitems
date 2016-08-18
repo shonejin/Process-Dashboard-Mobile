@@ -50,6 +50,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)StateChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AccountStorage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SettingsData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Readme.md" />

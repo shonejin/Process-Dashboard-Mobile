@@ -259,7 +259,6 @@
     <Compile Include="PDashAPI.cs" />
     <Compile Include="ViewControllers\ViewControllerHelper.cs" />
     <Compile Include="Helpers\Settings.cs" />
-    <Compile Include="ViewControllers\Settings\SettingsData.cs" />
     <Compile Include="ViewControllers\Settings\SettingsViewController.cs" />
     <Compile Include="ViewControllers\Settings\SettingsViewController.designer.cs">
       <DependentUpon>SettingsViewController.cs</DependentUpon>

@@ -15,9 +15,7 @@ namespace ProcessDashboard
 	{
 		public bool isReadyForNewTimeLog = true;
 		public bool WasNetworkAvailable = true;
-		
-		public static int MaxContinuousInterruptTime = 10; // minutes
-		public static int RunawayTimerTime = 60; // one hour
+
 		private Controller _controller;
 
 		private OsTimerService _osTimerService;
@@ -34,7 +32,7 @@ namespace ProcessDashboard
 		// Fired when network connection to the PDES changed from available to unavailable, or from unavailable to available
 		// not real-time. We do network connections once per minute in TimeLoggingController
 		// not represents global network availablility. Fired by and only by this TimeLoggingController.
-		public event StateChangedEventHandler NetworkAvailabilityChanged;
+		public static event StateChangedEventHandler NetworkAvailabilityChanged;
 		public void OnNetworkAvailabilityChanged(NetworkAvailabilityStates e, String message)
 		{
 			if (NetworkAvailabilityChanged != null)
@@ -44,7 +42,7 @@ namespace ProcessDashboard
 		}
 
 		// Fired when a new time log is created successfully, updated successfully/failed, or canceled by PDES.
-		public event StateChangedEventHandler TimeLoggingStateChanged;
+		public static event StateChangedEventHandler TimeLoggingStateChanged;
 		public void OnTimeLoggingStateChanged(TimeLoggingControllerStates e, String message)
 		{
 			if (TimeLoggingStateChanged != null)
@@ -87,7 +85,7 @@ namespace ProcessDashboard
 			Console.WriteLine("Trying to start timer for task: " + _taskId);
 
 			await SetTaskId(_taskId);
-			if (_stopwatch.GetTrailingLoggedMinutes() > MaxContinuousInterruptTime)
+			if (_stopwatch.GetTrailingLoggedMinutes() > SettingsData.MaxContIntTimeMin)
 			{
 				await SaveIfNeeded();
 				ReleaseTimeLogEntry(true);
@@ -145,7 +143,7 @@ namespace ProcessDashboard
 
 		public async void Ping(Object stateInfo)
 		{
-			_stopwatch.MaybeCancelRunawayTimer(RunawayTimerTime);
+			_stopwatch.MaybeCancelRunawayTimer(SettingsData.ForgottenTmrThsMin);
 			await Save();
 		}
 
@@ -206,8 +204,8 @@ namespace ProcessDashboard
 					}
 					catch (CancelTimeLoggingException e)
 					{
-						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogCanceled, String.Empty);
 						await HandleCancelTimeLoggingException(e);
+						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogCanceled, String.Empty);
 					}
 				}
 			}

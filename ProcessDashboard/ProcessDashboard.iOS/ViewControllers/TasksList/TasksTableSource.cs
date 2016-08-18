@@ -53,7 +53,8 @@ namespace ProcessDashboard.iOS
 				cell.TextLabel.AttributedText = attriStr;
 			}
 			else {
-				cell.TextLabel.Text = tableItems[indexPath.Row].FullName;
+				var attriStr = new NSAttributedString(tableItems[indexPath.Row].FullName, strikethroughStyle: NSUnderlineStyle.None);
+				cell.TextLabel.AttributedText = attriStr;
 			}
 
 			cell.TextLabel.Font = UIFont.SystemFontOfSize(13);

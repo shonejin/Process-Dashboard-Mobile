@@ -95,7 +95,7 @@ namespace ProcessDashboard.iOS
 			base.ViewDidLoad();
 
 			timeLoggingController = TimeLoggingController.GetInstance();
-			timeLoggingController.TimeLoggingStateChanged += new StateChangedEventHandler(timeLoggingStateChanged);
+			TimeLoggingController.TimeLoggingStateChanged += new StateChangedEventHandler(timeLoggingStateChanged);
 
 			activityView = new UIActivityIndicatorView(UIActivityIndicatorViewStyle.WhiteLarge);
 			activityView.Frame = View.Frame;

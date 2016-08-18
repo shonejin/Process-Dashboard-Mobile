@@ -1,7 +1,7 @@
 ﻿using Plugin.Settings;
 using Plugin.Settings.Abstractions;
 
-namespace ProcessDashboard.iOS
+namespace ProcessDashboard
 {
 	public static class SettingsData
 	{
@@ -40,7 +40,6 @@ namespace ProcessDashboard.iOS
 			set
 			{
 				AppSettings.AddOrUpdateValue<int>(MaxContIntTimeMinKey, value);
-				TimeLoggingController.MaxContinuousInterruptTime = value;
 			}
 		}
 
@@ -56,7 +55,6 @@ namespace ProcessDashboard.iOS
 			set
 			{
 				AppSettings.AddOrUpdateValue<int>(ForgottenTmrThsMinKey, value);
-				TimeLoggingController.RunawayTimerTime = value;
 			}
 		}
 	}
