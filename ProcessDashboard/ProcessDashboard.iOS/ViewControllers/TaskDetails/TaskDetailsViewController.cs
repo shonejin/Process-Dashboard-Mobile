@@ -64,6 +64,12 @@ namespace ProcessDashboard.iOS
 			}
 		}
 
+		public override void ViewDidAppear(bool animated)
+		{
+			refreshData();
+			base.ViewDidAppear(animated);
+		}
+
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
@@ -103,8 +109,6 @@ namespace ProcessDashboard.iOS
 			TimeSpan actual = TimeSpan.FromMinutes(task.ActualTime);
 			PlanTable.Source = new TaskDetailTableSource(task, this);
 			View.AddSubview(PlanTable);
-
-			refreshData();
 		}
 
 		public void refreshControlButtons()

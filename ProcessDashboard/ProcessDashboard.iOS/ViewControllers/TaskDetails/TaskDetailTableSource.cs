@@ -208,6 +208,7 @@ namespace ProcessDashboard.iOS
 						TaskItem.CompletionDate = completeTimeSelectedDate;
 						this.completeDateText.Text = Util.GetInstance().GetLocalTime(completeTimeSelectedDate).ToShortDateString();
 						owner.task = TaskItem;
+						owner.PauseBtnOnClick(null, null);
 						owner.refreshControlButtons();
 					}
 					catch (Exception ex)

@@ -16,8 +16,8 @@ namespace ProcessDashboard
 		public bool isReadyForNewTimeLog = true;
 		public bool WasNetworkAvailable = true;
 		
-		private const int MaxContinuousInterruptTime = 10; // minutes
-		private const int RunawayTimerTime = 60; // one hour
+		public static int MaxContinuousInterruptTime = 10; // minutes
+		public static int RunawayTimerTime = 60; // one hour
 		private Controller _controller;
 
 		private OsTimerService _osTimerService;
@@ -59,7 +59,11 @@ namespace ProcessDashboard
 		private static TimeLoggingController _instance;
 		public static TimeLoggingController GetInstance()
 		{
-			return _instance ?? (_instance = new TimeLoggingController());
+			if (_instance == null)
+			{
+				_instance = new TimeLoggingController();
+			}
+			return _instance;
 		}
 
 		public TimeLoggingController()

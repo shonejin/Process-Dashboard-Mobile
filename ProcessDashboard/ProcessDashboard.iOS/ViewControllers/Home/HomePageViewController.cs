@@ -235,6 +235,7 @@ namespace ProcessDashboard.iOS
 						await PDashAPI.Controller.UpdateATask(currentTask.Id, null, completeTimeSelectedDate, false);
 						currentTask.CompletionDate = completeTimeSelectedDate;
 						completeBtn.SetImage(UIImage.FromBundle("checkbox-checked"), UIControlState.Normal);
+						PauseBtnOnClick(null, null);
 					}
 					catch (Exception ex)
 					{

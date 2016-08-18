@@ -254,6 +254,7 @@ namespace ProcessDashboard.iOS
 			{
 
 				this.DeltaText.Text = this.deltaSelectedHour + ":" + this.deltaSelectedMinute;
+				double oldLoggedTime = timeLogEntry.LoggedTime;
 				timeLogEntry.LoggedTime = int.Parse(this.deltaSelectedHour) * 60 + int.Parse(this.deltaSelectedMinute);
 				this.DeltaText.ResignFirstResponder();
 
@@ -267,7 +268,7 @@ namespace ProcessDashboard.iOS
 					{
 						try
 						{
-							await PDashAPI.Controller.UpdateTimeLog(timeLogEntry.Id.ToString(), null, null, timeLogEntry.Task.Id, timeLogEntry.LoggedTime, null, false);
+							await PDashAPI.Controller.UpdateTimeLog(timeLogEntry.Id.ToString(), null, null, timeLogEntry.Task.Id, timeLogEntry.LoggedTime - oldLoggedTime, null, false);
 						}
 						catch (Exception ex)
 						{

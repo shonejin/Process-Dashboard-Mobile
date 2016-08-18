@@ -40,6 +40,7 @@ namespace ProcessDashboard.iOS
 			set
 			{
 				AppSettings.AddOrUpdateValue<int>(MaxContIntTimeMinKey, value);
+				TimeLoggingController.MaxContinuousInterruptTime = value;
 			}
 		}
 
@@ -55,6 +56,7 @@ namespace ProcessDashboard.iOS
 			set
 			{
 				AppSettings.AddOrUpdateValue<int>(ForgottenTmrThsMinKey, value);
+				TimeLoggingController.RunawayTimerTime = value;
 			}
 		}
 	}
