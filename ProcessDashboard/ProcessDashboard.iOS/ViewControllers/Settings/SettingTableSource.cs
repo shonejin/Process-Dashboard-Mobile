@@ -12,7 +12,6 @@ namespace ProcessDashboard.iOS
 		public SettingTableSource()
 		{
 		}
-		string[] Item;
 		protected string cellIdentifier = "Cell";
 		UIViewController owner;
 		UITextField InterruptTimeText, ForgottenTimerText;
@@ -20,47 +19,19 @@ namespace ProcessDashboard.iOS
 		UIToolbar toolbar;
 		UIBarButtonItem saveButton, cancelButton;
 		String saveButtonLabel = "Save";
-		string planSelectedHour, planSelectedMinute;
+		string intSelectedHour, intSelectedMinute;
+		string fgtSelectedHour, fgtSelectedMinute;
 
-		public SettingTableSource(string[] items, UIViewController owner)
+		public SettingTableSource(UIViewController owner)
 		{
-			Item = items;
 			this.owner = owner;
 		}
 
-		/// <summary>
-		/// Called by the TableView to determine how many cells to create for that particular section.
-		/// </summary>
 		public override nint RowsInSection(UITableView tableview, nint section)
 		{
-			// TODO: handling NULL
 			return 4;
 		}
 
-		/// <summary>
-		/// Called when a row is touched
-		/// </summary>
-		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
-		{
-			//tableView.DeselectRow(indexPath, true);
-
-			//if (indexPath.Row == 1)
-			//{
-			//	owner.PerformSegue("TaskTimeLogsSegue", owner);
-			//}
-			//tableView.DeselectRow(indexPath, true);
-			/*
-			UIAlertController okAlertController = UIAlertController.Create("Row Selected", tableItems[indexPath.Row], UIAlertControllerStyle.Alert);
-			okAlertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
-			owner.PresentViewController(okAlertController, true, null);
-
-			
-			*/
-		}
-
-		/// <summary>
-		/// Called by the TableView to get the actual UITableViewCell to render for the particular row
-		/// </summary>
 		public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
 		{
 			// request a recycled cell to save memory
@@ -72,25 +43,23 @@ namespace ProcessDashboard.iOS
 
 			if (indexPath.Row == 0)
 			{
-				cell.TextLabel.Text = "Log out";
-				UIToolbar logoutToolbar = new UIToolbar(new CGRect(0, 0, 65, 30));
-				logoutToolbar.BarStyle = UIBarStyle.Default;
-				logoutToolbar.BackgroundColor = UIColor.White;
-				logoutToolbar.Translucent = true;
+				cell.TextLabel.Text = "Logged in as: \"" + AccountStorage.UserId + "\"";
 
-				UIBarButtonItem item = new UIBarButtonItem("Logout", UIBarButtonItemStyle.Plain,
-				(s, e) =>
-				{
-					UIAlertController actionSheetAlert = UIAlertController.Create(null, "Are you sure you want to log out?", UIAlertControllerStyle.ActionSheet);
+				UIButton logoutBtn = new UIButton(UIButtonType.RoundedRect);
+				logoutBtn.Frame = new CGRect(0, 0, 65, 30);
+				logoutBtn.SetTitle("Log Out", UIControlState.Normal);
+				logoutBtn.TouchUpInside += (sender, e) => { 
+					UIAlertController actionSheetAlert = UIAlertController.Create(null, "You are going to log out", UIAlertControllerStyle.ActionSheet);
 
-					actionSheetAlert.AddAction(UIAlertAction.Create("Log out", UIAlertActionStyle.Destructive, (action) => {
+					actionSheetAlert.AddAction(UIAlertAction.Create("Log Out", UIAlertActionStyle.Destructive, (action) =>
+					{
 						AccountStorage.ClearStorage();
 						var mainStoryboard = UIStoryboard.FromName("Main", NSBundle.MainBundle);
 						var loginPageViewController = mainStoryboard.InstantiateViewController("LoginPageViewController");
 						UIApplication.SharedApplication.KeyWindow.RootViewController = loginPageViewController;
-					})); 
+					}));
 
-					actionSheetAlert.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, (action) => Console.WriteLine("Cancel button pressed.")));
+					actionSheetAlert.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
 
 					UIPopoverPresentationController presentationPopover = actionSheetAlert.PopoverPresentationController;
 					if (presentationPopover != null)
@@ -98,46 +67,38 @@ namespace ProcessDashboard.iOS
 						presentationPopover.SourceView = this.owner.View;
 						presentationPopover.PermittedArrowDirections = UIPopoverArrowDirection.Up;
 					}
-
-					// Display the alert
 					this.owner.PresentViewController(actionSheetAlert, true, null);
-
-				});
-
-				logoutToolbar.SetItems(new UIBarButtonItem[] { item }, true);
-				cell.AccessoryView = logoutToolbar;
-
+				};
+				cell.AccessoryView = logoutBtn;
 			}
 			else if (indexPath.Row == 1)
 			{
 				cell.TextLabel.Text = "Connect only over WiFi";
-				cell.AccessoryView = new UISwitch(new CGRect(0, 0, 100, 25));
-
+				UISwitch wifiSwitch = new UISwitch(new CGRect(0, 0, 80, 20));
+				wifiSwitch.On = SettingsData.WiFiOnly;
+				wifiSwitch.ValueChanged += (sender, e) => {
+					SettingsData.WiFiOnly = wifiSwitch.On;
+				};
+				cell.AccessoryView = wifiSwitch;
 			}
 			else if (indexPath.Row == 2)
 			{
-
 				cell.TextLabel.Text = "Max continuous interrupt time";
 				InterruptTimeText = new UITextField(new CGRect(0, 400, 150, 30));
 				cell.AccessoryView = InterruptTimeText;
 				InterruptTimeText.TextColor = UIColor.LightGray;
 				InterruptTimeText.TextAlignment = UITextAlignment.Right;
 				newInterruptTimePicker();
-
 			}
 			else if (indexPath.Row == 3){
-				
 				cell.TextLabel.Text = "Forgotten timer threshold";
 				ForgottenTimerText = new UITextField(new CGRect(0, 500, 150, 30));
 				cell.AccessoryView = ForgottenTimerText;
 				ForgottenTimerText.TextColor = UIColor.LightGray;
 				ForgottenTimerText.TextAlignment = UITextAlignment.Right;
 				newForgottenTimePicker();
-
 			}
 			return cell;
-
-
 		}
 
 		public void newInterruptTimePicker()
@@ -158,31 +119,35 @@ namespace ProcessDashboard.iOS
 			}
 			for (int i = 0; i < minutes.Length; i++)
 			{
-				if (i < 10)
-				{
-					minutes[i] = "0" + i.ToString();
-				}
-				else {
-					minutes[i] = i.ToString();
-				}
+				minutes[i] = i.ToString("00");
 			}
 
 			StatusPickerViewModel planModel = new StatusPickerViewModel(hours, minutes);
 
 			planModel.NumberSelected += (Object sender, EventArgs e) =>
 			{
-				this.planSelectedHour = planModel.selectedHour;
-				this.planSelectedMinute = planModel.selectedMinute;
+				this.intSelectedHour = planModel.selectedHour;
+				this.intSelectedMinute = planModel.selectedMinute;
 
+				if (this.intSelectedHour.Equals("0") && this.intSelectedMinute.Equals("00"))
+				{
+					this.intSelectedMinute = "01";
+					InterruptTimePicker.Select(1, 1, true);
+				}
 			};
 
 			InterruptTimePicker.Model = planModel;
 			InterruptTimePicker.BackgroundColor = UIColor.White;
-			this.planSelectedHour = "0";
-			this.planSelectedMinute = "00";
-			this.InterruptTimeText.Text = this.planSelectedHour + ":" + this.planSelectedMinute;
-			InterruptTimePicker.Select(0, 0, true);
-			InterruptTimePicker.Select(0, 1, true);
+
+			int maxContIntTimeHour = SettingsData.MaxContIntTimeMin / 60;
+			int maxContIntTimeMin = SettingsData.MaxContIntTimeMin % 60;
+
+			this.intSelectedHour = maxContIntTimeHour.ToString();
+			this.intSelectedMinute = maxContIntTimeMin.ToString("00");
+			this.InterruptTimeText.Text = this.intSelectedHour + ":" + this.intSelectedMinute;
+
+			InterruptTimePicker.Select(maxContIntTimeHour, 0, true);
+			InterruptTimePicker.Select(maxContIntTimeMin, 1, true);
 
 			//Setup the toolbar
 			toolbar = new UIToolbar();
@@ -196,8 +161,8 @@ namespace ProcessDashboard.iOS
 			saveButton = new UIBarButtonItem("Save", UIBarButtonItemStyle.Bordered,
 			(s, e) =>
 			{
-
-				this.InterruptTimeText.Text = this.planSelectedHour + ":" + this.planSelectedMinute;
+				this.InterruptTimeText.Text = this.intSelectedHour + ":" + this.intSelectedMinute;
+				SettingsData.MaxContIntTimeMin = int.Parse(this.intSelectedHour) * 60 + int.Parse(this.intSelectedMinute);
 				this.InterruptTimeText.ResignFirstResponder();
 			});
 
@@ -215,7 +180,7 @@ namespace ProcessDashboard.iOS
 			this.InterruptTimeText.InputAccessoryView = toolbar;
 		}
 
-	public void newForgottenTimePicker()
+		public void newForgottenTimePicker()
 		{
 			ForgottenTimePicker = new UIPickerView(new CoreGraphics.CGRect(0, 300, 400, 200f));
 			ForgottenTimePicker.BackgroundColor = UIColor.FromRGB(220, 220, 220);
@@ -229,35 +194,37 @@ namespace ProcessDashboard.iOS
 			for (int i = 0; i < hours.Length; i++)
 			{
 				hours[i] = i.ToString();
-
 			}
 			for (int i = 0; i < minutes.Length; i++)
 			{
-				if (i < 10)
-				{
-					minutes[i] = "0" + i.ToString();
-				}
-				else {
-					minutes[i] = i.ToString();
-				}
+				minutes[i] = i.ToString("00");
 			}
 
 			StatusPickerViewModel planModel = new StatusPickerViewModel(hours, minutes);
 
 			planModel.NumberSelected += (Object sender, EventArgs e) =>
 			{
-				this.planSelectedHour = planModel.selectedHour;
-				this.planSelectedMinute = planModel.selectedMinute;
+				this.fgtSelectedHour = planModel.selectedHour;
+				this.fgtSelectedMinute = planModel.selectedMinute;
 
+				if (this.fgtSelectedHour.Equals("0") && this.fgtSelectedMinute.Equals("00"))
+				{
+					this.fgtSelectedMinute = "01";
+					ForgottenTimePicker.Select(1, 1, true);
+				}
 			};
 
 			ForgottenTimePicker.Model = planModel;
 			ForgottenTimePicker.BackgroundColor = UIColor.White;
-			this.planSelectedHour = "0";
-			this.planSelectedMinute = "00";
-			this.ForgottenTimerText.Text = this.planSelectedHour + ":" + this.planSelectedMinute;
-			ForgottenTimePicker.Select(0, 0, true);
-			ForgottenTimePicker.Select(0, 1, true);
+
+			int maxFgtHour = SettingsData.ForgottenTmrThsMin / 60;
+			int maxFgtMin = SettingsData.ForgottenTmrThsMin % 60;
+			this.fgtSelectedHour = maxFgtHour.ToString();
+			this.fgtSelectedMinute = maxFgtMin.ToString("00");
+
+			this.ForgottenTimerText.Text = this.fgtSelectedHour + ":" + this.fgtSelectedMinute;
+			ForgottenTimePicker.Select(maxFgtHour, 0, true);
+			ForgottenTimePicker.Select(maxFgtMin, 1, true);
 
 			//Setup the toolbar
 			toolbar = new UIToolbar();
@@ -271,8 +238,8 @@ namespace ProcessDashboard.iOS
 			saveButton = new UIBarButtonItem("Save", UIBarButtonItemStyle.Bordered,
 			(s, e) =>
 			{
-
-				this.ForgottenTimerText.Text = this.planSelectedHour + ":" + this.planSelectedMinute;
+				this.ForgottenTimerText.Text = this.fgtSelectedHour + ":" + this.fgtSelectedMinute;
+				SettingsData.ForgottenTmrThsMin = int.Parse(this.fgtSelectedHour) * 60 + int.Parse(this.fgtSelectedMinute);
 				this.ForgottenTimerText.ResignFirstResponder();
 			});
 
@@ -289,7 +256,6 @@ namespace ProcessDashboard.iOS
 			this.ForgottenTimerText.InputView = ForgottenTimePicker;
 			this.ForgottenTimerText.InputAccessoryView = toolbar;
 		}
-
 	}
 }
 
