@@ -45,7 +45,7 @@ namespace ProcessDashboard.iOS
 
 		public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
 		{
-			if (AccountStorage.UserId != null)
+			if (AccountStorage.Password != null)
 			{
 				// Account information found. We can skip the login screen
 				// If the account credentials are changed on the server side, the user will be requested to login upon the first API request

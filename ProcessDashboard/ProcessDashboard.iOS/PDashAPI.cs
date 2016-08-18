@@ -74,7 +74,20 @@ namespace ProcessDashboard.iOS
 		{
 			if (shouldProceed())
 			{
-				return await base.GetProjects(dataset);
+				try
+				{
+					return await base.GetProjects(dataset);
+				}
+				catch (Exception ex)
+				{
+					if (ex.Message.Contains("401"))
+					{
+						AccountStorage.ClearStorage();
+						AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
+						del.BindLoginViewController();
+					}
+					throw ex;
+				}
 			}
 			else 
 			{
@@ -87,7 +100,20 @@ namespace ProcessDashboard.iOS
 		{
 			if (shouldProceed())
 			{
-				return await base.GetTasks(dataset, projectId);
+				try
+				{
+					return await base.GetTasks(dataset, projectId);
+				}
+				catch (Exception ex)
+				{
+					if (ex.Message.Contains("401"))
+					{
+						AccountStorage.ClearStorage();
+						AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
+						del.BindLoginViewController();
+					}
+					throw ex;
+				}
 			}
 			else
 			{
@@ -102,7 +128,20 @@ namespace ProcessDashboard.iOS
 		{
 			if (shouldProceed())
 			{
-				return await base.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId);
+				try
+				{
+					return await base.GetTimeLogs(dataset, maxResults, startDateFrom, startDateTo, taskId, projectId);
+				}
+				catch (Exception ex)
+				{
+					if (ex.Message.Contains("401"))
+					{
+						AccountStorage.ClearStorage();
+						AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
+						del.BindLoginViewController();
+					}
+					throw ex;
+				}
 			}
 			else
 			{
@@ -115,7 +154,20 @@ namespace ProcessDashboard.iOS
 		{
 			if (shouldProceed())
 			{
-				return await base.GetRecentTasks(dataset);
+				try
+				{
+					return await base.GetRecentTasks(dataset);
+				}
+				catch (Exception ex)
+				{
+					if (ex.Message.Contains("401"))
+					{
+						AccountStorage.ClearStorage();
+						AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
+						del.BindLoginViewController();
+					}
+					throw ex;
+				}
 			}
 			else
 			{
@@ -128,7 +180,20 @@ namespace ProcessDashboard.iOS
 		{
 			if (shouldProceed())
 			{
-				return await base.GetTask(dataset, taskId);
+				try
+				{
+					return await base.GetTask(dataset, taskId);
+				}
+				catch (Exception ex)
+				{
+					if (ex.Message.Contains("401"))
+					{
+						AccountStorage.ClearStorage();
+						AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
+						del.BindLoginViewController();
+					}
+					throw ex;
+				}
 			}
 			else
 			{
@@ -141,7 +206,20 @@ namespace ProcessDashboard.iOS
 		{
 			if (shouldProceed())
 			{
-				return await base.AddATimeLog(dataset, comment, startDate, taskId, loggedTime, interruptTime, open);
+				try
+				{
+					return await base.AddATimeLog(dataset, comment, startDate, taskId, loggedTime, interruptTime, open);
+				}
+				catch (Exception ex)
+				{
+					if (ex.Message.Contains("401"))
+					{
+						AccountStorage.ClearStorage();
+						AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
+						del.BindLoginViewController();
+					}
+					throw ex;
+				}
 			}
 			else
 			{
@@ -154,7 +232,20 @@ namespace ProcessDashboard.iOS
 		{
 			if (shouldProceed())
 			{
-				return await base.UpdateTimeLog(dataset, timeLogId, comment, startDate, taskId, loggedTime, interruptTime, open);
+				try
+				{
+					return await base.UpdateTimeLog(dataset, timeLogId, comment, startDate, taskId, loggedTime, interruptTime, open);
+				}
+				catch (Exception ex)
+				{
+					if (ex.Message.Contains("401"))
+					{
+						AccountStorage.ClearStorage();
+						AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
+						del.BindLoginViewController();
+					}
+					throw ex;
+				}
 			}
 			else
 			{
@@ -167,7 +258,20 @@ namespace ProcessDashboard.iOS
 		{
 			if (shouldProceed())
 			{
-				return await base.DeleteTimeLog(dataset, timeLogId);
+				try
+				{
+					return await base.DeleteTimeLog(dataset, timeLogId);
+				}
+				catch (Exception ex)
+				{
+					if (ex.Message.Contains("401"))
+					{
+						AccountStorage.ClearStorage();
+						AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
+						del.BindLoginViewController();
+					}
+					throw ex;
+				}
 			}
 			else
 			{
@@ -180,7 +284,20 @@ namespace ProcessDashboard.iOS
 		{
 			if (shouldProceed())
 			{
-				return await base.GetTimeLog(dataset, timeLogId);
+				try
+				{
+					return await base.GetTimeLog(dataset, timeLogId);
+				}
+				catch (Exception ex)
+				{
+					if (ex.Message.Contains("401"))
+					{
+						AccountStorage.ClearStorage();
+						AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
+						del.BindLoginViewController();
+					}
+					throw ex;
+				}
 			}
 			else
 			{
@@ -193,7 +310,20 @@ namespace ProcessDashboard.iOS
 		{
 			if (shouldProceed())
 			{
-				return await base.UpdateATask(dataset, taskId, estimatedTime, completionDate, markTaskIncomplete);
+				try
+				{
+					return await base.UpdateATask(dataset, taskId, estimatedTime, completionDate, markTaskIncomplete);
+				}
+				catch (Exception ex)
+				{
+					if (ex.Message.Contains("401"))
+					{
+						AccountStorage.ClearStorage();
+						AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
+						del.BindLoginViewController();
+					}
+					throw ex;
+				}
 			}
 			else
 			{

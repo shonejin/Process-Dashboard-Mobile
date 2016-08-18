@@ -45,6 +45,11 @@ namespace ProcessDashboard.iOS
 
 		public void TaskNameBtnOnClick(object sender, EventArgs ea)
 		{
+			String baseUrl = AccountStorage.BaseUrl;
+			String dataset = AccountStorage.DataSet;
+			AccountStorage.ClearStorage();
+			AccountStorage.Set("hehe", "test", baseUrl, dataset);
+			              
 			if (currentTask != null)
 			{
 				PerformSegue("homeTask2TaskDetails", this);
