@@ -85,7 +85,7 @@ namespace ProcessDashboard
 			Console.WriteLine("Trying to start timer for task: " + _taskId);
 
 			await SetTaskId(_taskId);
-			if (_stopwatch.GetTrailingLoggedMinutes() > SettingsData.MaxContIntTimeMin)
+			if (_stopwatch.GetTrailingInterruptMinutes() > SettingsData.MaxContIntTimeMin)
 			{
 				await SaveIfNeeded();
 				ReleaseTimeLogEntry(true);

@@ -108,12 +108,10 @@ namespace ProcessDashboard
 		{
 			if (IsRunning())
 			{
-				Console.WriteLine("getTrailingLoggedMinutes: from " + _startTime.ToString() + " has minutes: " + (DateTime.UtcNow - _startTime).TotalMinutes);
 				return (DateTime.UtcNow - _startTime).TotalMinutes;
 			}
 			else
 			{
-				Console.WriteLine("getTrailingLoggedMinutes: not running. Return 0 ");
 				return 0;
 			}
 		}
