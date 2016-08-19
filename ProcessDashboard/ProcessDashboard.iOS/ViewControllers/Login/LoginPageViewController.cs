@@ -11,6 +11,13 @@ namespace ProcessDashboard.iOS
 		public static event EventHandler OnLoginSuccess;
 		private DataSetLocationResolver _resolver;
 
+		public override void ViewDidLoad()
+		{
+			UserIDTextView.AutocapitalizationType = UITextAutocapitalizationType.None;
+			UserIDTextView.AutocorrectionType = UITextAutocorrectionType.No;
+			base.ViewDidLoad();
+		}
+
 		public override void ViewWillAppear(bool animated)
 		{
 			NavigationController.SetNavigationBarHidden(true, false);
