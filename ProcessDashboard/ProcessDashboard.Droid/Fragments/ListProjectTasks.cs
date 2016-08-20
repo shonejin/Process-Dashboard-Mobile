@@ -18,6 +18,7 @@ namespace ProcessDashboard.Droid.Fragments
         private string _projectId;
         private string _projectName = "";
         private ListOfProjects.Scrollinput _si;
+        private TextView empty;
 
         public ListProjectTasks(string projectId)
         {
@@ -58,6 +59,9 @@ namespace ProcessDashboard.Droid.Fragments
             {
 
                 var output = await ctrl.GetTasks(Settings.GetInstance().Dataset, projectId);
+
+                System.Diagnostics.Debug.WriteLine(output.Count);
+
                 var listAdapter = new TaskAdapter(Activity, Android.Resource.Layout.SimpleListItem1, output.ToArray());
                 ListView.Adapter = listAdapter;
                 
@@ -131,7 +135,10 @@ namespace ProcessDashboard.Droid.Fragments
                     p.EstimatedTime, p.ActualTime);
                 //Project p = listView.GetItemAtPosition(e.Position);
             };
-#pragma warning disable 4014
+
+            //listView.EmptyView = empty;
+            ListView.EmptyView = empty;
+            #pragma warning disable 4014
             AddData(((MainActivity)Activity).Ctrl, _projectId);
 #pragma warning restore 4014
 
@@ -174,6 +181,21 @@ namespace ProcessDashboard.Droid.Fragments
              new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, 2));
             ll.AddView(listContainer);
             //ll.AddView(srl);
+
+
+            empty = new TextView(this.Activity)
+            {
+                Text = "No Content Found",
+                Visibility = ViewStates.Gone,
+                LayoutParameters = (
+                    new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WrapContent,
+                        ViewGroup.LayoutParams.WrapContent))
+            };
+
+            empty.SetTextSize(ct, 25);
+
+            ll.AddView(empty);
 
             _si = new ListOfProjects.Scrollinput(srl);
             

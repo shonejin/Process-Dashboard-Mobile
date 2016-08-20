@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Fusillade;
 using Plugin.Connectivity;
@@ -31,14 +33,17 @@ namespace ProcessDashboard.Service_Access_Layer
     {
         // Api Service for making the request using Fusilade
         private readonly IApiTypes _apiService;
-
+        
         private readonly Policy _globalPolicy = Policy
-            .Handle<Exception>()
+            .Handle<WebException>(ex => ex.Status==WebExceptionStatus.ProtocolError && ((HttpWebResponse)ex.Response).StatusCode!=HttpStatusCode.Unauthorized)
+            .Or<Exception>()
             .WaitAndRetryAsync
             (
-                5,
+                3,
                 retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
             );
+
+
         // DB Manager to manage Database operations
         // private readonly DbManager _dbm;
 
@@ -50,6 +55,14 @@ namespace ProcessDashboard.Service_Access_Layer
             _apiService = apiService;
             _util = Util.GetInstance();
             _settings = Settings.GetInstance();
+            Policy.Handle<Exception>()
+                .WaitAndRetryAsync
+            (
+                5,
+                retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
+            );
+
+
             //_dbm = DbManager.GetInstance();
         }
 
@@ -217,7 +230,7 @@ namespace ProcessDashboard.Service_Access_Layer
 
         public async Task<Task> UpdateTaskDetails(Priority priority, string dataset, string projecttaskId,
             double? estimatedTime,
-            DateTime? completionDate,bool markIncomplete)
+            DateTime? completionDate, bool markIncomplete)
         {
             CheckConnection();
             try
@@ -299,7 +312,7 @@ namespace ProcessDashboard.Service_Access_Layer
 
             try
             {
-                
+
                 var value = new Dictionary<string, object>();
                 if (comment != null)
                     value.Add("comment", comment);

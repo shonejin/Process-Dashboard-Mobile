@@ -261,6 +261,7 @@ namespace ProcessDashboard.Droid.Fragments
 
                     });
 
+                    frag2.chosenDate = time;
                     if (_timeLog != null)
                     {
                         frag2.StartHour = _timeLog.StartDate.Hour;

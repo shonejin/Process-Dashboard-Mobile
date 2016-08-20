@@ -104,8 +104,8 @@ namespace ProcessDashboard.Droid
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
 
-            AccountStorage ase = new AccountStorage();
-            ase.SetContext(this);
+            _accountStorage = new AccountStorage();
+            _accountStorage.SetContext(this);
             //ase.Set("testing","testing","testing","mock");
             //System.Diagnostics.Debug.WriteLine(ase.UserId);
             
@@ -146,8 +146,7 @@ namespace ProcessDashboard.Droid
             _taskTimeLogDetailFragment = new TaskTimeLogList();
             _listOfTasksFragment = new ListProjectTasks("");
             _testFragment = new TestFragment();
-
-            try
+       try
             {
                 if (_accountStorage.UserId != null)
                 {
@@ -328,26 +327,32 @@ namespace ProcessDashboard.Droid
 
         public void SetDrawerState(bool isEnabled)
         {
-            if (isEnabled)
+            try
             {
-                _drawerLayout.SetDrawerLockMode(DrawerLayout.LockModeUnlocked);
-                drawerToggle.OnDrawerStateChanged(DrawerLayout.LockModeUnlocked);
-                drawerToggle.DrawerIndicatorEnabled = (true);
-                SupportActionBar.SetDisplayHomeAsUpEnabled(true);
-                SupportActionBar.SetHomeButtonEnabled(true);
+                if (isEnabled)
+                {
+                    _drawerLayout.SetDrawerLockMode(DrawerLayout.LockModeUnlocked);
+                    drawerToggle.OnDrawerStateChanged(DrawerLayout.LockModeUnlocked);
+                    drawerToggle.DrawerIndicatorEnabled = (true);
+                    SupportActionBar.SetDisplayHomeAsUpEnabled(true);
+                    SupportActionBar.SetHomeButtonEnabled(true);
+                    drawerToggle.SyncState();
 
-                drawerToggle.SyncState();
+                }
+                else
+                {
+                    _drawerLayout.SetDrawerLockMode(DrawerLayout.LockModeUnlocked);
+                    drawerToggle.OnDrawerStateChanged(DrawerLayout.LockModeUnlocked);
+                    drawerToggle.DrawerIndicatorEnabled = (false);
+                    SupportActionBar.SetDisplayHomeAsUpEnabled(false);
+                    SupportActionBar.SetHomeButtonEnabled(false);
 
+                    drawerToggle.SyncState();
+                }
             }
-            else
+            catch (Exception e)
             {
-                _drawerLayout.SetDrawerLockMode(DrawerLayout.LockModeUnlocked);
-                drawerToggle.OnDrawerStateChanged(DrawerLayout.LockModeUnlocked);
-                drawerToggle.DrawerIndicatorEnabled = (false);
-                SupportActionBar.SetDisplayHomeAsUpEnabled(false);
-                SupportActionBar.SetHomeButtonEnabled(false);
-
-                drawerToggle.SyncState();
+                System.Diagnostics.Debug.WriteLine("Set Drawer State : "+e.Message);
             }
         }
 

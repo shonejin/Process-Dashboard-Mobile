@@ -112,7 +112,7 @@ namespace ProcessDashboard.Droid.Fragments
             }
             catch (CannotReachServerException)
             {
-
+                //TODO: Retry option ?
                 Toast.MakeText(Activity, "Please check your internet connection and try again.", ToastLength.Long).Show();
             }
             catch (StatusNotOkayException)

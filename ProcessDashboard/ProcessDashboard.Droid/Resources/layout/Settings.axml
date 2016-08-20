@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
   <PreferenceCategory
-      android:title="Inline Preferences">
+      >
     <CheckBoxPreference
         android:key="wifi_preferance"
         android:title="Connect over Wifi only"
         android:summary="Application can connect only via Wifi connections" />
+  
+    <Preference 
+      android:key="login_preference"
+        android:title="Logout"
+        android:summary="Logout current user"
+        
+    />
+  
+  
   </PreferenceCategory>
+
+  
+
+
 </PreferenceScreen>
 
   <!--

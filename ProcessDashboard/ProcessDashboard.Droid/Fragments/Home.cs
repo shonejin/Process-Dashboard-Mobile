@@ -7,6 +7,7 @@ using Android.Support.V4.Content;
 using Android.Support.V4.Widget;
 using Android.Views;
 using Android.Widget;
+using HockeyApp.Android;
 using ProcessDashboard.Droid.Adapter;
 using ProcessDashboard.SyncLogic;
 using Debug = System.Diagnostics.Debug;
@@ -18,6 +19,8 @@ namespace ProcessDashboard.Droid.Fragments
         private MainActivity _mActivity;
         private myBroadCastReceiver onNotice;
         private IntentFilter iff;
+        //TODO: Remove this for production
+        private AccountStorage _ase;
 
         private Button play, pause;
 
@@ -56,6 +59,8 @@ namespace ProcessDashboard.Droid.Fragments
             base.OnCreate(savedInstanceState);
             RetainInstance = true;
             _mActivity.SetTitle("Process Dashboard");
+            _ase = new AccountStorage();
+            _ase.SetContext(this.Activity);
         }
 
         public override void OnPause()
@@ -95,7 +100,11 @@ namespace ProcessDashboard.Droid.Fragments
 
             var v = inflater.Inflate(Resource.Layout.Home, container, false);
             LoadData(v, _mActivity.Ctrl);
+            Debug.WriteLine("We are in oncreateView of Home screen");
 
+            System.Diagnostics.Debug.WriteLine(_ase.UserId);
+
+            Debug.WriteLine("*******************************");
             return v;
         }
 
@@ -135,7 +144,7 @@ namespace ProcessDashboard.Droid.Fragments
             var taskComplete = v.FindViewById<CheckBox>(Resource.Id.Home_TaskComplete);
             taskComplete.CheckedChange += (sender, args) =>
             {
-                string text;
+                string text = "";
                 if (args.IsChecked)
                 {
                     // Mark a task as complete
@@ -146,34 +155,42 @@ namespace ProcessDashboard.Droid.Fragments
                     {
                         ((MainActivity)(Activity)).Ctrl.UpdateATask(Settings.GetInstance().Dataset,
                             _currenttaskid, null, convertedTime, false);
-
-                      
+                        text = "Task Marked Complete";
 
                     }
                     catch (CannotReachServerException)
                     {
-                      
+                        if(pb.IsShowing)
+                            pb.Dismiss();
+                        Debug.WriteLine("We could not reach the server");
                         taskComplete.Checked = false;
-                        Toast.MakeText(Activity, "Please check your internet connection and try again.", ToastLength.Long).Show();
+                        text = "Please check your internet connection and try again.";
+                        Toast.MakeText(this.Activity,text,ToastLength.Short).Show();
+                        
                     }
                     catch (StatusNotOkayException)
                     {
-                      
+                        pb.Dismiss();
                         taskComplete.Checked = false;
-                        Toast.MakeText(Activity, "An error occured. Please try again.", ToastLength.Short).Show();
+                        //TODO: Should we report this ?
+                        text = "An error has occured. Please try again.";
+                        Toast.MakeText(this.Activity, text, ToastLength.Short).Show();
+
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
                         // For any other weird exceptions
+                        pb.Dismiss();
+                        
                         taskComplete.Checked = false;
-                      
-                        Toast.MakeText(Activity, "Unable to make the change. Please try again.", ToastLength.Short).Show();
+                        // Sending to HockeyApp
+                        ExceptionHandler.SaveException(Java.Lang.Throwable.FromException(e),null, null);
+                        text = "Unable to make the change. Please try again.";
+                        Toast.MakeText(this.Activity, text, ToastLength.Short).Show();
                     }
 
-                    text = "Task Marked Complete";
-                }
-                else
-                {
+                    
+                } else {
                     
                     // Unmark the task 
                     
@@ -182,34 +199,46 @@ namespace ProcessDashboard.Droid.Fragments
 
                         ((MainActivity)(Activity)).Ctrl.UpdateATask(Settings.GetInstance().Dataset,
                             _currenttaskid, null, null, true);
+                        text = "Task Marked Incomplete";
 
-                      }
+                    }
                     catch (CannotReachServerException)
                     {
+                        if (pb.IsShowing)
+                            pb.Dismiss();
+                        Debug.WriteLine("We could not reach the server");
                         taskComplete.Checked = true;
-                      
-                        Toast.MakeText(Activity, "Please check your internet connection and try again.", ToastLength.Long).Show();
+                        text = "Please check your internet connection and try again.";
+                        Toast.MakeText(this.Activity, text, ToastLength.Short).Show();
+
+
                     }
+                    //TODO: Should we handle this ?
                     catch (StatusNotOkayException)
                     {
+                        pb.Dismiss();
                         taskComplete.Checked = true;
-                      
-                        Toast.MakeText(Activity, "An error has occured. Please try again.", ToastLength.Short).Show();
+                        text = "An error has occured. Please try again.";
+                        Toast.MakeText(this.Activity, text, ToastLength.Short).Show();
+
+
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
                         // For any other weird exceptions
                         taskComplete.Checked = true;
-                      
-                        Toast.MakeText(Activity, "Unable to make the change. Please try again.", ToastLength.Short).Show();
+                        ExceptionHandler.SaveException(Java.Lang.Throwable.FromException(e), null, null);
+                        text = "Unable to make the change. Please try again.";
+                        Toast.MakeText(this.Activity, text, ToastLength.Short).Show();
+
                     }
 
-                    text = "Task Marked Incomplete";
+                    
                 }
                 
                 Debug.WriteLine("We have changed content ");
                 Toast.MakeText(Activity, text, ToastLength.Short).Show();
-                // await (((MainActivity)(Activity)).Ctrl).UpdateTimeLog(Settings.GetInstance().Dataset,)
+                
             };
 
             var recentTask = v.FindViewById<Button>(Resource.Id.Home_RecentTask);
@@ -273,7 +302,9 @@ namespace ProcessDashboard.Droid.Fragments
                               })
                             .SetCancelable(false);
                         AlertDialog alert = builder.Create();
+                        refresher.Refreshing = false;
                         alert.Show();
+
 
 
                     }
@@ -289,6 +320,7 @@ namespace ProcessDashboard.Droid.Fragments
                             })
                             .SetCancelable(false);
                         AlertDialog alert = builder.Create();
+                        refresher.Refreshing = false;
                         alert.Show();
 
 
@@ -305,6 +337,7 @@ namespace ProcessDashboard.Droid.Fragments
                             .SetMessage("Error :" + e.Message)
                             .SetCancelable(false);
                         AlertDialog alert = builder.Create();
+                        refresher.Refreshing = false;
                         alert.Show();
 
                     }
@@ -325,6 +358,7 @@ namespace ProcessDashboard.Droid.Fragments
             }
             catch (CannotReachServerException)
             {
+                pb.Dismiss();
                 AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
                 builder.SetTitle("Unable to Connect")
                     .SetMessage("Please check your network connection and try again")
@@ -340,7 +374,7 @@ namespace ProcessDashboard.Droid.Fragments
             }
             catch (StatusNotOkayException se)
             {
-
+                pb.Dismiss();
                 AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
                 builder.SetTitle("An Error has occured")
                     .SetMessage("Error :" + se.GetMessage())
@@ -357,6 +391,7 @@ namespace ProcessDashboard.Droid.Fragments
             catch (Exception e)
             {
                 // For any other weird exceptions
+                pb.Dismiss();
                 AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
                 builder.SetTitle("An Error has occured")
                       .SetNeutralButton("Okay", (sender, args) =>

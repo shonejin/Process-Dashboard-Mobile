@@ -81,6 +81,15 @@ namespace ProcessDashboard
 #else
                 Account account =  AccountStore.Create(_context).FindAccountsForService(AppName).ElementAtOrDefault(0);
 #endif
+			    if (account == null)
+			    {
+			        System.Diagnostics.Debug.WriteLine("Account is null ");
+			    }
+			    else
+			    {
+			        System.Diagnostics.Debug.WriteLine("Account is not null :"+account.ToString());
+                    System.Diagnostics.Debug.WriteLine("Account is not null 2:" + account.Username);
+                }
                 return account?.Username;
 			}
 		}

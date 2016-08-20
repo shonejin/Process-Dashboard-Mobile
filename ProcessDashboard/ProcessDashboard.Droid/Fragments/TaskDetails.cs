@@ -22,10 +22,10 @@ namespace ProcessDashboard.Droid.Fragments
         private string _taskId;
         private string _taskName;
         private Activity _mActivity;
-        private Home.myBroadCastReceiver onNotice;
-        private IntentFilter iff;
+        private Home.myBroadCastReceiver _onNotice;
+        private IntentFilter _iff;
 
-        private Button play, pause;
+        private Button _play, _pause;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -40,7 +40,7 @@ namespace ProcessDashboard.Droid.Fragments
         public override void OnPause()
         {
             base.OnPause();
-            LocalBroadcastManager.GetInstance(Activity).UnregisterReceiver(onNotice);
+            LocalBroadcastManager.GetInstance(Activity).UnregisterReceiver(_onNotice);
 
         }
 
@@ -49,9 +49,9 @@ namespace ProcessDashboard.Droid.Fragments
         {
             base.OnResume();
             ((MainActivity)Activity).SetTitle("Task Details");
-            iff = new IntentFilter("processdashboard.timelogger");
-            onNotice = new Home.myBroadCastReceiver((MainActivity)this.Activity);
-            LocalBroadcastManager.GetInstance(Activity).RegisterReceiver(onNotice, iff);
+            _iff = new IntentFilter("processdashboard.timelogger");
+            _onNotice = new Home.myBroadCastReceiver((MainActivity)this.Activity);
+            LocalBroadcastManager.GetInstance(Activity).RegisterReceiver(_onNotice, _iff);
         }
 
         public void SetId(string id, string taskName, string projectName, DateTime? completionDate,
@@ -79,13 +79,13 @@ namespace ProcessDashboard.Droid.Fragments
         {
             if (isPlaying)
             {
-                play.SetBackgroundResource(Resource.Drawable.play_activated);
-                pause.SetBackgroundResource(Resource.Drawable.pause_deactivated);
+                _play.SetBackgroundResource(Resource.Drawable.play_activated);
+                _pause.SetBackgroundResource(Resource.Drawable.pause_deactivated);
             }
             else
             {
-                play.SetBackgroundResource(Resource.Drawable.play_deactivated);
-                pause.SetBackgroundResource(Resource.Drawable.pause_activated);
+                _play.SetBackgroundResource(Resource.Drawable.play_deactivated);
+                _pause.SetBackgroundResource(Resource.Drawable.pause_activated);
             }
         }
 
@@ -96,15 +96,12 @@ namespace ProcessDashboard.Droid.Fragments
             var taskName = view.FindViewById<TextView>(Resource.Id.TaskDetails_TaskName);
             var notes = view.FindViewById<EditText>(Resource.Id.TaskDetails_Notes);
             var timeinfo = view.FindViewById<ListView>(Resource.Id.TaskDetails_TimeInfo);
-            play = view.FindViewById<Button>(Resource.Id.TaskDetails_Play);
-            pause = view.FindViewById<Button>(Resource.Id.TaskDetails_Pause);
+            _play = view.FindViewById<Button>(Resource.Id.TaskDetails_Play);
+            _pause = view.FindViewById<Button>(Resource.Id.TaskDetails_Pause);
+             
+          Debug.WriteLine("We are in the begining ");
 
-
-
-        
-
-            Debug.WriteLine("We are in the begining ");
-
+          
             var pb = new ProgressDialog(_mActivity) { Indeterminate = true };
             pb.SetTitle("Loading");
             pb.SetCanceledOnTouchOutside(false);
@@ -166,7 +163,7 @@ namespace ProcessDashboard.Droid.Fragments
                 // Get data from server
                 taskDetail = await ((MainActivity)Activity).Ctrl.GetTask(Settings.GetInstance().Dataset, _taskId);
 
-                play.Click += (sender, args) =>
+                _play.Click += (sender, args) =>
                 {
                     Debug.WriteLine("Play Clicked");
 
@@ -183,40 +180,81 @@ namespace ProcessDashboard.Droid.Fragments
 
 
 
-                pause.Click += (sender, args) =>
+                _pause.Click += (sender, args) =>
                 {
                     Debug.WriteLine("Pause Clicked");
                     Activity.StopService(new Intent(Activity, typeof(TimerService)));
                     Toast.MakeText(this.Activity, "Time Log Entry Saved", ToastLength.Short).Show();
 
                 };
+
+                projectName.Click += (obj, args) =>
+                {
+                    var projectId = taskDetail.Project.Id;
+                    var projectname = taskDetail.Project.Name;
+
+                    ((MainActivity)Activity).ListOfProjectsCallback(projectId, projectname);
+
+                };
+
+
+
             }
             catch (CannotReachServerException)
             {
-                if (pb.IsShowing)
+                if(pb.IsShowing)
                     pb.Dismiss();
+                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                builder.SetTitle("Unable to Connect")
+                    .SetMessage("Please check your network connection and try again")
+                      .SetNeutralButton("Okay", (sender, args) =>
+                      {
+                          builder.Dispose();
+                          ((MainActivity)Activity).FragmentManager.PopBackStack();
+                      })
+                    .SetCancelable(false);
+                AlertDialog alert = builder.Create();
+                alert.Show();
 
-                Toast.MakeText(Activity, "Please check your internet connection and try again.", ToastLength.Long).Show();
-                Debug.WriteLine("We are going to pop backstack");
-                ((MainActivity)Activity).FragmentManager.PopBackStack();
+
+
+
             }
-            catch (StatusNotOkayException)
+            catch (StatusNotOkayException se)
             {
                 if (pb.IsShowing)
                     pb.Dismiss();
 
-                Toast.MakeText(Activity, "An error occured. Please try again.", ToastLength.Short).Show();
-                Debug.WriteLine("We are going to pop backstack");
-                ((MainActivity)Activity).FragmentManager.PopBackStack();
+                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                builder.SetTitle("An Error has occured")
+                    .SetMessage("Error :" + se.GetMessage())
+                    .SetNeutralButton("Okay", (sender, args) =>
+                    {
+                        builder.Dispose();
+                    })
+                    .SetCancelable(false);
+                AlertDialog alert = builder.Create();
+                alert.Show();
+
+
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 // For any other weird exceptions
                 if (pb.IsShowing)
                     pb.Dismiss();
-                Toast.MakeText(Activity, "Invalid values. Please try again.", ToastLength.Short).Show();
-                Debug.WriteLine("We are going to pop backstack");
-                ((MainActivity)Activity).FragmentManager.PopBackStack();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                builder.SetTitle("An Error has occured")
+                      .SetNeutralButton("Okay", (sender, args) =>
+                      {
+                          builder.Dispose();
+                      })
+                    .SetMessage("Error :" + e.Message)
+                    .SetCancelable(false);
+                AlertDialog alert = builder.Create();
+                alert.Show();
+
             }
             if (taskDetail == null)
             {
@@ -233,8 +271,8 @@ namespace ProcessDashboard.Droid.Fragments
                     if (args.Position == 0)
                     {
 
-                        LinearLayout LL = new LinearLayout(Activity);
-                        LL.Orientation = (Orientation.Horizontal);
+                        LinearLayout ll = new LinearLayout(Activity);
+                        ll.Orientation = (Orientation.Horizontal);
 
                         NumberPicker aNumberPicker = new NumberPicker(Activity);
                         aNumberPicker.MaxValue = (100);
@@ -264,16 +302,16 @@ namespace ProcessDashboard.Droid.Fragments
                         LinearLayout.LayoutParams qPicerParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
                         qPicerParams.Weight = 1;
 
-                        LL.LayoutParameters = parameters;
-                        LL.AddView(aNumberPicker, numPicerParams);
-                        LL.AddView(aNumberPickerA, qPicerParams);
+                        ll.LayoutParameters = parameters;
+                        ll.AddView(aNumberPicker, numPicerParams);
+                        ll.AddView(aNumberPickerA, qPicerParams);
 
                         //((TaskDetailsAdapter)(timeinfo.Adapter)).GetEntry()
 
 
                         //var ts = DateTime.ParseExact("", "HH.mm", CultureInfo.InvariantCulture);
 
-                        AlertDialog.Builder np = new AlertDialog.Builder(Activity).SetView(LL);
+                        AlertDialog.Builder np = new AlertDialog.Builder(Activity).SetView(ll);
 
                         np.SetTitle("Update Planned Time");
                         np.SetNegativeButton("Cancel", (s, a) =>
@@ -293,9 +331,57 @@ namespace ProcessDashboard.Droid.Fragments
                                 ((MainActivity)(Activity)).Ctrl.UpdateATask(Settings.GetInstance().Dataset,
                                     _taskId, val, null, false);
                             }
+                            catch (CannotReachServerException)
+                            {
+                              
+                                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                                builder.SetTitle("Unable to Connect")
+                                    .SetMessage("Please check your network connection and try again")
+                                      .SetNeutralButton("Okay", (sender2, args2) =>
+                                      {
+                                          builder.Dispose();
+                                          ((MainActivity)Activity).FragmentManager.PopBackStack();
+                                      })
+                                    .SetCancelable(false);
+                                AlertDialog alert = builder.Create();
+                                alert.Show();
+
+
+
+
+                            }
+                            catch (StatusNotOkayException se)
+                            {
+                              
+                                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                                builder.SetTitle("An Error has occured")
+                                    .SetMessage("Error :" + se.GetMessage())
+                                    .SetNeutralButton("Okay", (sender2, args2) =>
+                                    {
+                                        builder.Dispose();
+                                    })
+                                    .SetCancelable(false);
+                                AlertDialog alert = builder.Create();
+                                alert.Show();
+
+
+                            }
                             catch (Exception e)
                             {
-                                Debug.WriteLine(e.Message);
+                                // For any other weird exceptions
+                                
+
+                                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                                builder.SetTitle("An Error has occured")
+                                      .SetNeutralButton("Okay", (sender2, args2) =>
+                                      {
+                                          builder.Dispose();
+                                      })
+                                    .SetMessage("Error :" + e.Message)
+                                    .SetCancelable(false);
+                                AlertDialog alert = builder.Create();
+                                alert.Show();
+
                             }
                             output[0].value = TimeSpan.FromMinutes(val).ToString(@"hh\:mm");
 
@@ -338,9 +424,57 @@ namespace ProcessDashboard.Droid.Fragments
                                 ((MainActivity)(Activity)).Ctrl.UpdateATask(Settings.GetInstance().Dataset,
                                     _taskId, null, Util.GetInstance().GetServerTime(time), false);
                             }
+                            catch (CannotReachServerException)
+                            {
+
+                                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                                builder.SetTitle("Unable to Connect")
+                                    .SetMessage("Please check your network connection and try again")
+                                      .SetNeutralButton("Okay", (sender2, args2) =>
+                                      {
+                                          builder.Dispose();
+                                          ((MainActivity)Activity).FragmentManager.PopBackStack();
+                                      })
+                                    .SetCancelable(false);
+                                AlertDialog alert = builder.Create();
+                                alert.Show();
+
+
+
+
+                            }
+                            catch (StatusNotOkayException se)
+                            {
+
+                                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                                builder.SetTitle("An Error has occured")
+                                    .SetMessage("Error :" + se.GetMessage())
+                                    .SetNeutralButton("Okay", (sender2, args2) =>
+                                    {
+                                        builder.Dispose();
+                                    })
+                                    .SetCancelable(false);
+                                AlertDialog alert = builder.Create();
+                                alert.Show();
+
+
+                            }
                             catch (Exception e)
                             {
-                                Debug.WriteLine(e.Message);
+                                // For any other weird exceptions
+
+
+                                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                                builder.SetTitle("An Error has occured")
+                                      .SetNeutralButton("Okay", (sender2, args2) =>
+                                      {
+                                          builder.Dispose();
+                                      })
+                                    .SetMessage("Error :" + e.Message)
+                                    .SetCancelable(false);
+                                AlertDialog alert = builder.Create();
+                                alert.Show();
+
                             }
 
 
@@ -394,16 +528,106 @@ namespace ProcessDashboard.Droid.Fragments
                 }
                 else
                     taskComplete.Checked = false;
-               
+
+                taskComplete.CheckedChange += (sender, args) =>
+                {
+                    string text;
+                    if (args.IsChecked)
+                    {
+                        // Mark a task as complete
+                        DateTime convertedTime = Util.GetInstance().GetServerTime(DateTime.UtcNow);
+                        taskDetail.CompletionDate = convertedTime;
+
+                        try
+                        {
+                            ((MainActivity)(this.Activity)).Ctrl.UpdateATask(Settings.GetInstance().Dataset,
+                                _taskId, null, convertedTime, false);
+
+                            output[2].value = DateTime.Now.ToShortDateString();
+
+                        }
+                        catch (CannotReachServerException)
+                        {
+                            output[2].value = "-";
+                            taskComplete.Checked = false;
+                            Toast.MakeText(Activity, "Please check your internet connection and try again.", ToastLength.Long).Show();
+                        }
+                        catch (StatusNotOkayException)
+                        {
+                            output[2].value = "-";
+                            taskComplete.Checked = false;
+                            Toast.MakeText(Activity, "An error occured. Please try again.", ToastLength.Short).Show();
+                        }
+                        catch (Exception)
+                        {
+                            // For any other weird exceptions
+                            taskComplete.Checked = false;
+                            output[2].value = "-";
+                            Toast.MakeText(Activity, "Unable to make the change. Please try again.", ToastLength.Short).Show();
+                        }
+
+                        text = "Task Marked Complete";
+                    }
+                    else
+                    {
+                        var previousValue = output[2].value;
+                        // Unmark the task 
+                        taskDetail.CompletionDate = null;
+
+                        try
+                        {
+
+                            ((MainActivity)(this.Activity)).Ctrl.UpdateATask(Settings.GetInstance().Dataset,
+                                _taskId, null, null, true);
+
+                            output[2].value = "-";
+
+
+
+                        }
+                        catch (CannotReachServerException)
+                        {
+                            taskComplete.Checked = true;
+                            output[2].value = previousValue;
+                            Toast.MakeText(Activity, "Please check your internet connection and try again.", ToastLength.Long).Show();
+                        }
+                        catch (StatusNotOkayException)
+                        {
+                            taskComplete.Checked = true;
+                            output[2].value = previousValue;
+                            Toast.MakeText(Activity, "An error has occured. Please try again.", ToastLength.Short).Show();
+                        }
+                        catch (Exception)
+                        {
+                            // For any other weird exceptions
+                            taskComplete.Checked = true;
+                            output[2].value = previousValue;
+                            Toast.MakeText(Activity, "Unable to make the change. Please try again.", ToastLength.Short).Show();
+                        }
+
+                        text = "Task Marked Incomplete";
+                    }
+                    listAdapter = new TaskDetailsAdapter(Activity, Resource.Layout.TimeLogEntryListItem,
+                 output);
+                    Debug.WriteLine("We have changed content ");
+                    timeinfo.Adapter = listAdapter;
+                    Toast.MakeText(Activity, text, ToastLength.Short).Show();
+                    // await (((MainActivity)(Activity)).Ctrl).UpdateTimeLog(Settings.GetInstance().Dataset,)
+                };
             }
-            if(pb.IsShowing) 
-            pb.Dismiss();
+            if (pb.IsShowing)
+                pb.Dismiss();
 
             // Dismiss Dialog
 
 
+
+
         }
 
-
+        private void ProjectName_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
