@@ -140,18 +140,11 @@ namespace ProcessDashboard
 
         private Uri LookupUrl(string shortUrl)
         {
-            try
-            {
-                var req = WebRequest.CreateHttp(shortUrl);
-                req.Method = "HEAD";
-                req.AllowAutoRedirect = false;
-                var resp = (HttpWebResponse) req.GetResponse();
-                return new Uri(resp.Headers["Location"]);
-            }
-            catch (Exception)
-            {
-                throw new ArgumentException("Unrecognized token");
-            }
+			var req = WebRequest.CreateHttp(shortUrl);
+			req.Method = "HEAD";
+			req.AllowAutoRedirect = false;
+			var resp = (HttpWebResponse)req.GetResponse();
+			return new Uri(resp.Headers["Location"]);
         }
     }
 }

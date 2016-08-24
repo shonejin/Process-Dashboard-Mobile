@@ -1,6 +1,5 @@
 ﻿#region
 using System;
-using System.Threading.Tasks;
 using ProcessDashboard.Service;
 using ProcessDashboard.Service_Access_Layer;
 using ProcessDashboard.SyncLogic;
@@ -15,7 +14,7 @@ namespace ProcessDashboard
 
 	public class TimeLoggingController
 	{
-		public bool IsReadyForNewTimeLog = true;
+		public bool isReadyForNewTimeLog = true;
 		public bool WasNetworkAvailable = true;
 
 		private Controller _controller;
@@ -24,9 +23,9 @@ namespace ProcessDashboard
 		private int _savedLoggedTime;
 		private int _savedInterruptTime;
 		private Stopwatch _stopwatch = new Stopwatch();
-		private string _taskId;
-		private string _timeLogEntryId;
-		
+		private String _taskId;
+		private String _timeLogEntryId;
+
 
 
 		// Events --------------------------------------------------------------------------------------------------------------------
@@ -34,10 +33,8 @@ namespace ProcessDashboard
 		// Fired when network connection to the PDES changed from available to unavailable, or from unavailable to available
 		// not real-time. We do network connections once per minute in TimeLoggingController
 		// not represents global network availablility. Fired by and only by this TimeLoggingController.
-
 		public static event StateChangedEventHandler NetworkAvailabilityChanged;
 		public void OnNetworkAvailabilityChanged(NetworkAvailabilityStates e, String message)
-
 		{
 			if (NetworkAvailabilityChanged != null)
 			{
@@ -48,7 +45,6 @@ namespace ProcessDashboard
 		// Fired when a new time log is created successfully, updated successfully/failed, or canceled by PDES.
 		public static event StateChangedEventHandler TimeLoggingStateChanged;
 		public void OnTimeLoggingStateChanged(TimeLoggingControllerStates e, String message)
-
 		{
 			if (TimeLoggingStateChanged != null)
 			{
@@ -71,27 +67,26 @@ namespace ProcessDashboard
 
 		public TimeLoggingController()
 		{
-			var apiService = new ApiTypes();
+			var apiService = new ApiTypes(null);
 			var service = new PDashServices(apiService);
 			_controller = new Controller(service);
 			_osTimerService = new OsTimerService(this);
 		}
 
-		public async Task StopTiming()
+		public async System.Threading.Tasks.Task StopTiming()
 		{
 			_stopwatch.Stop();
 			await Save();
 		}
 
 
-		public async Task StartTiming(string taskId)
+		public async System.Threading.Tasks.Task StartTiming(String _taskId)
 		{
 
-			Console.WriteLine("Trying to start timer for task: " + taskId);
+			Console.WriteLine("Trying to start timer for task: " + _taskId);
 
 			await SetTaskId(_taskId);
 			if (_stopwatch.GetTrailingInterruptMinutes() > SettingsData.MaxContIntTimeMin)
-
 			{
 				await SaveIfNeeded();
 				ReleaseTimeLogEntry(true);
@@ -107,53 +102,53 @@ namespace ProcessDashboard
 			}
 		}
 
-		private async Task SetTaskId(string newTaskId)
+		private async System.Threading.Tasks.Task SetTaskId(String newTaskId)
 		{
-			if (newTaskId.Equals(_taskId))
+			if (newTaskId.Equals(this._taskId))
 			{
 				return;
 			}
 			_stopwatch.Stop();
 			await SaveIfNeeded();
 
-			_taskId = newTaskId;
+			this._taskId = newTaskId;
 			ReleaseTimeLogEntry(true);
 		}
 
-		public string GetTimingTaskId()
+		public String GetTimingTaskId()
 		{
 			return IsTimerRunning() ? _taskId : null;
 		}
 
-		public bool IsTimerRunning()
+		public Boolean IsTimerRunning()
 		{
 			return _stopwatch.IsRunning();
 		}
 
-		public string GetActiveTimeLogEntryId()
+		public String GetActiveTimeLogEntryId()
 		{
 			return _timeLogEntryId;
 		}
 
-		public async Task SetLoggedTime(int minutes)
+		public async System.Threading.Tasks.Task SetLoggedTime(int minutes)
 		{
 			_stopwatch.SetLoggedMinutes(minutes);
 			await Save();
 		}
 
-		public async Task SetInterruptTime(int minutes)
+		public async System.Threading.Tasks.Task SetInterruptTime(int minutes)
 		{
 			_stopwatch.SetInterruptMinutes(minutes);
 			await Save();
 		}
 
-		public async void Ping(object stateInfo)
+		public async void Ping(Object stateInfo)
 		{
 			_stopwatch.MaybeCancelRunawayTimer(SettingsData.ForgottenTmrThsMin);
 			await Save();
 		}
 
-		private async Task Save()
+		private async System.Threading.Tasks.Task Save()
 		{
 			try
 			{
@@ -167,23 +162,23 @@ namespace ProcessDashboard
 					WasNetworkAvailable = true;
 				}
 			}
-			catch (CannotReachServerException)
+			catch (CannotReachServerException e)
 			{
-				IsReadyForNewTimeLog = false;
+				isReadyForNewTimeLog = false;
 
 				_osTimerService.SetBackgroundPingsEnabled(true);
 
-				OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogUpdateFailed, string.Empty);
+				OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogUpdateFailed, String.Empty);
 
 				if (WasNetworkAvailable)
 				{
-					OnNetworkAvailabilityChanged(NetworkAvailabilityStates.BecameUnavailable, string.Empty);
+					OnNetworkAvailabilityChanged(NetworkAvailabilityStates.BecameUnavailable, String.Empty);
 					WasNetworkAvailable = false;
 				}
 			}
 		}
 
-		private async Task SaveIfNeeded()
+		private async System.Threading.Tasks.Task SaveIfNeeded()
 		{
 			if (_timeLogEntryId == null)
 			{
@@ -201,15 +196,12 @@ namespace ProcessDashboard
 						_savedLoggedTime = logged;
 						_savedInterruptTime = interrupt;
 
-						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogCreated, string.Empty);
+						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogCreated, String.Empty);
 					}
 					catch (CancelTimeLoggingException e)
 					{
 						await HandleCancelTimeLoggingException(e);
-						UIApplication.SharedApplication.InvokeOnMainThread(() =>
-						{
-							OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogCanceled, String.Empty);
-						});
+						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogCanceled, String.Empty);
 					}
 				}
 			}
@@ -220,10 +212,7 @@ namespace ProcessDashboard
 					await _controller.DeleteTimeLog(AccountStorage.DataSet, _timeLogEntryId);
 					ReleaseTimeLogEntry(false);
 
-					UIApplication.SharedApplication.InvokeOnMainThread(() =>
-					{
-						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogUpdated, "Time log deleted because it is too short.");
-					});
+					OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogUpdated, "Time log deleted because it is too short.");
 				}
 				else if (TimeIsDiscrepant())
 				{
@@ -232,30 +221,25 @@ namespace ProcessDashboard
 						int logged = Round(_stopwatch.GetLoggedMinutes());
 						int interrupt = Round(_stopwatch.GetInterruptMinutes());
 
+						throw new CancelTimeLoggingException();
 						await _controller.UpdateTimeLog(AccountStorage.DataSet, _timeLogEntryId, null, null, _taskId,
-						                               LoggedTimeDelta(), interruptTimeDelta(), _stopwatch.IsRunning());
+													   LoggedTimeDelta(), interruptTimeDelta(), _stopwatch.IsRunning());
 
 						_savedLoggedTime = logged;
 						_savedInterruptTime = interrupt;
-						UIApplication.SharedApplication.InvokeOnMainThread(() =>
-						{
-							OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogUpdated, "Time log updated");
-						});
+						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogUpdated, "Time log updated");
 					}
 					catch (CancelTimeLoggingException e)
 					{
 						await HandleCancelTimeLoggingException(e);
-						UIApplication.SharedApplication.InvokeOnMainThread(() =>
-						{
-							OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogCanceled, String.Empty);
-						});
+						OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogCanceled, String.Empty);
 					}
 				}
 			}
-			IsReadyForNewTimeLog = true;
+			isReadyForNewTimeLog = true;
 		}
 
-		private async Task HandleCancelTimeLoggingException(CancelTimeLoggingException e)
+		private async System.Threading.Tasks.Task HandleCancelTimeLoggingException(CancelTimeLoggingException e)
 		{
 			Console.WriteLine("handleCancelTimeLoggingException() called");
 
@@ -269,7 +253,7 @@ namespace ProcessDashboard
 			Console.WriteLine("handle finished");
 		}
 
-		private void ReleaseTimeLogEntry(bool resetStopwatch)
+		private void ReleaseTimeLogEntry(Boolean resetStopwatch)
 		{
 			_timeLogEntryId = null;
 			_savedLoggedTime = 0;
@@ -280,9 +264,9 @@ namespace ProcessDashboard
 			}
 		}
 
-		private bool TimeIsDiscrepant()
+		private Boolean TimeIsDiscrepant()
 		{
-			return LoggedTimeDelta() != 0 || InterruptTimeDelta() != 0;
+			return LoggedTimeDelta() != 0 || interruptTimeDelta() != 0;
 		}
 
 		private int LoggedTimeDelta()
@@ -292,7 +276,7 @@ namespace ProcessDashboard
 			return ret;
 		}
 
-		private int InterruptTimeDelta()
+		private int interruptTimeDelta()
 		{
 			return Round(_stopwatch.GetInterruptMinutes() - _savedInterruptTime);
 		}
@@ -303,4 +287,3 @@ namespace ProcessDashboard
 		}
 	}
 }
-

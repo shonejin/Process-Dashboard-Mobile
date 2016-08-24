@@ -68,14 +68,14 @@ namespace ProcessDashboard.iOS
 
 		public override void ViewDidAppear(bool animated)
 		{
-			TimeLoggingController.TimeLoggingStateChanged += stateHandler;
+			PDashAPI.UIHandlerToDispatch += stateHandler;
 			refreshData();
 			base.ViewDidAppear(animated);
 		}
 
 		public override void ViewWillDisappear(bool animated)
 		{
-			TimeLoggingController.TimeLoggingStateChanged -= stateHandler;
+			PDashAPI.UIHandlerToDispatch -= stateHandler;
 			base.ViewWillDisappear(animated);
 		}
 

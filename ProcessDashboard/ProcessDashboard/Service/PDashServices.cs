@@ -388,16 +388,16 @@ namespace ProcessDashboard.Service_Access_Layer
 
         public void CheckConnection()
         {
-            if (Settings.GetInstance().CheckWifi)
+			if (SettingsData.WiFiOnly)
             {
                 if (!IsWifiConnected())
                 {
-                    throw new CannotReachServerException();
+					throw new CannotReachServerException("App running in WiFi only mode, but WiFi is unavailable.");
                 }
             }
             if (!CrossConnectivity.Current.IsConnected)
             {
-                throw new CannotReachServerException();
+                throw new CannotReachServerException("Server connection unavailable.");
             }
         }
     }

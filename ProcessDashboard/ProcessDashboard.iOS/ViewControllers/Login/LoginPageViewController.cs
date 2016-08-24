@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
 using CoreGraphics;
 using Foundation;
+using Plugin.Connectivity;
+using Plugin.Connectivity.Abstractions;
 using UIKit;
 
 namespace ProcessDashboard.iOS
@@ -13,6 +16,10 @@ namespace ProcessDashboard.iOS
 
 		public override void ViewDidLoad()
 		{
+			DataTokenTextView.AutocorrectionType = UITextAutocorrectionType.No;
+			DataTokenTextView.AutocapitalizationType = UITextAutocapitalizationType.AllCharacters;
+
+
 			UserIDTextView.AutocapitalizationType = UITextAutocapitalizationType.None;
 			UserIDTextView.AutocorrectionType = UITextAutocorrectionType.No;
 			base.ViewDidLoad();
@@ -37,6 +44,8 @@ namespace ProcessDashboard.iOS
 
 		partial void LoginButton_TouchUpInside(UIButton sender)
 		{
+			View.EndEditing(true);
+
 			String userId = UserIDTextView.Text.Trim();
 			String password = PasswordTextView.Text;
 			String dataToken = DataTokenTextView.Text.Trim();
@@ -49,15 +58,22 @@ namespace ProcessDashboard.iOS
 				return;
 			}
 
+			if (!CrossConnectivity.Current.ConnectionTypes.Contains(ConnectionType.Cellular) &&
+				!CrossConnectivity.Current.ConnectionTypes.Contains(ConnectionType.WiFi))
+			{ 
+				new UIAlertView("Connection Unavailable", "Please enable cellular data or WiFi and try again.", null, "OK", null).Show();
+				return;
+			}
+
 			String baseUrl;
 			String dataSet;
 			try
 			{
 				_resolver.ResolveFromToken(dataToken, out baseUrl, out dataSet);
 			}
-			catch (ArgumentException e)
+			catch (Exception e)
 			{
-				new UIAlertView("Invalid Data", "DataToken not recognized", null, "OK", null).Show();
+				new UIAlertView("Invalid DataToken", "DataToken not recognized", null, "OK", null).Show();
 				return;
 			}
 
@@ -71,19 +87,25 @@ namespace ProcessDashboard.iOS
 				req.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(credential)));
 				resp = (System.Net.HttpWebResponse)req.GetResponse();
 			}
-			catch (Exception e)
+			catch (System.Net.WebException e)
 			{
-				new UIAlertView("Invalid Data", "DataToken or credentials not recognized. " + e.Message, null, "OK", null).Show();
+				resp = (System.Net.HttpWebResponse)e.Response;
+				if (resp.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+				{
+					new UIAlertView("Bad Credentials", "Your user ID or password is not correct.", null, "OK", null).Show();
+				}
+				else if (resp.StatusCode == System.Net.HttpStatusCode.Forbidden)
+				{
+					new UIAlertView("Permission Denied", "You may not have the permission to connect to the given dataset", null, "OK", null).Show();
+				}
+				else
+				{
+					new UIAlertView("Server Unavailable", "Cannot reach server \"" + baseUrl + "\". " + e.Message, null, "OK", null).Show();
+				}
 				return;
 			}
 
-
-			if (resp.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-			{
-				new UIAlertView("Wrong Credentials", "Your user ID or password is not correct", null, "OK", null).Show();
-				return;
-			}
-			else if (resp.StatusCode == System.Net.HttpStatusCode.OK)
+			if (resp.StatusCode == System.Net.HttpStatusCode.OK)
 			{
 				if (resp.GetResponseStream().CanRead)
 				{
@@ -97,7 +119,7 @@ namespace ProcessDashboard.iOS
 					}
 					else if (responseStr.Contains("permission-denied"))
 					{
-						new UIAlertView("Permission Denied", "You may not have the permission to connect to the given dashboard", null, "OK", null).Show();
+						new UIAlertView("Permission Denied", "You may not have the permission to connect to the given dataset", null, "OK", null).Show();
 						return;
 					}
 					else if (responseStr.Contains("dataset"))

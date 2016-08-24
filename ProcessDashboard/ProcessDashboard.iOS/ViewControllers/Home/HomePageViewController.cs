@@ -45,7 +45,7 @@ namespace ProcessDashboard.iOS
 		}
 
 		public void TaskNameBtnOnClick(object sender, EventArgs ea)
-		{     
+		{    
 			if (currentTask != null)
 			{
 				PerformSegue("homeTask2TaskDetails", this);
@@ -127,14 +127,14 @@ namespace ProcessDashboard.iOS
 		public override void ViewDidAppear(bool animated)
 		{
 			base.ViewDidAppear(animated);
-			TimeLoggingController.TimeLoggingStateChanged += stateHandler;
+			PDashAPI.UIHandlerToDispatch += stateHandler;
 			NavigationController.NavigationBar.TopItem.Title = "Process Dashboard";
 			refreshData();
 		}
 
 		public override void ViewWillDisappear(bool animated)
 		{
-			TimeLoggingController.TimeLoggingStateChanged -= stateHandler;
+			PDashAPI.UIHandlerToDispatch -= stateHandler;
 			base.ViewWillDisappear(animated);
 		}
 
