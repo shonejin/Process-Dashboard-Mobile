@@ -72,7 +72,7 @@ namespace ProcessDashboard.SyncLogic
         {
             var remoteTasks = await _pDashServices.GetRecentTasksRemote(Priority.UserInitiated, dataset)
                 .ConfigureAwait(false);
-            System.Diagnostics.Debug.WriteLine("We are under remote tasks :"+remoteTasks.Count);
+            Debug.WriteLine("We are under remote tasks :"+remoteTasks.Count);
             return remoteTasks;
         }
 
@@ -89,74 +89,26 @@ namespace ProcessDashboard.SyncLogic
             double loggedTime, double interruptTime, bool open)
 
         {
-            try
-            {
                 var tro =
                     await
                         _pDashServices.AddTimeLog(Priority.UserInitiated, dataset, comment, startDate, taskId,
                             loggedTime, interruptTime, open);
                 Debug.WriteLine("Id:" + tro.Id);
                 return tro;
-            }
-            catch (CannotReachServerException)
-            {
-                Debug.WriteLine("Unable to connect to network");
-            }
-            catch (CancelTimeLoggingException)
-            {
-                // Add this when needed
-                Debug.WriteLine("Cancel Time Logging Right now");
-            }
-            catch (StatusNotOkayException)
-            {
-                Debug.WriteLine("Status Not Okay!!");
-            }
-            catch (Exception)
-            {
-                // For any other weird exceptions
-            }
-
-            //if (tro.Err.Equals("stopTimeLogging"))
-            //{
-
-            //    throw new CancelTimeLoggingException(tro.Err.StopTime);
-
-            //}
-
-            return null;
+            
         }
 
         //Update an existing timelog entry
         public async Task<TimeLogEntry> UpdateTimeLog(string dataset, string timeLogId, string comment,
             DateTime? startDate, string taskId, double? loggedTime, double? interruptTime, bool open)
         {
-            try
-            {
+            
                 var tro =
                     await
                         _pDashServices.UpdateTimeLog(Priority.UserInitiated, dataset, timeLogId, comment, startDate,
                             taskId, loggedTime, interruptTime, open);
                 return tro;
-            }
-            catch (CannotReachServerException)
-            {
-                Debug.WriteLine("Unable to connect to network");
-            }
-            catch (CancelTimeLoggingException)
-            {
-                // Add this when needed
-                Debug.WriteLine("Cancel Time Logging Right now");
-            }
-            catch (StatusNotOkayException)
-            {
-                Debug.WriteLine("Status Not Okay!! We are in the outer thingy");
-            }
-            catch (Exception)
-            {
-                // For any other weird exceptions
-            }
-
-            return null;
+            
         }
 
         //Delete a  timelog entry

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Web;
 #endregion
 namespace ProcessDashboard
 {
@@ -36,16 +35,16 @@ namespace ProcessDashboard
                 throw new ArgumentException("Unrecognized token");
         }
 
-		public Dictionary<String, String> ParseQueryString(string query)
+		public Dictionary<string, string> ParseQueryString(string query)
 		{
 			if (query.Length == 0)
 				return null;
 
-			string decoded = System.Net.WebUtility.HtmlDecode(query);
+			string decoded = WebUtility.HtmlDecode(query);
 			int decodedLength = decoded.Length;
 			int namePos = 0;
 			bool first = true;
-			Dictionary<String, String> result = new Dictionary<String, String>();
+			Dictionary<string, string> result = new Dictionary<string, string>();
 			while (namePos <= decodedLength)
 			{
 				int valuePos = -1, valueEnd = -1;
@@ -76,7 +75,7 @@ namespace ProcessDashboard
 					valuePos = namePos;
 				}
 				else {
-					name = System.Net.WebUtility.UrlDecode(decoded.Substring(namePos, valuePos - namePos - 1));
+					name = WebUtility.UrlDecode(decoded.Substring(namePos, valuePos - namePos - 1));
 				}
 				if (valueEnd < 0)
 				{
@@ -86,7 +85,7 @@ namespace ProcessDashboard
 				else {
 					namePos = valueEnd + 1;
 				}
-				value = System.Net.WebUtility.UrlDecode(decoded.Substring(valuePos, valueEnd - valuePos));
+				value = WebUtility.UrlDecode(decoded.Substring(valuePos, valueEnd - valuePos));
 
 				result.Add(name, value);
 				if (namePos == -1)

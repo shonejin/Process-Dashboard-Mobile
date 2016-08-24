@@ -3,73 +3,40 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using ProcessDashboard.SyncLogic;
+using NUnit.Framework;
+
 #endregion
 namespace ProcessDashboard
 {
-    internal class ControllerTest
+    public class ControllerTest
     {
-        private Controller ctrl;
+        private Controller _ctrl;
 
         public ControllerTest(Controller ctrl)
         {
-            this.ctrl = ctrl;
+            _ctrl = ctrl;
         }
+
+        [Test]
         public async void TestListOfProjects()
         {
-            var projectsList = await ctrl.GetProjects("mock");
-            try
-            {
-                Debug.WriteLine("** LIST OF PROJECTS **");
-
-                Debug.WriteLine("Length is " + projectsList.Count);
-
-                foreach (var proj in projectsList)
-                {
-                    Debug.WriteLine(proj.Id);
-                    Debug.WriteLine(proj.CreationDate + " : " + proj.CreationDate.Kind);
-
-                    Debug.WriteLine(proj.IsActive);
-                    Debug.WriteLine(proj.Name);
-
-                    Debug.WriteLine("***************");
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("We are in an error state :" + e);
-            }
+            var projectsList = await _ctrl.GetProjects("mock");
+            Assert.IsNotNull(projectsList);
+           
         }
 
+        [Test]
         public async void TestRecentTasks()
         {
-            var projectsList = await ctrl.GetRecentTasks("mock");
-            try
-            {
-                Debug.WriteLine("** LIST OF RECENT TASKS **");
-                Debug.WriteLine("Length is " + projectsList.Count);
-
-                foreach (var proj in projectsList)
-                {
-                    Debug.WriteLine(proj.Project);
-                    Debug.WriteLine(proj.ActualTime);
-                    Debug.WriteLine(proj.CompletionDate);
-                    Debug.WriteLine(proj.EstimatedTime);
-                    Debug.WriteLine(proj.FullName);
-                    Debug.WriteLine(proj.Id);
-                    Debug.WriteLine(proj.Note);
-                    Debug.WriteLine("********************");
-                    //  _taskService.GetTasksList(Priority.Speculative, "mock", taskID);
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("We are in an error state :" + e);
-            }
+            var projectsList = await _ctrl.GetRecentTasks("mock");
+            Assert.Equals(projectsList.Count, 10);
+            Assert.IsNotNull(projectsList);
+            
         }
-
+        [Test]
         public async void TestSingleTask()
         {
-            var taskItem = await ctrl.GetTask("mock", "iokdum2d:11401830");
+            var taskItem = await _ctrl.GetTask("mock", "iokdum2d:11401830");
             Debug.WriteLine("** TASK ENTRY **");
             try
             {
@@ -85,10 +52,10 @@ namespace ProcessDashboard
                 Debug.WriteLine("We are in an error state :" + e);
             }
         }
-
+        [Test]
         public async void TestListOfTasks()
         {
-            var tasksList = await ctrl.GetTasks("mock", "iokdum2d");
+            var tasksList = await _ctrl.GetTasks("mock", "iokdum2d");
             try
             {
                 Debug.WriteLine("** LIST OF TASKS **");
@@ -118,12 +85,12 @@ namespace ProcessDashboard
                 Debug.WriteLine("We are in an error state :" + e);
             }
         }
-
+        [Test]
         public async void TestListOfTimeLogs()
         {
             try
             {
-                var timeLogEntries = await ctrl.GetTimeLogs("mock", null, null, null, null, null);
+                var timeLogEntries = await _ctrl.GetTimeLogs("mock", null, null, null, null, null);
 
                 Debug.WriteLine("** LIST OF Timelog **");
                 Debug.WriteLine("Length is " + timeLogEntries.Count);
@@ -145,12 +112,12 @@ namespace ProcessDashboard
                 Debug.WriteLine("We are in an error state :" + e);
             }
         }
-
+        [Test]
         public async void TestListOfTimeLogsWithMaxResults()
         {
             try
             {
-                var timeLogEntries = await ctrl.GetTimeLogs("mock", 10, null, null, null, null);
+                var timeLogEntries = await _ctrl.GetTimeLogs("mock", 10, null, null, null, null);
 
                 Debug.WriteLine("** LIST OF TestListOfTimeLogsWithMaxResults **");
                 Debug.WriteLine("Length is " + timeLogEntries.Count);
@@ -172,13 +139,13 @@ namespace ProcessDashboard
                 Debug.WriteLine("We are in an error state :" + e);
             }
         }
-
+        [Test]
         public async void TestListOfTimeLogsWithstartDateFrom()
         {
             try
             {
                 var dt = new DateTime(2014, 3, 2).ToUniversalTime();
-                var timeLogEntries = await ctrl.GetTimeLogs("mock", null, dt, null, null, null);
+                var timeLogEntries = await _ctrl.GetTimeLogs("mock", null, dt, null, null, null);
                 Debug.WriteLine("** LIST OF TestListOfTimeLogsWithstartDateFrom **");
                 Debug.WriteLine("Length is " + timeLogEntries.Count);
 
@@ -199,13 +166,13 @@ namespace ProcessDashboard
                 Debug.WriteLine("We are in an error state :" + e);
             }
         }
-
+        [Test]
         public async void TestListOfTimeLogsWithstartDateTo()
         {
             try
             {
                 var dt = new DateTime(2014, 3, 2).ToUniversalTime();
-                var timeLogEntries = await ctrl.GetTimeLogs("mock", null, null, dt, null, null);
+                var timeLogEntries = await _ctrl.GetTimeLogs("mock", null, null, dt, null, null);
                 Debug.WriteLine("** LIST OF TestListOfTimeLogsWithstartDateTo **");
                 Debug.WriteLine("Length is " + timeLogEntries.Count);
 
@@ -226,12 +193,12 @@ namespace ProcessDashboard
                 Debug.WriteLine("We are in an error state :" + e);
             }
         }
-
+        [Test]
         public async void TestListOfTimeLogsWithtaskId()
         {
             try
             {
-                var timeLogEntries = await ctrl.GetTimeLogs("mock", null, null, null, "i5ixdkxc:15565303", null);
+                var timeLogEntries = await _ctrl.GetTimeLogs("mock", null, null, null, "i5ixdkxc:15565303", null);
 
                 Debug.WriteLine("** LIST OF TestListOfTimeLogsWithtaskId **");
                 Debug.WriteLine("Length is " + timeLogEntries.Count);
@@ -256,12 +223,12 @@ namespace ProcessDashboard
                 Debug.WriteLine("We are in an error state :" + e);
             }
         }
-
+        [Test]
         public async void TestListOfTimeLogsWithprojectId()
         {
             try
             {
-                var timeLogEntries = await ctrl.GetTimeLogs("mock", null, null, null, null, "i5ixdkxc");
+                var timeLogEntries = await _ctrl.GetTimeLogs("mock", null, null, null, null, "i5ixdkxc");
                 Debug.WriteLine("** LIST OF TestListOfTimeLogsWithprojectId **");
                 Debug.WriteLine("Length is " + timeLogEntries.Count);
 
@@ -282,12 +249,12 @@ namespace ProcessDashboard
                 Debug.WriteLine("We are in an error state :" + e);
             }
         }
-
+        [Test]
         public async void TestTimeLogsWithId(string taskId)
         {
             try
             {
-                var timeLogEntries = await ctrl.GetTimeLogs("mock", 0, null, null, taskId, null);
+                var timeLogEntries = await _ctrl.GetTimeLogs("mock", 0, null, null, taskId, null);
 
                 Debug.WriteLine("** LIST OF Timelog **");
                 Debug.WriteLine("Length is " + timeLogEntries.Count);
@@ -305,12 +272,13 @@ namespace ProcessDashboard
                 Debug.WriteLine("We are in an error state :" + e);
             }
         }
+        [Test]
         public async Task<int> TestAddATimeLog()
         {
             int id;
             try
             {
-                var tr = await ctrl.AddATimeLog("INST-szewf0", "Testing a comment", DateTime.UtcNow.Subtract(new TimeSpan(5,0,0,0)), "305", 32, 6, true);
+                var tr = await _ctrl.AddATimeLog("INST-szewf0", "Testing a comment", DateTime.UtcNow.Subtract(new TimeSpan(5,0,0,0)), "305", 32, 6, true);
                 Debug.WriteLine("** Added a new Time Log entry **");
                 Debug.WriteLine(tr.Id);
                 id = tr.Id;
@@ -326,12 +294,13 @@ namespace ProcessDashboard
             return id;
 
         }
+        [Test]
         public async Task TestGetATimeLog(string timelogid)
         {
             try
             {
 
-                var value = await ctrl.GetTimeLog("INST-szewf0", timelogid);
+                var value = await _ctrl.GetTimeLog("INST-szewf0", timelogid);
                 Debug.WriteLine("Task Name :" + value.Task.FullName);
                 Debug.WriteLine(value.Id);
                 Debug.WriteLine("Logged Time :" + value.LoggedTime);
@@ -348,8 +317,8 @@ namespace ProcessDashboard
                 Debug.WriteLine("We are in an error state :" + e);
             }
         }
-      
 
+        [Test]
         public async void TestDeleteATimeLog(int? val)
         {
             string timeLogId;
@@ -360,7 +329,7 @@ namespace ProcessDashboard
             else
                 timeLogId = "" + val.Value;
 
-            var tr = await ctrl.DeleteTimeLog("INST-szewf0", timeLogId);
+            var tr = await _ctrl.DeleteTimeLog("INST-szewf0", timeLogId);
             try
             {
                 Debug.WriteLine("** Deleting the Time Log entry **");
@@ -372,9 +341,7 @@ namespace ProcessDashboard
             }
         }
 
-
-
-
+        [Test]
         public async void TestUpdateATimeLogUpdateComment(string id)
         {
             string timeLogId;
@@ -386,7 +353,7 @@ namespace ProcessDashboard
 
             var tr =
                 await
-                    ctrl.UpdateTimeLog("INST-szewf0", timeLogId, "Testing updating the comment", null, null,null,null,true);
+                    _ctrl.UpdateTimeLog("INST-szewf0", timeLogId, "Testing updating the comment", null, null,null,null,true);
             try
             {
                 Debug.WriteLine("** Updated the Time Log Comment **");
@@ -406,7 +373,7 @@ namespace ProcessDashboard
                 Debug.WriteLine("We are in an error state :" + e);
             }
         }
-
+        [Test]
         public async void TestUpdateATimeLogUpdateStartDate(string id)
         {
             string timeLogId;
@@ -418,7 +385,7 @@ namespace ProcessDashboard
 
             var tr =
                 await
-                    ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, DateTime.UtcNow, null, null, null, true);
+                    _ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, DateTime.UtcNow, null, null, null, true);
             try
             {
                 Debug.WriteLine("** Updated the Time Log Start Date **");
@@ -435,7 +402,7 @@ namespace ProcessDashboard
                 Debug.WriteLine("We are in an error state :" + e);
             }
         }
-
+        [Test]
         public async void TestUpdateATimeLogUpdateTaskId(string id)
         {
             string timeLogId;
@@ -447,7 +414,7 @@ namespace ProcessDashboard
 
             var tr =
                 await
-                    ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null,null, "306", null, null, true);
+                    _ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null,null, "306", null, null, true);
             try
             {
                 Debug.WriteLine("** Updated the Time Log Task Id **");
@@ -465,7 +432,7 @@ namespace ProcessDashboard
                 Debug.WriteLine("We are in an error state :" + e);
             }
         }
-
+        [Test]
         public async void TestUpdateATimeLogUpdateLoggedTime(string id)
         {
             string timeLogId;
@@ -480,7 +447,7 @@ namespace ProcessDashboard
             {
                 var tr =
                await
-                   ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, null, null, 20, null, true);
+                   _ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, null, null, 20, null, true);
                 Debug.WriteLine("** Updated the Time Log Logged Time **");
                 Debug.WriteLine(tr.Id);
                 Debug.WriteLine(tr.LoggedTime);
@@ -494,7 +461,7 @@ namespace ProcessDashboard
                 Debug.WriteLine("We are in an error state :" + e);
             }
         }
-
+        [Test]
         public async void TestUpdateATimeLogUpdateInterruptTime(string id)
         {
             string timeLogId;
@@ -506,7 +473,7 @@ namespace ProcessDashboard
 
             var tr =
                 await
-                    ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, null, null,null ,20, true);
+                    _ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, null, null,null ,20, true);
             try
             {
                 Debug.WriteLine("** Updated the Time Log Interrupt Time **");
@@ -524,7 +491,7 @@ namespace ProcessDashboard
         }
 
 
-
+        [Test]
         public async void TestUpdateATimeLogUpdateLoggedTimeNotOpen(string id)
         {
             string timeLogId;
@@ -536,7 +503,7 @@ namespace ProcessDashboard
 
             var tr =
                 await
-                    ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, null, null, 20, null, false);
+                    _ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, null, null, 20, null, false);
             try
             {
                 Debug.WriteLine("** Updated the Time Logged Time with False **");
@@ -552,7 +519,7 @@ namespace ProcessDashboard
                 Debug.WriteLine("We are in an error state :" + e);
             }
         }
-
+        [Test]
         public async void TestUpdateATimeLogUpdateInterruptTimeNotOpen(string id)
         {
             string timeLogId;
@@ -564,7 +531,7 @@ namespace ProcessDashboard
 
             var tr =
                 await
-                    ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, null, null, null, 20, false);
+                    _ctrl.UpdateTimeLog("INST-szewf0", timeLogId, null, null, null, null, 20, false);
             try
             {
                 Debug.WriteLine("** Updated the Time Log Interrupt Time with False **");
@@ -581,13 +548,13 @@ namespace ProcessDashboard
             }
         }
 
-        
+        [Test]
         public async void TestMarkTaskComplete(string taskId)
         {
 
             var tr =
                 await
-                    ctrl.UpdateATask("INST-szewf0", taskId, null, DateTime.UtcNow,false);
+                    _ctrl.UpdateATask("INST-szewf0", taskId, null, DateTime.UtcNow,false);
 
             try
             {
@@ -607,12 +574,12 @@ namespace ProcessDashboard
 
 
         }
-
+        [Test]
         public async void TestMarkTaskIncomplete(string taskId)
         {
             var tr =
              await
-                 ctrl.UpdateATask("INST-szewf0", taskId, null,null,true);
+                 _ctrl.UpdateATask("INST-szewf0", taskId, null,null,true);
 
             try
             {
@@ -630,12 +597,12 @@ namespace ProcessDashboard
             }
 
         }
-
+        [Test]
         public async void TestUpdateEstimatedTime(string taskId, double estimatedTime)
         {
             var tr =
           await
-              ctrl.UpdateATask("INST-szewf0", taskId, estimatedTime, null,false);
+              _ctrl.UpdateATask("INST-szewf0", taskId, estimatedTime, null,false);
 
             try
             {

@@ -1,16 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Runtime;
-using Android.Util;
-using Android.Views;
 using Android.Widget;
-
+using Debug = System.Diagnostics.Debug;
 namespace ProcessDashboard.Droid.Fragments
 {
     public class DatePickerFragment : DialogFragment,
@@ -46,6 +38,9 @@ namespace ProcessDashboard.Droid.Fragments
                                                            currently.Year,
                                                            currently.Month-1,
                                                            currently.Day);
+
+            TimeSpan t = DateTime.Now - new DateTime(1970, 1, 1,0,0,0,DateTimeKind.Local);
+            dialog.DatePicker.MaxDate = (long)t.TotalMilliseconds;
             return dialog;
         }
 
@@ -53,7 +48,7 @@ namespace ProcessDashboard.Droid.Fragments
         {
             // Note: monthOfYear is a value between 0 and 11, not 1 and 12!
             DateTime selectedDate = new DateTime(year, monthOfYear + 1, dayOfMonth);
-            System.Diagnostics.Debug.WriteLine("Date Selected is :" + selectedDate.ToShortDateString());
+            Debug.WriteLine("Date Selected is :" + selectedDate.ToShortDateString());
             StartTime = selectedDate;
             //Log.Debug(TAG, selectedDate.ToLongDateString());
             _dateSelectedHandler(selectedDate);
@@ -75,10 +70,16 @@ namespace ProcessDashboard.Droid.Fragments
 
         public int StartMinute { get; set; }
 
+
+        public DateTime chosenDate { get; set; }
+
         public static TimePickerFragment NewInstance(Action<int,int> onTimeSelected)
         {
             TimePickerFragment frag = new TimePickerFragment();
             frag._timeSelectedHandler = onTimeSelected;
+
+       // frag.
+
             return frag;
         }
 
@@ -88,17 +89,38 @@ namespace ProcessDashboard.Droid.Fragments
         public override Dialog OnCreateDialog(Bundle savedInstanceState)
         {
             TimePickerDialog dialog = new TimePickerDialog(Activity, this, StartHour, StartMinute, true);
+
+            
+
             return dialog;
         }
 
       
         public void OnTimeSet(TimePicker view, int hourOfDay, int minute)
         {
-            System.Diagnostics.Debug.WriteLine("Hour of day :" + hourOfDay + " Minute :" + minute);
+            Debug.WriteLine("Hour of day :" + hourOfDay + " Minute :" + minute);
+            
+            
             StartHour = hourOfDay;
             StartMinute = minute;
-            _timeSelectedHandler(hourOfDay, minute);
 
+            if (chosenDate.Date.Equals(DateTime.Now.Date))
+            {
+                if(chosenDate.Hour<StartHour)
+                {
+                    Toast.MakeText(this.Activity, "Please choose a valid time", ToastLength.Long).Show();
+                }
+                else if (chosenDate.Hour == StartHour && chosenDate.Minute < StartMinute)
+                {
+                    Toast.MakeText(this.Activity, "Please choose a valid time", ToastLength.Long).Show();
+                }
+                else
+                    _timeSelectedHandler(hourOfDay, minute);
+            }
+            else
+            { 
+                _timeSelectedHandler(hourOfDay, minute);
+            }
         }
     }
 }

@@ -19,7 +19,7 @@
       android:icon="@drawable/ic_devices_black_24dp"
       android:title="Settings" />
   </group>
-
+  <!--
   <item android:title="Sub items">
     <menu>
       <item
@@ -28,4 +28,5 @@
         android:title="Sub item 2" />
     </menu>
   </item>
+  -->
 </menu>

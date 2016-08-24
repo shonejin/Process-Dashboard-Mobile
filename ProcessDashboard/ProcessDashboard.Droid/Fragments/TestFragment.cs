@@ -18,9 +18,17 @@ namespace ProcessDashboard.Droid.Fragments
             string url, id;
             dslr.ResolveFromToken("go.yn-hk1", out url, out id);
 
-            Debug.WriteLine("URL is :" + url);
-            Debug.WriteLine("Id is :" + id);
+            AccountStorage aspStorage = new AccountStorage();
 
+            aspStorage.SetContext(this.Activity);
+
+            aspStorage.Set("test", id, url, "dataset");
+            Debug.WriteLine("We are testing storage");
+            Debug.WriteLine(aspStorage.BaseUrl);
+            Debug.WriteLine(aspStorage.DataSet);
+            Debug.WriteLine(aspStorage.Password);
+            Debug.WriteLine(aspStorage.UserId);
+            
             try
             {
                 var ct = new ControllerTest(((MainActivity)Activity).Ctrl);
@@ -34,7 +42,7 @@ namespace ProcessDashboard.Droid.Fragments
                 //                ct.TestListOfTimeLogsWithprojectId();
                 //                ct.TestListOfTimeLogsWithstartDateFrom();
                 //                ct.TestListOfTimeLogsWithstartDateTo();
-                                ct.TestListOfTimeLogsWithtaskId();
+                //                ct.TestListOfTimeLogsWithtaskId();
                 //ct.TestAddATimeLog();
                 
                 //ct.TestGetATimeLog("-71");
@@ -43,7 +51,7 @@ namespace ProcessDashboard.Droid.Fragments
                 string tid = "-87";
                 //ct.TestUpdateATimeLogUpdateComment(tid);
                 //ct.TestUpdateATimeLogUpdateInterruptTimeNotOpen(tid);
-                ct.TestUpdateATimeLogUpdateLoggedTime(tid);
+               // ct.TestUpdateATimeLogUpdateLoggedTime(tid);
                 // ct.TestUpdateATimeLogUpdateStartDate(tid);
                 //ct.TestUpdateATimeLogUpdateTaskId(tid); 
                 //ct.TestUpdateATimeLogUpdateInterruptTime(tid);

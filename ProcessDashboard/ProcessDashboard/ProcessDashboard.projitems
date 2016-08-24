@@ -9,6 +9,7 @@
     <Import_RootNamespace>ProcessDashboard</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AccountStorage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\EditATimeLogRoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\DeleteRoot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)APIRoot\Err.cs" />

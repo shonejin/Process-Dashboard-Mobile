@@ -58,57 +58,120 @@ namespace ProcessDashboard.Droid.Fragments
             pn.Text = ProjectName;
             tn.Text = TaskName;
 
-            var pb = new ProgressDialog(this.Activity) { Indeterminate = true };
+            var pb = new ProgressDialog(Activity) {Indeterminate = true};
             pb.SetTitle("Loading");
             pb.SetCanceledOnTouchOutside(false);
             pb.Show();
-            var timelogs = await ctrl.GetTimeLogs(Settings.GetInstance().Dataset, null, null, null, _id, null);
 
-            Debug.WriteLine("Got data for timelogs :" + timelogs.Count);
-            fab.Click += (sender, args) =>
+            try
             {
+                var timelogs = await ctrl.GetTimeLogs(Settings.GetInstance().Dataset, null, null, null, _id, null);
+
+                Debug.WriteLine("Got data for timelogs :" + timelogs.Count);
+                fab.Click += (sender, args) =>
+                {
+                    if (timelogs.Count > 0)
+                    {
+                        Debug.WriteLine("Project Name :" + timelogs[0].Task.Project.Name);
+                        Debug.WriteLine("Task Name :" + timelogs[0].Task.FullName);
+
+                        ((MainActivity) Activity).TimeLogEditCallBack(timelogs[0].Task.Project.Name,
+                            timelogs[0].Task.FullName, timelogs[0].Task.Id, null);
+                    }
+                    else
+                    {
+                        ((MainActivity) Activity).TimeLogEditCallBack(ProjectName, TaskName, _id, null);
+                    }
+                };
+                fab.Show();
+                foreach (var timelog in timelogs)
+
+                {
+                    Debug.WriteLine(timelog);
+                }
+
+                var listAdapter = new TaskTimeLogAdapter(Activity, Resource.Layout.TimeLogEntryListItem,
+                    timelogs.ToArray());
+                ListAdapter = listAdapter;
+
                 if (timelogs.Count > 0)
                 {
-                    Debug.WriteLine("Project Name :" + timelogs[0].Task.Project.Name);
-                    Debug.WriteLine("Task Name :" + timelogs[0].Task.FullName);
-
-                    ((MainActivity)Activity).TimeLogEditCallBack(timelogs[0].Task.Project.Name,
-                        timelogs[0].Task.FullName, timelogs[0].Task.Id, null);
+                    pn.Text = timelogs[0].Task.Project.Name;
+                    tn.Text = timelogs[0].Task.FullName;
                 }
-                else
+                pb.Dismiss();
+
+
+                ListView.ItemClick += (sender, args) =>
                 {
-                    ((MainActivity)Activity).TimeLogEditCallBack(ProjectName, TaskName, _id, null);
-                }
-            };
-            fab.Show();
-            foreach (var timelog in timelogs)
-
-            {
-                Debug.WriteLine(timelog);
+                    var i = args.Position;
+                    Debug.WriteLine("I position :" + i);
+                    ((MainActivity) Activity).TimeLogEditCallBack(timelogs[i].Task.Project.Name,
+                        timelogs[i].Task.FullName,
+                        timelogs[i].Task.Id, timelogs[i]);
+                };
             }
-
-            var listAdapter = new TaskTimeLogAdapter(Activity, Resource.Layout.TimeLogEntryListItem,timelogs.ToArray());
-            ListAdapter = listAdapter;
-            
-            if (timelogs.Count > 0)
+            catch (CannotReachServerException)
             {
-                pn.Text = timelogs[0].Task.Project.Name;
-                tn.Text = timelogs[0].Task.FullName;
+                if(pb.IsShowing)
+                    pb.Dismiss();
+                
+                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                builder.SetTitle("Unable to Connect")
+                    .SetMessage("Please check your network connection and try again")
+                      .SetNeutralButton("Okay", (sender2, args2) =>
+                      {
+                          builder.Dispose();
+                          ((MainActivity)Activity).FragmentManager.PopBackStack();
+                      })
+                    .SetCancelable(false);
+                AlertDialog alert = builder.Create();
+                alert.Show();
+
+
+
+
             }
-            pb.Dismiss();
-           
-
-            ListView.ItemClick += (sender, args) =>
+            catch (StatusNotOkayException se)
             {
-                var i = args.Position;
-                Debug.WriteLine("I position :" + i);
-                ((MainActivity) Activity).TimeLogEditCallBack(timelogs[i].Task.Project.Name, timelogs[i].Task.FullName,
-                    timelogs[i].Task.Id, timelogs[i]);
-            };
+                if (pb.IsShowing)
+                    pb.Dismiss();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                builder.SetTitle("An Error has occured")
+                    .SetMessage("Error :" + se.GetMessage())
+                    .SetNeutralButton("Okay", (sender2, args2) =>
+                    {
+                        builder.Dispose();
+                    })
+                    .SetCancelable(false);
+                AlertDialog alert = builder.Create();
+                alert.Show();
+
+
+            }
+            catch (Exception e)
+            {
+                // For any other weird exceptions
+
+                if (pb.IsShowing)
+                    pb.Dismiss();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                builder.SetTitle("An Error has occured")
+                      .SetNeutralButton("Okay", (sender2, args2) =>
+                      {
+                          builder.Dispose();
+                      })
+                    .SetMessage("Error :" + e.Message)
+                    .SetCancelable(false);
+                AlertDialog alert = builder.Create();
+                alert.Show();
+
+            }
         }
 
-
-       }
+    }
 
     public class TaskTimeLogAdapter : BaseAdapter
     {

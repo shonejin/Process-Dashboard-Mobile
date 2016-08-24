@@ -11,11 +11,6 @@
      android:layout_height="wrap_content"
      android:layout_gravity="center"
      android:gravity="center"/>
-  
-  <android.support.v4.widget.SwipeRefreshLayout
-     android:id="@+id/tasksLists_Refresher"
-     android:layout_width="match_parent"
-     android:layout_height="wrap_content">
 
     <ListView
         android:minWidth="25px"
@@ -23,6 +18,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@id/android:list" />
+    <TextView
+  android:text="@string/no_content"
+  android:id="@+id/listprojecttasks_emptyview"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:gravity="center"
+   android:visibility="gone"
+  android:layout_gravity="center"/>
 
-  </android.support.v4.widget.SwipeRefreshLayout>
+
 </LinearLayout>
