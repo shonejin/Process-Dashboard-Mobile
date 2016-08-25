@@ -69,7 +69,7 @@ namespace ProcessDashboard.iOS
 			{
 				if (ex.Message.Contains("401"))
 				{
-					AccountStorage.ClearStorage();
+					AccountStorage.ClearPassword();
 					AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
 					del.BindLoginViewController();
 				}
@@ -88,7 +88,7 @@ namespace ProcessDashboard.iOS
 			{
 				if (ex.Message.Contains("401"))
 				{
-					AccountStorage.ClearStorage();
+					AccountStorage.ClearPassword();
 					AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
 					del.BindLoginViewController();
 				}
@@ -109,7 +109,7 @@ namespace ProcessDashboard.iOS
 			{
 				if (ex.Message.Contains("401"))
 				{
-					AccountStorage.ClearStorage();
+					AccountStorage.ClearPassword();
 					AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
 					del.BindLoginViewController();
 				}
@@ -128,7 +128,7 @@ namespace ProcessDashboard.iOS
 			{
 				if (ex.Message.Contains("401"))
 				{
-					AccountStorage.ClearStorage();
+					AccountStorage.ClearPassword();
 					AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
 					del.BindLoginViewController();
 				}
@@ -147,7 +147,7 @@ namespace ProcessDashboard.iOS
 			{
 				if (ex.Message.Contains("401"))
 				{
-					AccountStorage.ClearStorage();
+					AccountStorage.ClearPassword();
 					AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
 					del.BindLoginViewController();
 				}
@@ -166,7 +166,7 @@ namespace ProcessDashboard.iOS
 			{
 				if (ex.Message.Contains("401"))
 				{
-					AccountStorage.ClearStorage();
+					AccountStorage.ClearPassword();
 					AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
 					del.BindLoginViewController();
 				}
@@ -185,7 +185,7 @@ namespace ProcessDashboard.iOS
 			{
 				if (ex.Message.Contains("401"))
 				{
-					AccountStorage.ClearStorage();
+					AccountStorage.ClearPassword();
 					AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
 					del.BindLoginViewController();
 				}
@@ -204,7 +204,7 @@ namespace ProcessDashboard.iOS
 			{
 				if (ex.Message.Contains("401"))
 				{
-					AccountStorage.ClearStorage();
+					AccountStorage.ClearPassword();
 					AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
 					del.BindLoginViewController();
 				}
@@ -223,7 +223,7 @@ namespace ProcessDashboard.iOS
 			{
 				if (ex.Message.Contains("401"))
 				{
-					AccountStorage.ClearStorage();
+					AccountStorage.ClearPassword();
 					AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
 					del.BindLoginViewController();
 				}
@@ -242,7 +242,7 @@ namespace ProcessDashboard.iOS
 			{
 				if (ex.Message.Contains("401"))
 				{
-					AccountStorage.ClearStorage();
+					AccountStorage.ClearPassword();
 					AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
 					del.BindLoginViewController();
 				}

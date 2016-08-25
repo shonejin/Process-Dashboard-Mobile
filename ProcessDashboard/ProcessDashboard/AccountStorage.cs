@@ -25,11 +25,11 @@ namespace ProcessDashboard
 	    }
 		#endif
 
-		public static void Set(String userId, String password, String baseUrl, String dataSet)
+		public static void Set(String userId, String password, String baseUrl, String dataSet, String dataToken)
 		{
 			ClearStorage();
 
-			if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(password) || String.IsNullOrEmpty(baseUrl) || String.IsNullOrEmpty(dataSet))
+			if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(password) || String.IsNullOrEmpty(baseUrl) || String.IsNullOrEmpty(dataSet) || String.IsNullOrEmpty(dataToken))
 			{
 				throw new FormatException("input parameters contain null or empty strings");
 			}
@@ -42,6 +42,7 @@ namespace ProcessDashboard
 				account.Properties.Add("Password", password);
 				account.Properties.Add("BaseUrl", baseUrl);
 				account.Properties.Add("DataSet", dataSet);
+				account.Properties.Add("DataToken", dataToken);
 
 				#if __IOS__
 				AccountStore.Create().Save(account, AppName);
@@ -124,6 +125,15 @@ namespace ProcessDashboard
 			}
 		}
 
+		public static void ClearPassword()
+		{
+			List<Account> accounts = (List<Account>)AccountStore.Create().FindAccountsForService(AppName);
+			if (accounts.Count > 0)
+			{
+				accounts[0].Properties["Password"] = "";
+			}
+		}
+
 		public static string BaseUrl
 		{
 			get
@@ -151,5 +161,20 @@ namespace ProcessDashboard
 				#endif
 			}
 		}
+
+		public static string DataToken
+		{
+			get
+			{
+				#if __IOS__
+				List<Account> accounts = (List<Account>)AccountStore.Create().FindAccountsForService(AppName);
+				return (accounts.Count > 0) ? accounts[0].Properties["DataToken"] : null;
+				#else
+				Account account = (Account)AccountStore.Create(_context).FindAccountsForService(AppName).ElementAtOrDefault(0);
+				return account?.Properties["DataSet"];
+				#endif
+			}
+		}
+
 	}
 }

@@ -16,9 +16,17 @@ namespace ProcessDashboard.iOS
 
 		public override void ViewDidLoad()
 		{
+			String dataToken = AccountStorage.DataToken;
+			String userId = AccountStorage.UserId;
+
+			if (!String.IsNullOrEmpty(dataToken) && !String.IsNullOrEmpty(userId))
+			{
+				DataTokenTextView.Text = dataToken;
+				UserIDTextView.Text = userId;
+			}
+			
 			DataTokenTextView.AutocorrectionType = UITextAutocorrectionType.No;
 			DataTokenTextView.AutocapitalizationType = UITextAutocapitalizationType.AllCharacters;
-
 
 			UserIDTextView.AutocapitalizationType = UITextAutocapitalizationType.None;
 			UserIDTextView.AutocorrectionType = UITextAutocorrectionType.No;
@@ -124,7 +132,7 @@ namespace ProcessDashboard.iOS
 					}
 					else if (responseStr.Contains("dataset"))
 					{
-						AccountStorage.Set(userId, password, baseUrl, dataSet);
+						AccountStorage.Set(userId, password, baseUrl, dataSet, dataToken);
 						PDashAPI.Controller.RefreshDataset();
 						if (OnLoginSuccess != null)
 						{

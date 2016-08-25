@@ -53,7 +53,7 @@ namespace ProcessDashboard.iOS
 
 					actionSheetAlert.AddAction(UIAlertAction.Create("Log Out", UIAlertActionStyle.Destructive, (action) =>
 					{
-						AccountStorage.ClearStorage();
+						AccountStorage.ClearPassword();
 						AppDelegate del = UIApplication.SharedApplication.Delegate as AppDelegate;
 						del.BindLoginViewController();
 					}));
