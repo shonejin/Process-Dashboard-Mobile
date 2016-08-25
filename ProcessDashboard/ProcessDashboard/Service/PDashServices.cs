@@ -291,11 +291,15 @@ namespace ProcessDashboard.Service_Access_Layer
                 System.Diagnostics.Debug.WriteLine("2");
                 var timelogged = await addTimeLog;
                 Debug.WriteLine("3");
-                if (!timelogged.Stat.Equals("ok"))
+                if (timelogged.Stat.Equals("fail") && timelogged.Err.Code.Equals("stopTimeLogging"))
+                {
+                    throw new CancelTimeLoggingException(timelogged.Err.StopTime);
+                }
+                else if (!timelogged.Stat.Equals("ok"))
                 {
                     throw new StatusNotOkayException(timelogged.Err.Msg, timelogged.Err.Code);
                 }
-
+                
                 return timelogged.TimeLogEntry;
             }
             catch (Exception)
@@ -332,7 +336,10 @@ namespace ProcessDashboard.Service_Access_Layer
 
                 var updatedTimeLog = await _globalPolicy
                     .ExecuteAsync(async () => await updateTimeLog);
-
+                if (updatedTimeLog.Stat.Equals("fail") && updatedTimeLog.Err.Code.Equals("stopTimeLogging"))
+                {
+                    throw new CancelTimeLoggingException(updatedTimeLog.Err.StopTime);
+                }
                 if (!updatedTimeLog.Stat.Equals("ok"))
                 {
                     throw new StatusNotOkayException(updatedTimeLog.Err.Msg, updatedTimeLog.Err.Code);
@@ -358,7 +365,10 @@ namespace ProcessDashboard.Service_Access_Layer
 
                 var deletestatus = await _globalPolicy
                     .ExecuteAsync(async () => await deleteTimeLog);
-
+                if (deletestatus.Stat.Equals("fail") && deletestatus.Err.Code.Equals("stopTimeLogging"))
+                {
+                    throw new CancelTimeLoggingException(deletestatus.Err.StopTime);
+                }
                 if (!deletestatus.Stat.Equals("ok"))
                 {
                     throw new StatusNotOkayException(deletestatus.Err.Msg, deletestatus.Err.Code);
