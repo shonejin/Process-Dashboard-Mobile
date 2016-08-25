@@ -284,7 +284,7 @@ namespace ProcessDashboard.Service_Access_Layer
                     {"taskId", taskId},
                     {"loggedTime", loggedTime},
                     {"editTimestamp", _util.GetEditTimeStamp()},
-                    {"open", open},
+                    {"open", open ? "true" : "false"},
                     {"interruptTime", interruptTime}
                 };
                 var addTimeLog = _apiService.GetApi(priority).AddTimeLog(AccountStorage.AuthHeader, dataset, value);
@@ -326,7 +326,7 @@ namespace ProcessDashboard.Service_Access_Layer
                     value.Add("startDate", _util.GetServerTimeString(startDate));
                 if (loggedTimeDelta.HasValue)
                     value.Add("loggedTimeDelta", loggedTimeDelta.Value);
-                value.Add("open", open);
+                value.Add("open", open ? "true" : "false");
                 if (interruptTimeDelta.HasValue)
                     value.Add("interruptTimeDelta", interruptTimeDelta.Value);
                 value.Add("editTimestamp", _util.GetEditTimeStamp());
