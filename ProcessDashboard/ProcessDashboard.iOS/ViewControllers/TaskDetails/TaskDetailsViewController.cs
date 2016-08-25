@@ -162,7 +162,8 @@ namespace ProcessDashboard.iOS
 
 		private void timeLoggingStateChanged(object sender, StateChangedEventArgs ea)
 		{
-			if (ea.NewState.Equals(TimeLoggingControllerStates.TimeLogCanceled))
+			if (ea.NewState.Equals(TimeLoggingControllerStates.TimeLogCanceled) ||
+				ea.NewState.Equals(TimeLoggingControllerStates.TimeLogStopped))
 			{
 				refreshControlButtons();
 			}

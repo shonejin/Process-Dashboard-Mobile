@@ -221,7 +221,6 @@ namespace ProcessDashboard
 						int logged = Round(_stopwatch.GetLoggedMinutes());
 						int interrupt = Round(_stopwatch.GetInterruptMinutes());
 
-						throw new CancelTimeLoggingException();
 						await _controller.UpdateTimeLog(AccountStorage.DataSet, _timeLogEntryId, null, null, _taskId,
 													   LoggedTimeDelta(), interruptTimeDelta(), _stopwatch.IsRunning());
 

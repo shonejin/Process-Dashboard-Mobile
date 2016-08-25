@@ -136,6 +136,7 @@ namespace ProcessDashboard
 			long millisToCancel = (long)(minutesToCancel * Minutes);
 			DateTime cancelTime = DateTime.UtcNow.AddMilliseconds(-millisToCancel);
 			CancelTimingAsOf(cancelTime);
+			TimeLoggingController.GetInstance().OnTimeLoggingStateChanged(TimeLoggingControllerStates.TimeLogStopped, "Timer stopped automatically.");
 		}
 
 		public void CancelTimingAsOf(DateTime cancellationTime)

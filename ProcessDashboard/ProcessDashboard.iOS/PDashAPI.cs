@@ -48,7 +48,6 @@ namespace ProcessDashboard.iOS
 	{
 		// dataset value is refreshed after each login
 		private string dataset = AccountStorage.DataSet;
-		private bool wifiAvailable = false;
 		public delegate void ControllerExceptionHandler(string message);
 
 		public void RefreshDataset()
