@@ -38,11 +38,22 @@ namespace ProcessDashboard.iOS
 
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 		{
-			if (indexPath.Row == 1)
+			switch (indexPath.Row)
 			{
-				owner.PerformSegue("TaskTimeLogsSegue", owner);
+				case 0:
+					planTimeText.BecomeFirstResponder();
+					tableView.DeselectRow(indexPath, true);
+					break;
+				case 1:
+					owner.PerformSegue("TaskTimeLogsSegue", owner);
+					tableView.DeselectRow(indexPath, true);
+					break;
+				case 2:
+					completeDateText.BecomeFirstResponder();
+					tableView.DeselectRow(indexPath, true);
+					break;
+				default: break;	
 			}
-			tableView.DeselectRow(indexPath, true);
 		}
 
 		public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
@@ -180,7 +191,6 @@ namespace ProcessDashboard.iOS
 
 		public void newCompleteDatePicker()
 		{
-
 			CompleteTimePicker = new UIDatePicker(new CoreGraphics.CGRect(0, 300, 400, 200f));
 			CompleteTimePicker.BackgroundColor = UIColor.FromRGB(220, 220, 220);
 

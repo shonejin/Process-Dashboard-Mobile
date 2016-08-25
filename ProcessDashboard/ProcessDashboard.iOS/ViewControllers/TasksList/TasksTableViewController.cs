@@ -50,11 +50,6 @@ namespace ProcessDashboard.iOS
 			tasksTableView.Frame = new CGRect(0, 42, View.Bounds.Width, View.Bounds.Height - 42);
 			StaticLabel.AutoresizingMask = UIViewAutoresizing.All;
 			View.AddSubview(StaticLabel);
-
-			// TODO: Fixed the Refreshcontrol, refreshing the list of tasks.
-			//RefreshControl = new UIRefreshControl();
-			//tasksTableView.Add(RefreshControl);
-			//RefreshControl.ValueChanged += (sender, e) => { refreshData(); };
 		}
 
 		public override void ViewDidAppear(bool animated)

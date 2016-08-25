@@ -114,8 +114,6 @@ namespace ProcessDashboard.iOS
 			TdNotesTf.Layer.CornerRadius = 10.0f;
 			TdNotesTf.Text = task.Note ?? "";
 
-			TimeSpan estimated = TimeSpan.FromMinutes(task.EstimatedTime);
-			TimeSpan actual = TimeSpan.FromMinutes(task.ActualTime);
 			PlanTable.Source = new TaskDetailTableSource(task, this);
 			View.AddSubview(PlanTable);
 		}
