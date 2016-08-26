@@ -45,6 +45,7 @@ namespace ProcessDashboard
 			{
 				_stopTime = when;
 				_loggedMillis += (long)(_stopTime - _startTime).TotalMilliseconds;
+				Console.WriteLine("**** new logged millis: " + _loggedMillis);
 				_startTime = new DateTime(0, DateTimeKind.Utc);
 			}
 		}
@@ -141,7 +142,9 @@ namespace ProcessDashboard
 
 		public void CancelTimingAsOf(DateTime cancellationTime)
 		{
+			Console.WriteLine(" *** Cancelation Time: " + cancellationTime.ToLocalTime().ToString());
 			DateTime now = DateTime.UtcNow;
+			cancellationTime = cancellationTime.ToUniversalTime();
 			if (cancellationTime > now)
 			{
 				cancellationTime = now;
@@ -154,16 +157,19 @@ namespace ProcessDashboard
 					StopAsOf(cancellationTime);
 					return;
 				}
-			    if (_stopTime.Ticks != 0)
-			    {
-			        long interrupToDiscard = (long)(_startTime - _stopTime).TotalMilliseconds;
-			        _interruptMillis -= interrupToDiscard;
-			        if (_interruptMillis < 0)
-			        {
-			            _interruptMillis = 0;
-			        }
-			    }
-			    _startTime = new DateTime(0, DateTimeKind.Utc);
+				else
+				{
+					if (_stopTime.Ticks != 0)
+					{
+						long interrupToDiscard = (long)(_startTime - _stopTime).TotalMilliseconds;
+						_interruptMillis -= interrupToDiscard;
+						if (_interruptMillis < 0)
+						{
+							_interruptMillis = 0;
+						}
+					}
+					_startTime = new DateTime(0, DateTimeKind.Utc);
+				}
 			}
 
 			if (_stopTime.Ticks != 0 && cancellationTime < _stopTime)

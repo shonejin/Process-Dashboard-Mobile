@@ -209,6 +209,7 @@ namespace ProcessDashboard
 			{
 				if (_stopwatch.IsPaused() && _stopwatch.GetLoggedMinutes() < 0.5)
 				{
+					Console.WriteLine("delete time log in saveifneeded, loggedMinutes: " + _stopwatch.GetLoggedMinutes());
 					await _controller.DeleteTimeLog(AccountStorage.DataSet, _timeLogEntryId);
 					ReleaseTimeLogEntry(false);
 
