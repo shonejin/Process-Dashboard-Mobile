@@ -168,7 +168,11 @@ namespace ProcessDashboard
 			{
 				#if __IOS__
 				List<Account> accounts = (List<Account>)AccountStore.Create().FindAccountsForService(AppName);
-				return (accounts.Count > 0) ? accounts[0].Properties["DataToken"] : null;
+				if (accounts.Count > 0 && accounts[0].Properties.ContainsKey("DataToken"))
+				{
+					return accounts[0].Properties["DataToken"];
+				}
+				return null;
 				#else
 				Account account = (Account)AccountStore.Create(_context).FindAccountsForService(AppName).ElementAtOrDefault(0);
 				return account?.Properties["DataSet"];

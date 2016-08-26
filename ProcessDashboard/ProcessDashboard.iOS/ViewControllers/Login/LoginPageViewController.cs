@@ -98,7 +98,11 @@ namespace ProcessDashboard.iOS
 			catch (System.Net.WebException e)
 			{
 				resp = (System.Net.HttpWebResponse)e.Response;
-				if (resp.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+				if (resp == null)
+				{ 
+					new UIAlertView("Server Unavailable", "Cannot reach server \"" + baseUrl + "\". " + e.Message, null, "OK", null).Show();
+				}
+				else if (resp.StatusCode == System.Net.HttpStatusCode.Unauthorized)
 				{
 					new UIAlertView("Bad Credentials", "Your user ID or password is not correct.", null, "OK", null).Show();
 				}
@@ -108,7 +112,7 @@ namespace ProcessDashboard.iOS
 				}
 				else
 				{
-					new UIAlertView("Server Unavailable", "Cannot reach server \"" + baseUrl + "\". " + e.Message, null, "OK", null).Show();
+					new UIAlertView("Server Not Recognized", "Server \"" + baseUrl + "\" is not recognized. " + e.Message, null, "OK", null).Show();
 				}
 				return;
 			}
@@ -139,6 +143,16 @@ namespace ProcessDashboard.iOS
 							OnLoginSuccess(sender, new EventArgs());
 						}
 					}
+					else
+					{
+						new UIAlertView("Server Not Recognized", "Server \"" + baseUrl + "\" is not recognized.", null, "OK", null).Show();
+						return;
+					}
+				}
+				else
+				{
+					new UIAlertView("Error", "Comunication with the server failed. Status code: " + resp.StatusCode + ", " + resp.StatusDescription, null, "OK", null).Show();
+					return;
 				}
 			}
 			else
