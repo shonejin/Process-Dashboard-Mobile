@@ -144,7 +144,7 @@ namespace ProcessDashboard
 		{
 			Console.WriteLine(" *** Cancelation Time: " + cancellationTime.ToLocalTime().ToString());
 			DateTime now = DateTime.UtcNow;
-			cancellationTime = cancellationTime.ToUniversalTime();
+			cancellationTime = Util.GetInstance().GetServerTime(cancellationTime);
 			if (cancellationTime > now)
 			{
 				cancellationTime = now;
