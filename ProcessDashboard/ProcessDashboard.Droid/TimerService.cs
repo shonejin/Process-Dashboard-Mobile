@@ -17,8 +17,8 @@ namespace ProcessDashboard.Droid
         }
 
         private string _taskId { get; set; }
-    
-        public  override StartCommandResult OnStartCommand(Intent intent, StartCommandFlags flags, int startId)
+
+        public override StartCommandResult OnStartCommand(Intent intent, StartCommandFlags flags, int startId)
         {
             try
             {
@@ -30,27 +30,18 @@ namespace ProcessDashboard.Droid
                     .SetContentText("Timer is running")
                     .SetContentTitle("Process Dashboard")
                     .SetSmallIcon(Resource.Drawable.Icon);
-          
+
                 var ongoing = builder.Build();
-                
-                StartForeground((int) NotificationFlags.ForegroundService, ongoing);
+
+                StartForeground((int)NotificationFlags.ForegroundService, ongoing);
 
                 Intent intent2 = new Intent(eventName);
-                
-                _tlc.TimeLoggingStateChanged += _tlc_TimeLoggingStateChanged;
-                if (_tlc.WasNetworkAvailable)
-                {
 
-                    _tlc.StartTiming(_taskId);
-                    intent2.PutExtra("key", "Time logging has been started by the server");
-                   
+                //TODO: THERE SEEMS TO BE SOMETHING WEIRD HERE!!
 
-                }
-                else
-                {
-                    // Send message to Activity about the error
-                    intent2.PutExtra("key", "You cant create a new timelog");
-                }
+                TimeLoggingController.TimeLoggingStateChanged += _tlc_TimeLoggingStateChanged;
+                _tlc.StartTiming(_taskId);
+                intent2.PutExtra("key", "Time logging has been started by the server");
                 LocalBroadcastManager.GetInstance(this).SendBroadcast(intent2);
                 System.Diagnostics.Debug.WriteLine("This is a foreground Service");
             }
@@ -65,7 +56,7 @@ namespace ProcessDashboard.Droid
         {
             Intent intent = new Intent(eventName);
             // You can also include some extra data.
-             System.Diagnostics.Debug.WriteLine("We have a change of state");
+            System.Diagnostics.Debug.WriteLine("We have a change of state");
 
             if (e.NewState.Equals(TimeLoggingControllerStates.TimeLogCanceled))
 
@@ -97,8 +88,6 @@ namespace ProcessDashboard.Droid
         public override void OnCreate()
         {
             base.OnCreate();
-           
-            
         }
 
         public async void StopTimer()
@@ -109,10 +98,9 @@ namespace ProcessDashboard.Droid
         public override void OnDestroy()
         {
             base.OnDestroy();
-            
+
             if (_tlc.IsTimerRunning())
             {
-
                 Intent intent2 = new Intent(eventName);
                 intent2.PutExtra("key", "Time logging has been cancelled by the server");
                 LocalBroadcastManager.GetInstance(this).SendBroadcast(intent2);
@@ -132,7 +120,7 @@ namespace ProcessDashboard.Droid
         {
             public override void HandleMessage(Message msg)
             {
-                       
+
                 System.Diagnostics.Debug.WriteLine(msg.Arg1);
                 System.Diagnostics.Debug.WriteLine(msg.Arg2);
 

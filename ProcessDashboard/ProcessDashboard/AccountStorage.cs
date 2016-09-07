@@ -15,9 +15,9 @@ namespace ProcessDashboard
 		private const string AppName = "Process_Dashboard";
 
 #if __ANDROID__
-	    private Context _context;
+	    private static Context _context;
 
-	    public void SetContext(Context context)
+	    public static void SetContext(Context context)
 	    {
 	        _context = context;
 	    }
@@ -25,7 +25,7 @@ namespace ProcessDashboard
 #endif
 
 
-        public void Set(string userId, string password, string baseUrl, string dataSet)
+        public static void Set(string userId, string password, string baseUrl, string dataSet)
 		{
 			ClearStorage();
 
@@ -48,7 +48,7 @@ namespace ProcessDashboard
 #endif
 		}
 
-		public void ClearStorage()
+		public static void ClearStorage()
 		{
 			while (true)
 			{
@@ -72,7 +72,7 @@ namespace ProcessDashboard
 			}
 		}
 
-		public string UserId
+		public static string UserId
 		{
 			get
 			{
@@ -81,20 +81,11 @@ namespace ProcessDashboard
 #else
                 Account account =  AccountStore.Create(_context).FindAccountsForService(AppName).ElementAtOrDefault(0);
 #endif
-			    if (account == null)
-			    {
-			        System.Diagnostics.Debug.WriteLine("Account is null ");
-			    }
-			    else
-			    {
-			        System.Diagnostics.Debug.WriteLine("Account is not null :"+account.ToString());
-                    System.Diagnostics.Debug.WriteLine("Account is not null 2:" + account.Username);
-                }
                 return account?.Username;
 			}
 		}
 
-		public string Password
+		public static string Password
 		{
 			get
 			{
@@ -107,7 +98,7 @@ namespace ProcessDashboard
 			}
 		}
 
-		public string BaseUrl
+		public static string BaseUrl
 		{
 			get
 			{
@@ -116,16 +107,22 @@ namespace ProcessDashboard
 #else
                 Account account = (Account)AccountStore.Create(_context).FindAccountsForService(AppName).ElementAtOrDefault(0);
 #endif
+                System.Diagnostics.Debug.WriteLine("Base url in storage is :"+ account?.Properties["BaseUrl"]);
                 return account?.Properties["BaseUrl"];
 			}
 		}
 
-		public string DataSet
+		public static string DataSet
 		{
 			get
 			{
-#if __IOS__
-                Account account = (Account) AccountStore.Create().FindAccountsForService(AppName);
+                #if __IOS__
+				List<Account> accounts = (List<Account>)AccountStore.Create().FindAccountsForService(AppName);
+				if (accounts.Count > 0 && accounts[0].Properties.ContainsKey("DataToken"))
+				{
+					return accounts[0].Properties["DataToken"];
+				}
+				return null;
 #else
                 Account account = (Account)AccountStore.Create(_context).FindAccountsForService(AppName).ElementAtOrDefault(0);
 #endif

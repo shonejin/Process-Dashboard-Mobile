@@ -1,6 +1,7 @@
 #region
 using System;
 using System.Globalization;
+using System.Net;
 using Android.App;
 using Android.OS;
 using Android.Views;
@@ -58,12 +59,23 @@ namespace ProcessDashboard.Droid.Fragments
         public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater)
         {
             base.OnCreateOptionsMenu(menu, inflater);
-
             inflater.Inflate(Resource.Menu.TimelogMenu, menu);
+          //  menu.FindItem(Resource.Id.TimeLog_Delete).Icon = Android.Resource.Drawable.IcMenuSave;
+
+            if (_timeLog == null)
+            {
+                menu.FindItem(Resource.Id.TimeLog_Delete).SetVisible(false);
+            }
+            else
+            {
+                menu.FindItem(Resource.Id.TimeLog_Save).SetVisible(false);
+            }
+            
         }
 
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
+          
             switch (item.ItemId)
             {
                 case Resource.Id.TimeLog_Save:
@@ -86,7 +98,7 @@ namespace ProcessDashboard.Droid.Fragments
             try
             {
               
-                await ((MainActivity)Activity).Ctrl.DeleteTimeLog(Settings.GetInstance().Dataset, "" + _timeLog.Id);
+                await ((MainActivity)Activity).Ctrl.DeleteTimeLog(AccountStorage.DataSet, "" + _timeLog.Id);
                 pd.Dismiss();
                 Toast.MakeText(Activity, "Deleted the timelog entry", ToastLength.Short).Show();
                 Debug.WriteLine("We are going to pop backstack");
@@ -99,6 +111,49 @@ namespace ProcessDashboard.Droid.Fragments
                 Toast.MakeText(Activity, "Please check your internet connection and try again.", ToastLength.Long).Show();
                 Debug.WriteLine("We are going to pop backstack");
                 ((MainActivity)Activity).FragmentManager.PopBackStack();
+            }
+            catch (WebException we)
+            {
+                if (we.Status == WebExceptionStatus.ProtocolError)
+                {
+                    var response = we.Response as HttpWebResponse;
+                    if (response != null)
+                    {
+                        Console.WriteLine("HTTP Status Code: " + (int)response.StatusCode);
+                        if (response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            try
+                            {
+
+                                if (pd.IsShowing)
+                                    pd.Dismiss();
+                                Toast.MakeText(this.Activity, "Username and password error.", ToastLength.Long).Show();
+                                System.Diagnostics.Debug.WriteLine("We are about to logout");
+                                AccountStorage.ClearStorage();
+                                System.Diagnostics.Debug.WriteLine("Main Activity is :" + Activity == null);
+                                System.Diagnostics.Debug.WriteLine("Items in the backstack :" + Activity.FragmentManager.BackStackEntryCount);
+                                System.Diagnostics.Debug.WriteLine("Main Activity is :" + Activity == null);
+                                Activity.FragmentManager.PopBackStack(null, PopBackStackFlags.Inclusive);
+                                System.Diagnostics.Debug.WriteLine("Items in the backstack 2 :" + Activity.FragmentManager.BackStackEntryCount);
+                                ((MainActivity)(Activity)).SetDrawerState(false);
+                                ((MainActivity)(Activity)).SwitchToFragment(MainActivity.FragmentTypes.Login);
+                            }
+                            catch (System.Exception e)
+                            {
+                                System.Diagnostics.Debug.WriteLine("We encountered an error :" + e.Message);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // no http status code available
+                        Toast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                    }
+                }
+                else
+                {
+                    // no http status code availableToast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                }
             }
             catch (StatusNotOkayException)
             {
@@ -131,20 +186,13 @@ namespace ProcessDashboard.Droid.Fragments
                 try
                 {
                     var newDate = DateTime.SpecifyKind(DateTime.Parse(_startTime.Text), DateTimeKind.Local);
-
-
-                    double val =
-                        Convert.ToDouble(
-                            TimeSpan.ParseExact(_deltaTime.Text, @"hh\:mm", CultureInfo.InvariantCulture).TotalMinutes);
-                    double val2 =
-                        Convert.ToDouble(
-                            TimeSpan.ParseExact(_interruptTime.Text, @"hh\:mm", CultureInfo.InvariantCulture)
-                                .TotalMinutes);
+                    
+                    double val =Convert.ToDouble(TimeSpan.ParseExact(_deltaTime.Text, @"hh\:mm", CultureInfo.InvariantCulture).TotalMinutes);
+                    double val2 =Convert.ToDouble(TimeSpan.ParseExact(_interruptTime.Text, @"hh\:mm", CultureInfo.InvariantCulture).TotalMinutes);
                     pd.Show();
                     await
-                        ((MainActivity)Activity).Ctrl.AddATimeLog(Settings.GetInstance().Dataset, _comment.Text,
-                            newDate
-                            , _taskId, val, val2, false);
+                        ((MainActivity)Activity).Ctrl.AddATimeLog(AccountStorage.DataSet, _comment.Text,
+                            newDate, _taskId, val, val2, false);
                     pd.Dismiss();
                     Toast.MakeText(Activity, "Added new Timelog Entry", ToastLength.Short).Show();
                     Debug.WriteLine("We are going to pop backstack");
@@ -158,6 +206,44 @@ namespace ProcessDashboard.Droid.Fragments
                     Debug.WriteLine("We are going to pop backstack");
                     ((MainActivity)Activity).FragmentManager.PopBackStack();
                 }
+                catch (WebException we)
+                {
+                    if (we.Status == WebExceptionStatus.ProtocolError)
+                    {
+                        var response = we.Response as HttpWebResponse;
+                        if (response != null)
+                        {
+                            Console.WriteLine("HTTP Status Code: " + (int)response.StatusCode);
+                            if (response.StatusCode == HttpStatusCode.Forbidden)
+                            {
+                                try
+                                {
+
+                                    if (pd.IsShowing)
+                                        pd.Dismiss();
+                                    Toast.MakeText(this.Activity, "Username and password error.", ToastLength.Long).Show();
+                                    AccountStorage.ClearStorage();
+                                    Activity.FragmentManager.PopBackStack(null, PopBackStackFlags.Inclusive);
+                                    ((MainActivity)(Activity)).SetDrawerState(false);
+                                    ((MainActivity)(Activity)).SwitchToFragment(MainActivity.FragmentTypes.Login);
+                                }
+                                catch (System.Exception e)
+                                {
+                                    System.Diagnostics.Debug.WriteLine("We encountered an error :" + e.Message);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // no http status code available
+                            Toast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                        }
+                    }
+                    else
+                    {
+                        // no http status code availableToast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                    }
+                }
                 catch (StatusNotOkayException)
                 {
                     if (pd.IsShowing)
@@ -166,12 +252,12 @@ namespace ProcessDashboard.Droid.Fragments
                     Debug.WriteLine("We are going to pop backstack");
                     ((MainActivity)Activity).FragmentManager.PopBackStack();
                 }
-                catch (Exception)
+                catch (Exception ea)
                 {
                     if (pd.IsShowing)
                         pd.Dismiss();
                     // For any other weird exceptions
-                    Toast.MakeText(Activity, "Invalid values. Please try again.", ToastLength.Short).Show();
+                    Toast.MakeText(Activity, "Invalid values. Please try again."+ea.Message, ToastLength.Short).Show();
                     Debug.WriteLine("We are going to pop backstack");
                     ((MainActivity)Activity).FragmentManager.PopBackStack();
                 }
@@ -191,7 +277,7 @@ namespace ProcessDashboard.Droid.Fragments
 
                     pd.Show();
                     await
-                        ((MainActivity)Activity).Ctrl.UpdateTimeLog(Settings.GetInstance().Dataset,
+                        ((MainActivity)Activity).Ctrl.UpdateTimeLog(AccountStorage.DataSet,
                             "" + _timeLog.Id,
                             _comment.Text,
                             newDate, _taskId, updatedLoggedTime, updatedInterruptTime, false);
@@ -209,6 +295,44 @@ namespace ProcessDashboard.Droid.Fragments
                     Toast.MakeText(Activity, "Please check your internet connection and try again.", ToastLength.Long).Show();
                     Debug.WriteLine("We are going to pop backstack");
                     ((MainActivity)Activity).FragmentManager.PopBackStack();
+                }
+                catch (WebException we)
+                {
+                    if (we.Status == WebExceptionStatus.ProtocolError)
+                    {
+                        var response = we.Response as HttpWebResponse;
+                        if (response != null)
+                        {
+                            Console.WriteLine("HTTP Status Code: " + (int)response.StatusCode);
+                            if (response.StatusCode == HttpStatusCode.Forbidden)
+                            {
+                                try
+                                {
+
+                                    if (pd.IsShowing)
+                                        pd.Dismiss();
+                                    Toast.MakeText(this.Activity, "Username and password error.", ToastLength.Long).Show();
+                                    AccountStorage.ClearStorage();
+                                    Activity.FragmentManager.PopBackStack(null, PopBackStackFlags.Inclusive);
+                                    ((MainActivity)(Activity)).SetDrawerState(false);
+                                    ((MainActivity)(Activity)).SwitchToFragment(MainActivity.FragmentTypes.Login);
+                                }
+                                catch (System.Exception e)
+                                {
+                                    System.Diagnostics.Debug.WriteLine("We encountered an error :" + e.Message);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // no http status code available
+                            Toast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                        }
+                    }
+                    else
+                    {
+                        // no http status code availableToast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                    }
                 }
                 catch (StatusNotOkayException)
                 {
@@ -245,6 +369,190 @@ namespace ProcessDashboard.Droid.Fragments
             _startTime = v.FindViewById<EditText>(Resource.Id.TimeLogEdit_StartTime);
             _deltaTime = v.FindViewById<EditText>(Resource.Id.TimeLogEdit_DeltaTime);
 
+            _startTime.Focusable = false;
+            _deltaTime.Focusable = false;
+            _interruptTime.Focusable = false;
+            _comment.Focusable = false;
+
+            _startTime.Clickable = true;
+            _deltaTime.Clickable = true;
+            _interruptTime.Clickable = true;
+            _comment.Clickable = true;
+
+            if (_timeLog != null)
+            {
+                _oldLoggedTime = _timeLog.LoggedTime;
+                _oldInterruptTime = _timeLog.InterruptTime;
+            }
+            else
+            {
+                _oldLoggedTime = 0;
+                _oldInterruptTime = 0;
+            }
+
+
+            _deltaTime.Click += (sender, args) =>
+            {
+
+                LinearLayout ll = new LinearLayout(Activity);
+                ll.Orientation = (Orientation.Horizontal);
+
+                NumberPicker aNumberPicker = new NumberPicker(Activity);
+                // TODO: Should there be a maximum for the hour column ?
+                aNumberPicker.MaxValue = (100);
+                aNumberPicker.MinValue = (0);
+
+                double temp = 0;
+                if(!_deltaTime.Text.Equals(""))
+                temp = Convert.ToDouble(TimeSpan.ParseExact(_deltaTime.Text, @"hh\:mm", CultureInfo.InvariantCulture).TotalMinutes);
+
+                //temp = Double.Parse(_deltaTime.Text);
+
+                aNumberPicker.Value = TimeSpan.FromMinutes(temp).Hours;
+
+                NumberPicker aNumberPickerA = new NumberPicker(Activity)
+                {
+                    MaxValue = (59),
+                    MinValue = (0),
+                    Value = TimeSpan.FromMinutes(temp).Minutes
+                };
+
+
+                LinearLayout.LayoutParams parameters = new LinearLayout.LayoutParams(50, 50);
+                parameters.Gravity = GravityFlags.Center;
+
+                LinearLayout.LayoutParams numPicerParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
+                numPicerParams.Weight = 1;
+
+                LinearLayout.LayoutParams qPicerParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
+                qPicerParams.Weight = 1;
+
+                ll.LayoutParameters = parameters;
+                ll.AddView(aNumberPicker, numPicerParams);
+                ll.AddView(aNumberPickerA, qPicerParams);
+
+                
+                AlertDialog.Builder np = new AlertDialog.Builder(Activity).SetView(ll);
+
+                np.SetTitle("Update Delta Time");
+                np.SetNegativeButton("Cancel", (s, a) =>
+                {
+                    np.Dispose();
+                });
+
+                np.SetPositiveButton("Ok", (s, a) =>
+                {
+
+                    //Update Planned Time
+                    string number = aNumberPicker.Value.ToString("D2") + ":" + aNumberPickerA.Value.ToString("D2");
+                    Debug.WriteLine(number);
+                    double val = Convert.ToDouble(TimeSpan.ParseExact(number, @"hh\:mm", CultureInfo.InvariantCulture).TotalMinutes);
+                    Debug.WriteLine("The updated val is :" + val);
+                    var updatedLoggedTime = val - _oldLoggedTime;
+                    try
+                    {
+                        if(_timeLog!=null)
+                        ((MainActivity)Activity).Ctrl.UpdateTimeLog(AccountStorage.DataSet,"" + _timeLog.Id,null,null, _taskId, updatedLoggedTime, null, false);
+                        
+                    }
+                    catch (CannotReachServerException)
+                    {
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                        builder.SetTitle("Unable to Connect")
+                            .SetMessage("Please check your network connection and try again")
+                              .SetNeutralButton("Okay", (sender2, args2) =>
+                              {
+                                  builder.Dispose();
+                                  ((MainActivity)Activity).FragmentManager.PopBackStack();
+                              })
+                            .SetCancelable(false);
+                        AlertDialog alert = builder.Create();
+                        alert.Show();
+                    }
+                    catch (WebException we)
+                    {
+                        if (we.Status == WebExceptionStatus.ProtocolError)
+                        {
+                            var response = we.Response as HttpWebResponse;
+                            if (response != null)
+                            {
+                                Console.WriteLine("HTTP Status Code: " + (int)response.StatusCode);
+                                if (response.StatusCode == HttpStatusCode.Forbidden)
+                                {
+                                    try
+                                    {
+                                      
+                                        Toast.MakeText(this.Activity, "Username and password error.", ToastLength.Long).Show();
+                                        System.Diagnostics.Debug.WriteLine("We are about to logout");
+                                        AccountStorage.ClearStorage();
+                                        System.Diagnostics.Debug.WriteLine("Main Activity is :" + Activity == null);
+                                        System.Diagnostics.Debug.WriteLine("Items in the backstack :" + Activity.FragmentManager.BackStackEntryCount);
+                                        System.Diagnostics.Debug.WriteLine("Main Activity is :" + Activity == null);
+                                        Activity.FragmentManager.PopBackStack(null, PopBackStackFlags.Inclusive);
+                                        System.Diagnostics.Debug.WriteLine("Items in the backstack 2 :" + Activity.FragmentManager.BackStackEntryCount);
+                                        ((MainActivity)(Activity)).SetDrawerState(false);
+                                        ((MainActivity)(Activity)).SwitchToFragment(MainActivity.FragmentTypes.Login);
+                                    }
+                                    catch (System.Exception e)
+                                    {
+                                        System.Diagnostics.Debug.WriteLine("We encountered an error :" + e.Message);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // no http status code available
+                                Toast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                            }
+                        }
+                        else
+                        {
+                            // no http status code availableToast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                        }
+                    }
+                    catch (StatusNotOkayException se)
+                    {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                        builder.SetTitle("An Error has occured")
+                            .SetMessage("Error :" + se.GetMessage())
+                            .SetNeutralButton("Okay", (sender2, args2) =>
+                            {
+                                builder.Dispose();
+                            })
+                            .SetCancelable(false);
+                        AlertDialog alert = builder.Create();
+                        alert.Show();
+
+
+                    }
+                    catch (Exception e)
+                    {
+                        // For any other weird exceptions
+                        AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                        builder.SetTitle("An Error has occured")
+                              .SetNeutralButton("Okay", (sender2, args2) =>
+                              {
+                                  builder.Dispose();
+                              })
+                            .SetMessage("Error :" + e.Message)
+                            .SetCancelable(false);
+                        AlertDialog alert = builder.Create();
+                        alert.Show();
+
+                    }
+
+
+                    _deltaTime.Text = "" + TimeSpan.FromMinutes(val).ToString(@"hh\:mm");
+                    Toast.MakeText(Activity, "Delta Time Updated", ToastLength.Short).Show();
+                    np.Dispose();
+
+                });
+                np.Show();
+
+
+
+            };
 
             _startTime.Click += (sender, args) =>
             {
@@ -283,20 +591,317 @@ namespace ProcessDashboard.Droid.Fragments
                 Debug.WriteLine(frag.StartTime);
                 frag.Show(FragmentManager, DatePickerFragment.TAG);
 
+                   
+            };
+
+            _interruptTime.Click += (sender, args) =>
+            {
+                LinearLayout ll = new LinearLayout(Activity);
+                ll.Orientation = (Orientation.Horizontal);
+
+                NumberPicker aNumberPicker = new NumberPicker(Activity);
+                // TODO: Should there be a maximum for the hour column ?
+                aNumberPicker.MaxValue = (100);
+                aNumberPicker.MinValue = (0);
+
+                double temp = 0;
+                if (!_interruptTime.Text.Equals(""))
+                    temp = Convert.ToDouble(TimeSpan.ParseExact(_interruptTime.Text, @"hh\:mm", CultureInfo.InvariantCulture).TotalMinutes);
+
+                //temp = Double.Parse(_deltaTime.Text);
+
+                aNumberPicker.Value = TimeSpan.FromMinutes(temp).Hours;
+
+                NumberPicker aNumberPickerA = new NumberPicker(Activity)
+                {
+                    MaxValue = (59),
+                    MinValue = (0),
+                    Value = TimeSpan.FromMinutes(temp).Minutes
+                };
+
+
+                LinearLayout.LayoutParams parameters = new LinearLayout.LayoutParams(50, 50);
+                parameters.Gravity = GravityFlags.Center;
+
+                LinearLayout.LayoutParams numPicerParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
+                numPicerParams.Weight = 1;
+
+                LinearLayout.LayoutParams qPicerParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
+                qPicerParams.Weight = 1;
+
+                ll.LayoutParameters = parameters;
+                ll.AddView(aNumberPicker, numPicerParams);
+                ll.AddView(aNumberPickerA, qPicerParams);
+
+
+                AlertDialog.Builder np = new AlertDialog.Builder(Activity).SetView(ll);
+
+                np.SetTitle("Update Interrupt Time");
+                np.SetNegativeButton("Cancel", (s, a) =>
+                {
+                    np.Dispose();
+                });
+
+                np.SetPositiveButton("Ok", (s, a) =>
+                {
+
+                    //Update Planned Time
+                    string number = aNumberPicker.Value.ToString("D2") + ":" + aNumberPickerA.Value.ToString("D2");
+                    Debug.WriteLine(number);
+                    double val = Convert.ToDouble(TimeSpan.ParseExact(number, @"hh\:mm", CultureInfo.InvariantCulture).TotalMinutes);
+                    Debug.WriteLine("The updated val is :" + val);
+                    var updatedInterruptTime = val - _oldInterruptTime;
+                    if (_timeLog != null)
+                    {
+                        // This is an update operation
+                        try
+                        {
+                            if (_timeLog != null)
+                                ((MainActivity) Activity).Ctrl.UpdateTimeLog(AccountStorage.DataSet, "" + _timeLog.Id, null,
+                                null, _taskId, null, updatedInterruptTime, false);
+                            
+                        }
+                        catch (CannotReachServerException)
+                        {
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                            builder.SetTitle("Unable to Connect")
+                                .SetMessage("Please check your network connection and try again")
+                                .SetNeutralButton("Okay", (sender2, args2) =>
+                                {
+                                    builder.Dispose();
+                                    ((MainActivity) Activity).FragmentManager.PopBackStack();
+                                })
+                                .SetCancelable(false);
+                            AlertDialog alert = builder.Create();
+                            alert.Show();
+                        }
+                        catch (WebException we)
+                        {
+                            if (we.Status == WebExceptionStatus.ProtocolError)
+                            {
+                                var response = we.Response as HttpWebResponse;
+                                if (response != null)
+                                {
+                                    Console.WriteLine("HTTP Status Code: " + (int) response.StatusCode);
+                                    if (response.StatusCode == HttpStatusCode.Forbidden)
+                                    {
+                                        try
+                                        {
+
+                                            Toast.MakeText(this.Activity, "Username and password error.",
+                                                ToastLength.Long).Show();
+                                            System.Diagnostics.Debug.WriteLine("We are about to logout");
+                                            AccountStorage.ClearStorage();
+                                            System.Diagnostics.Debug.WriteLine("Main Activity is :" + Activity == null);
+                                            System.Diagnostics.Debug.WriteLine("Items in the backstack :" +
+                                                                               Activity.FragmentManager
+                                                                                   .BackStackEntryCount);
+                                            System.Diagnostics.Debug.WriteLine("Main Activity is :" + Activity == null);
+                                            Activity.FragmentManager.PopBackStack(null, PopBackStackFlags.Inclusive);
+                                            System.Diagnostics.Debug.WriteLine("Items in the backstack 2 :" +
+                                                                               Activity.FragmentManager
+                                                                                   .BackStackEntryCount);
+                                            ((MainActivity) (Activity)).SetDrawerState(false);
+                                            ((MainActivity) (Activity)).SwitchToFragment(
+                                                MainActivity.FragmentTypes.Login);
+                                        }
+                                        catch (System.Exception e)
+                                        {
+                                            System.Diagnostics.Debug.WriteLine("We encountered an error :" + e.Message);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // no http status code available
+                                    Toast.MakeText(Activity, "Unable to load the data. Please restart the application.",
+                                        ToastLength.Short).Show();
+                                }
+                            }
+                            else
+                            {
+                                // no http status code availableToast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                            }
+                        }
+                        catch (StatusNotOkayException se)
+                        {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                            builder.SetTitle("An Error has occured")
+                                .SetMessage("Error :" + se.GetMessage())
+                                .SetNeutralButton("Okay", (sender2, args2) =>
+                                {
+                                    builder.Dispose();
+                                })
+                                .SetCancelable(false);
+                            AlertDialog alert = builder.Create();
+                            alert.Show();
+
+
+                        }
+                        catch (Exception e)
+                        {
+                            // For any other weird exceptions
+                            AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                            builder.SetTitle("An Error has occured")
+                                .SetNeutralButton("Okay", (sender2, args2) =>
+                                {
+                                    builder.Dispose();
+                                })
+                                .SetMessage("Error :" + e.Message)
+                                .SetCancelable(false);
+                            AlertDialog alert = builder.Create();
+                            alert.Show();
+
+                        }
+                    }
+                    _interruptTime.Text = "" + TimeSpan.FromMinutes(val).ToString(@"hh\:mm");
+                    Toast.MakeText(Activity, "Interrupt Time Updated", ToastLength.Short).Show();
+                    np.Dispose();
+
+                });
+                np.Show();
+
 
             };
 
+            _comment.Click += (sender, args) =>
+            {
+                LinearLayout ll = new LinearLayout(Activity);
+                ll.Orientation = (Orientation.Horizontal);
 
-            if (_timeLog != null)
-            {
-                _oldLoggedTime = _timeLog.LoggedTime;
-                _oldInterruptTime = _timeLog.InterruptTime;
-            }
-            else
-            {
-                _oldLoggedTime = 0;
-                _oldInterruptTime = 0;
-            }
+                EditText et = new EditText(Activity);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                      LinearLayout.LayoutParams.MatchParent,
+                      LinearLayout.LayoutParams.WrapContent);
+                et.LayoutParameters = lp;
+                //et.LayoutParams = (lp);
+                ll.AddView(et);
+
+                et.Focusable=(true);
+                
+
+                if(!_comment.Text.Equals("-"))
+                et.Text = _comment.Text;
+
+                AlertDialog.Builder np = new AlertDialog.Builder(Activity).SetView(ll);
+
+                np.SetTitle("Update Comments");
+                np.SetNegativeButton("Cancel", (s, a) =>
+                {
+                    np.Dispose();
+                });
+
+                np.SetPositiveButton("Ok", (s, a) =>
+                {
+
+                    //Update Comments
+                    string value = et.Text;
+                    if (_timeLog != null)
+                    {
+                        // This is an update operation
+                        try
+                        {
+                            if (_timeLog != null)
+                                ((MainActivity)Activity).Ctrl.UpdateTimeLog(AccountStorage.DataSet, "" + _timeLog.Id, value,
+                                null, _taskId, null, null, false);
+                            
+                        }
+                        catch (CannotReachServerException)
+                        {
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                            builder.SetTitle("Unable to Connect")
+                                .SetMessage("Please check your network connection and try again")
+                                .SetNeutralButton("Okay", (sender2, args2) =>
+                                {
+                                    builder.Dispose();
+                                    ((MainActivity)Activity).FragmentManager.PopBackStack();
+                                })
+                                .SetCancelable(false);
+                            AlertDialog alert = builder.Create();
+                            alert.Show();
+                        }
+                        catch (WebException we)
+                        {
+                            if (we.Status == WebExceptionStatus.ProtocolError)
+                            {
+                                var response = we.Response as HttpWebResponse;
+                                if (response != null)
+                                {
+                                    Console.WriteLine("HTTP Status Code: " + (int)response.StatusCode);
+                                    if (response.StatusCode == HttpStatusCode.Forbidden)
+                                    {
+                                        try
+                                        {
+
+                                            Toast.MakeText(this.Activity, "Username and password error.",
+                                                ToastLength.Long).Show();
+                                            AccountStorage.ClearStorage();
+                                            Activity.FragmentManager.PopBackStack(null, PopBackStackFlags.Inclusive);
+                                            ((MainActivity)(Activity)).SetDrawerState(false);
+                                            ((MainActivity)(Activity)).SwitchToFragment(
+                                                MainActivity.FragmentTypes.Login);
+                                        }
+                                        catch (System.Exception e)
+                                        {
+                                            System.Diagnostics.Debug.WriteLine("We encountered an error :" + e.Message);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // no http status code available
+                                    Toast.MakeText(Activity, "Unable to load the data. Please restart the application.",
+                                        ToastLength.Short).Show();
+                                }
+                            }
+                            else
+                            {
+                                // no http status code available
+                                Toast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                            }
+                        }
+                        catch (StatusNotOkayException se)
+                        {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                            builder.SetTitle("An Error has occured")
+                                .SetMessage("Error :" + se.GetMessage())
+                                .SetNeutralButton("Okay", (sender2, args2) =>
+                                {
+                                    builder.Dispose();
+                                })
+                                .SetCancelable(false);
+                            AlertDialog alert = builder.Create();
+                            alert.Show();
+
+
+                        }
+                        catch (Exception e)
+                        {
+                            // For any other weird exceptions
+                            AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                            builder.SetTitle("An Error has occured")
+                                .SetNeutralButton("Okay", (sender2, args2) =>
+                                {
+                                    builder.Dispose();
+                                })
+                                .SetMessage("Error :" + e.Message)
+                                .SetCancelable(false);
+                            AlertDialog alert = builder.Create();
+                            alert.Show();
+
+                        }
+                    }
+
+                    _comment.Text = value;
+                    Toast.MakeText(Activity, "Comment Updated", ToastLength.Short).Show();
+                    np.Dispose();
+
+                });
+                np.Show();
+
+            };
 
             if (_taskName != null && _projectName != null)
             {
@@ -311,6 +916,7 @@ namespace ProcessDashboard.Droid.Fragments
             _interruptTime.Text = "" + TimeSpan.FromMinutes(_timeLog.InterruptTime).ToString(@"hh\:mm");
             _comment.Text = _timeLog.Comment ?? "-";
             _deltaTime.Text = "" + TimeSpan.FromMinutes(_timeLog.LoggedTime).ToString(@"hh\:mm");
+
             return v;
         }
     }

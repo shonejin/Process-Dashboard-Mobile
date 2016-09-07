@@ -89,9 +89,6 @@ namespace ProcessDashboard.Droid.Fragments
         public override Dialog OnCreateDialog(Bundle savedInstanceState)
         {
             TimePickerDialog dialog = new TimePickerDialog(Activity, this, StartHour, StartMinute, true);
-
-            
-
             return dialog;
         }
 

@@ -1,10 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"  >
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
   <item android:id="@+id/TimeLog_Save"
-        android:title="Save" />
+        app:showAsAction="always"
+        android:icon="@android:drawable/ic_menu_save"/>
 
   <item android:id="@+id/TimeLog_Delete"
-        android:title="Delete"/>
+        app:showAsAction="always"
+        android:icon="@android:drawable/ic_delete"/>
   
 </menu>

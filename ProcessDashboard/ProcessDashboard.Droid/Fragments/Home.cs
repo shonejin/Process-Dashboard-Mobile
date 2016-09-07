@@ -1,14 +1,20 @@
 #region
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Support.V4.Content;
 using Android.Support.V4.Widget;
+using Android.Text;
+using Android.Text.Style;
 using Android.Views;
 using Android.Widget;
 using HockeyApp.Android;
 using ProcessDashboard.Droid.Adapter;
+using ProcessDashboard.DTO;
 using ProcessDashboard.SyncLogic;
 using Debug = System.Diagnostics.Debug;
 #endregion
@@ -19,21 +25,18 @@ namespace ProcessDashboard.Droid.Fragments
         private MainActivity _mActivity;
         private myBroadCastReceiver onNotice;
         private IntentFilter iff;
-        //TODO: Remove this for production
-        private AccountStorage _ase;
+
+        private Dictionary<string, List<Task>> _headings = new Dictionary<string, List<Task>>();
 
         private Button play, pause;
 
         private string _currenttaskid;
-     
+
 
         public override void OnAttach(Context activity)
         {
             base.OnAttach(activity);
-            _mActivity = (MainActivity) activity;
-
-           
-
+            _mActivity = (MainActivity)activity;
         }
 
         //Disabling compiler warnings
@@ -44,7 +47,7 @@ namespace ProcessDashboard.Droid.Fragments
 #pragma warning disable 618
             base.OnAttach(activity);
 #pragma warning restore 618
-            _mActivity = (MainActivity) activity;
+            _mActivity = (MainActivity)activity;
             //
         }
 
@@ -59,37 +62,30 @@ namespace ProcessDashboard.Droid.Fragments
             base.OnCreate(savedInstanceState);
             RetainInstance = true;
             _mActivity.SetTitle("Process Dashboard");
-            _ase = new AccountStorage();
-            _ase.SetContext(this.Activity);
+
+            AccountStorage.SetContext(this.Activity);
         }
 
         public override void OnPause()
         {
             base.OnPause();
-
             LocalBroadcastManager.GetInstance(Activity).UnregisterReceiver(onNotice);
-
-
         }
 
         public override void OnResume()
         {
             base.OnResume();
             iff = new IntentFilter("processdashboard.timelogger");
-            
 
             onNotice = new myBroadCastReceiver((MainActivity)this.Activity);
-
-            LocalBroadcastManager.GetInstance(Activity).RegisterReceiver(onNotice,iff);
-            
-
+            LocalBroadcastManager.GetInstance(Activity).RegisterReceiver(onNotice, iff);
             _mActivity.SetTitle("Process Dashboard");
         }
 
         public override void OnListItemClick(ListView l, View v, int position, long id)
         {
             base.OnListItemClick(l, v, position, id);
-            var ta = (TaskAdapter) l.Adapter;
+            var ta = (TaskAdapter)l.Adapter;
             var pb = ta.GetTask(position);
             _mActivity.PassTaskDetailsInfo(pb.Id, null, null, null, null, null);
         }
@@ -100,9 +96,9 @@ namespace ProcessDashboard.Droid.Fragments
 
             var v = inflater.Inflate(Resource.Layout.Home, container, false);
             LoadData(v, _mActivity.Ctrl);
-            Debug.WriteLine("We are in oncreateView of Home screen");
+            
 
-            System.Diagnostics.Debug.WriteLine(_ase.UserId);
+            System.Diagnostics.Debug.WriteLine(AccountStorage.UserId);
 
             Debug.WriteLine("*******************************");
             return v;
@@ -110,27 +106,52 @@ namespace ProcessDashboard.Droid.Fragments
 
         private async void LoadData(View v, Controller ctrl)
         {
-            var pb = new ProgressDialog(_mActivity) {Indeterminate = true};
+            play = v.FindViewById<Button>(Resource.Id.Home_Play);
+            pause = v.FindViewById<Button>(Resource.Id.Home_Pause);
+            var taskComplete = v.FindViewById<CheckBox>(Resource.Id.Home_TaskComplete);
+            var recentTask = v.FindViewById<Button>(Resource.Id.Home_RecentTask);
+            var recentProject = v.FindViewById<Button>(Resource.Id.Home_CurrentProject);
+            var expandableList = v.FindViewById<ExpandableListView>(Android.Resource.Id.List);
+
+
+            var pb = new ProgressDialog(_mActivity) { Indeterminate = true };
             pb.SetTitle("Loading");
 
-            play = v.FindViewById<Button>(Resource.Id.Home_Play);
+            //TODO: This is under the assumption that whatever task is on the top of the recent task list
+            // is the currently logged timer task. Check whether this assumption is valid or not.
+
+            if (TimeLoggingController.GetInstance().IsTimerRunning())
+                ModifyPlayPauseState(true);
 
             play.Click += (sender, args) =>
             {
                 Debug.WriteLine("Play Clicked");
 
                 //var timerServiceIntent = new Intent("com.tumasolutions.processdashboard.TimerService");
-
                 //var timerServiceConnection = new TimerServiceConnection((MainActivity)this.Activity);
-
                 //Activity.ApplicationContext.BindService(timerServiceIntent, timerServiceConnection, Bind.AutoCreate);
-                Intent intent = new Intent(Activity, typeof(TimerService));
-                intent.PutExtra("taskId", _currenttaskid);
-                Activity.StartService(intent);
+                if (TimeLoggingController.GetInstance().WasNetworkAvailable)
+                {
+                
+                    Intent intent = new Intent(Activity, typeof(TimerService));
+                    intent.PutExtra("taskId", _currenttaskid);
+                    Activity.StartService(intent);
+                }
+                else
+                {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                    builder.SetTitle("Previous changes not saved")
+                        .SetMessage("An earlier time log entry has not yet been synchronized with the server. Please try again later.")
+                          .SetNeutralButton("Okay", (sender2, args2) =>
+                          {
+                              builder.Dispose();
+                          })
+                        .SetCancelable(false);
+                    AlertDialog alert = builder.Create();
+                    alert.Show();
+                }
 
             };
-
-             pause = v.FindViewById<Button>(Resource.Id.Home_Pause);
 
             pause.Click += (sender, args) =>
             {
@@ -141,117 +162,115 @@ namespace ProcessDashboard.Droid.Fragments
             };
 
 
-            var taskComplete = v.FindViewById<CheckBox>(Resource.Id.Home_TaskComplete);
             taskComplete.CheckedChange += (sender, args) =>
-            {
-                string text = "";
-                if (args.IsChecked)
-                {
+          {
+              string text = "";
+              if (args.IsChecked)
+              {
                     // Mark a task as complete
                     DateTime convertedTime = Util.GetInstance().GetServerTime(DateTime.UtcNow);
                     //taskDetail.CompletionDate = convertedTime;
 
                     try
-                    {
-                        ((MainActivity)(Activity)).Ctrl.UpdateATask(Settings.GetInstance().Dataset,
-                            _currenttaskid, null, convertedTime, false);
-                        text = "Task Marked Complete";
+                  {
+                      ((MainActivity)(Activity)).Ctrl.UpdateATask(AccountStorage.DataSet,
+                          _currenttaskid, null, convertedTime, false);
+                      text = "Task Marked Complete";
 
-                    }
-                    catch (CannotReachServerException)
-                    {
-                        if(pb.IsShowing)
-                            pb.Dismiss();
-                        Debug.WriteLine("We could not reach the server");
-                        taskComplete.Checked = false;
-                        text = "Please check your internet connection and try again.";
-                        Toast.MakeText(this.Activity,text,ToastLength.Short).Show();
-                        
-                    }
-                    catch (StatusNotOkayException)
-                    {
-                        pb.Dismiss();
-                        taskComplete.Checked = false;
+                  }
+                  catch (CannotReachServerException)
+                  {
+                      if (pb.IsShowing)
+                          pb.Dismiss();
+                      Debug.WriteLine("We could not reach the server");
+                      taskComplete.Checked = false;
+                      text = "Please check your internet connection and try again.";
+                      Toast.MakeText(this.Activity, text, ToastLength.Short).Show();
+
+                  }
+                  catch (StatusNotOkayException)
+                  {
+                      pb.Dismiss();
+                      taskComplete.Checked = false;
                         //TODO: Should we report this ?
                         text = "An error has occured. Please try again.";
-                        Toast.MakeText(this.Activity, text, ToastLength.Short).Show();
+                      Toast.MakeText(this.Activity, text, ToastLength.Short).Show();
 
-                    }
-                    catch (Exception e)
-                    {
+                  }
+                  catch (Exception e)
+                  {
                         // For any other weird exceptions
                         pb.Dismiss();
-                        
-                        taskComplete.Checked = false;
+
+                      taskComplete.Checked = false;
                         // Sending to HockeyApp
-                        ExceptionHandler.SaveException(Java.Lang.Throwable.FromException(e),null, null);
-                        text = "Unable to make the change. Please try again.";
-                        Toast.MakeText(this.Activity, text, ToastLength.Short).Show();
-                    }
+                        ExceptionHandler.SaveException(Java.Lang.Throwable.FromException(e), null, null);
+                      text = "Unable to make the change. Please try again.";
+                      Toast.MakeText(this.Activity, text, ToastLength.Short).Show();
+                  }
 
-                    
-                } else {
-                    
+
+              }
+              else
+              {
+
                     // Unmark the task 
-                    
+
                     try
-                    {
+                  {
 
-                        ((MainActivity)(Activity)).Ctrl.UpdateATask(Settings.GetInstance().Dataset,
-                            _currenttaskid, null, null, true);
-                        text = "Task Marked Incomplete";
+                      ((MainActivity)(Activity)).Ctrl.UpdateATask(AccountStorage.DataSet,
+                          _currenttaskid, null, null, true);
+                      text = "Task Marked Incomplete";
 
-                    }
-                    catch (CannotReachServerException)
-                    {
-                        if (pb.IsShowing)
-                            pb.Dismiss();
-                        Debug.WriteLine("We could not reach the server");
-                        taskComplete.Checked = true;
-                        text = "Please check your internet connection and try again.";
-                        Toast.MakeText(this.Activity, text, ToastLength.Short).Show();
+                  }
+                  catch (CannotReachServerException)
+                  {
+                      if (pb.IsShowing)
+                          pb.Dismiss();
+                      Debug.WriteLine("We could not reach the server");
+                      taskComplete.Checked = true;
+                      text = "Please check your internet connection and try again.";
+                      Toast.MakeText(this.Activity, text, ToastLength.Short).Show();
 
 
-                    }
+                  }
                     //TODO: Should we handle this ?
                     catch (StatusNotOkayException)
-                    {
-                        pb.Dismiss();
-                        taskComplete.Checked = true;
-                        text = "An error has occured. Please try again.";
-                        Toast.MakeText(this.Activity, text, ToastLength.Short).Show();
+                  {
+                      pb.Dismiss();
+                      taskComplete.Checked = true;
+                      text = "An error has occured. Please try again.";
+                      Toast.MakeText(this.Activity, text, ToastLength.Short).Show();
 
 
-                    }
-                    catch (Exception e)
-                    {
+                  }
+                  catch (Exception e)
+                  {
                         // For any other weird exceptions
                         taskComplete.Checked = true;
-                        ExceptionHandler.SaveException(Java.Lang.Throwable.FromException(e), null, null);
-                        text = "Unable to make the change. Please try again.";
-                        Toast.MakeText(this.Activity, text, ToastLength.Short).Show();
+                      ExceptionHandler.SaveException(Java.Lang.Throwable.FromException(e), null, null);
+                      text = "Unable to make the change. Please try again.";
+                      Toast.MakeText(this.Activity, text, ToastLength.Short).Show();
 
-                    }
+                  }
 
-                    
-                }
-                
-                Debug.WriteLine("We have changed content ");
-                Toast.MakeText(Activity, text, ToastLength.Short).Show();
-                
-            };
 
-            var recentTask = v.FindViewById<Button>(Resource.Id.Home_RecentTask);
+              }
+              Debug.WriteLine("We have changed content ");
+              Toast.MakeText(Activity, text, ToastLength.Short).Show();
+
+          };
             recentTask.Text = "Loading..";
 
-            var recentProject = v.FindViewById<Button>(Resource.Id.Home_CurrentProject);
             recentProject.Text = "Loading..";
+
             pb.SetCanceledOnTouchOutside(false);
             pb.Show();
 
             try
             {
-                var output = await ctrl.GetRecentTasks(Settings.GetInstance().Dataset);
+                var output = await ctrl.GetRecentTasks(AccountStorage.DataSet);
 
                 pb.Dismiss();
 
@@ -261,15 +280,31 @@ namespace ProcessDashboard.Droid.Fragments
                 recentProject.Text = recent.Project.Name;
                 _currenttaskid = recent.Id;
 
+                _headings.Add(recent.Project.Name,new List<Task>());
+
                 output.RemoveAt(0);
 
-                if (_mActivity == null)
+                foreach(Task t in output)
                 {
-                    Debug.WriteLine("Activity is null");
+                    if (_headings.ContainsKey(t.Project.Name))
+                    {
+                        List<Task> tt = _headings[t.Project.Name];
+                        tt.Add(t);
+                        _headings[t.Project.Name] = tt;
+                    }
+                    else
+                    {
+                        List<Task> tt = new List<Task>();
+                        tt.Add(t);
+                        _headings[t.Project.Name] = tt;
+                    }
+
                 }
 
-                var listAdapter = new TaskAdapter(_mActivity, Android.Resource.Layout.SimpleListItem1, output.ToArray());
-                ListAdapter = listAdapter;
+                //var listAdapter = new TaskAdapter(_mActivity, Android.Resource.Layout.SimpleListItem1, output.ToArray());
+                var listAdapter = new HomeListAdapter(this.Activity, _headings);
+                expandableList.SetAdapter(listAdapter);
+                //ListAdapter = listAdapter;
 
                 var refresher = v.FindViewById<SwipeRefreshLayout>(Resource.Id.refresher);
 
@@ -277,17 +312,33 @@ namespace ProcessDashboard.Droid.Fragments
                 {
                     try
                     {
-                        output = await ctrl.GetRecentTasks(Settings.GetInstance().Dataset);
+                        output = await ctrl.GetRecentTasks(AccountStorage.DataSet);
 
                         recent = output[0];
-
+                        _headings = new Dictionary<string, List<Task>>();
                         recentTask.Text = recent.FullName;
                         recentProject.Text = recent.Project.Name;
+                        _headings.Add(recent.Project.Name, new List<Task>());
 
                         output.RemoveAt(0);
-                        listAdapter = new TaskAdapter(_mActivity, Android.Resource.Layout.SimpleListItem1,
-                            output.ToArray());
-                        ListAdapter = listAdapter;
+                        foreach (Task t in output)
+                        {
+                            if (_headings.ContainsKey(t.Project.Name))
+                            {
+                                List<Task> tt = _headings[t.Project.Name];
+                                tt.Add(t);
+                                _headings[t.Project.Name] = tt;
+                            }
+                            else
+                            {
+                                List<Task> tt = new List<Task>();
+                                tt.Add(t);
+                                _headings[t.Project.Name] = tt;
+                            }
+
+                        }
+                        listAdapter = new HomeListAdapter(this.Activity, _headings);
+                        expandableList.SetAdapter(listAdapter);
 
                         refresher.Refreshing = false;
                     }
@@ -346,12 +397,12 @@ namespace ProcessDashboard.Droid.Fragments
 
                 recentProject.Click += (sender, args) =>
                 {
-                    ((MainActivity) Activity).ListOfProjectsCallback(recent.Project.Id, recent.Project.Name);
+                    ((MainActivity)Activity).ListOfProjectsCallback(recent.Project.Id, recent.Project.Name);
                 };
 
                 recentTask.Click += (sender, args) =>
                 {
-                    ((MainActivity) Activity).PassTaskDetailsInfo(recent.Id, recent.FullName, recent.Project.Name,
+                    ((MainActivity)Activity).PassTaskDetailsInfo(recent.Id, recent.FullName, recent.Project.Name,
                         recent.CompletionDate,
                         recent.EstimatedTime, recent.ActualTime);
                 };
@@ -387,6 +438,47 @@ namespace ProcessDashboard.Droid.Fragments
                 alert.Show();
 
 
+            }
+            catch (WebException we)
+            {
+                if (we.Status == WebExceptionStatus.ProtocolError)
+                {
+                    var response = we.Response as HttpWebResponse;
+                    if (response != null)
+                    {
+                        Console.WriteLine("HTTP Status Code: " + (int)response.StatusCode);
+                        if (response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            try
+                            {
+                                Toast.MakeText(this.Activity, "Username and password error.", ToastLength.Long).Show();
+                                System.Diagnostics.Debug.WriteLine("We are about to logout");
+                                AccountStorage.ClearStorage();
+                                System.Diagnostics.Debug.WriteLine("Main Activity is :" + Activity == null);
+                                System.Diagnostics.Debug.WriteLine("Items in the backstack :" + Activity.FragmentManager.BackStackEntryCount);
+                                System.Diagnostics.Debug.WriteLine("Main Activity is :" + Activity == null);
+                                Activity.FragmentManager.PopBackStack(null, PopBackStackFlags.Inclusive);
+                                System.Diagnostics.Debug.WriteLine("Items in the backstack 2 :" + Activity.FragmentManager.BackStackEntryCount);
+                                ((MainActivity)(Activity)).SetDrawerState(false);
+                                ((MainActivity)(Activity)).SwitchToFragment(MainActivity.FragmentTypes.Login);
+                            }
+                            catch (System.Exception e)
+                            {
+                                System.Diagnostics.Debug.WriteLine("We encountered an error :" + e.Message);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // no http status code available
+                        Toast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                    }
+                }
+                else
+                {
+                    // no http status code available
+                    Toast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                }
             }
             catch (Exception e)
             {
@@ -444,7 +536,7 @@ namespace ProcessDashboard.Droid.Fragments
 
             public myBroadCastReceiver()
             {
-                
+
             }
 
             public myBroadCastReceiver(MainActivity home)
@@ -468,5 +560,91 @@ namespace ProcessDashboard.Droid.Fragments
 
             }
         }
+
+        public class HomeListAdapter : BaseExpandableListAdapter
+        {
+            private Activity _activity;
+            private Dictionary<string, List<Task>> _dictGroup;
+            private List<string> _lstGroupId;
+
+            public HomeListAdapter(Activity activity, Dictionary<string, List<Task>> dictGroup)
+            {
+                _dictGroup = dictGroup;
+                _activity = activity;
+                _lstGroupId = dictGroup.Keys.ToList();
+            }
+            #region implemented abstract members of BaseExpandableListAdapter
+            public override Java.Lang.Object GetChild(int groupPosition, int childPosition)
+            {
+                var myObj = _dictGroup[_lstGroupId[groupPosition]][childPosition];
+                return new JavaObjectWrapper<Task> { Obj = myObj };
+            }
+            public override long GetChildId(int groupPosition, int childPosition)
+            {
+                return childPosition;
+            }
+            public override int GetChildrenCount(int groupPosition)
+            {
+                return _dictGroup[_lstGroupId[groupPosition]].Count;
+            }
+            public override View GetChildView(int groupPosition,int childPosition,
+                bool isLastChild,View convertView,
+                ViewGroup parent)
+            {
+                var item = _dictGroup[_lstGroupId[groupPosition]][childPosition];
+
+                if (convertView == null)
+                    convertView = _activity.LayoutInflater.Inflate(Android.Resource.Layout.SimpleListItem1, null);
+
+                var tv = convertView.FindViewById<TextView>(Android.Resource.Id.Text1);
+                var text = item.FullName;
+                var spannable = new SpannableString(text);
+                spannable.SetSpan(new LeadingMarginSpanStandard(0, 15), 0, text.Length, 0);
+
+                if (item.CompletionDate.HasValue && !item.CompletionDate.Value.Equals(DateTime.MinValue))
+                {
+                    // Strike out the text
+                    spannable.SetSpan(new StrikethroughSpan(), 0, text.Length, SpanTypes.InclusiveExclusive);
+
+                }
+                tv.TextFormatted = spannable;
+
+                return convertView;
+            }
+
+            public override Java.Lang.Object GetGroup(int groupPosition)
+            {
+                return _lstGroupId[groupPosition];
+            }
+            public override long GetGroupId(int groupPosition)
+            {
+                return groupPosition;
+            }
+            public override View GetGroupView(int groupPosition, bool isExpanded, View convertView, ViewGroup parent)
+            {
+                var item = _lstGroupId[groupPosition];
+
+                if (convertView == null)
+                    convertView = _activity.LayoutInflater.Inflate(Resource.Layout.ListControl_Group, null);
+
+                var textBox = convertView.FindViewById<TextView>(Resource.Id.txtLarge);
+                textBox.SetText(item, TextView.BufferType.Normal);
+
+                return convertView;
+            }
+            public override bool IsChildSelectable(int groupPosition, int childPosition)
+            {
+                return true;
+            }
+            public override int GroupCount => _dictGroup.Count;
+            public override bool HasStableIds => true;
+            #endregion
+        }
+
+        public class JavaObjectWrapper<T> : Java.Lang.Object
+        {
+            public T Obj { get; set; }
+        }
+
     }
 }

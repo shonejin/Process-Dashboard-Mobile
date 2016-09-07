@@ -80,6 +80,14 @@
       <HintPath>..\..\packages\Xam.Plugin.Connectivity.2.2.12\lib\MonoAndroid10\Plugin.Connectivity.Abstractions.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Plugin.Settings, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Xam.Plugins.Settings.2.1.0\lib\MonoAndroid10\Plugin.Settings.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Plugin.Settings.Abstractions, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Xam.Plugins.Settings.2.1.0\lib\MonoAndroid10\Plugin.Settings.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Polly, Version=4.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Polly.4.3.0\lib\dotnet\Polly.dll</HintPath>
       <Private>True</Private>
@@ -198,6 +206,7 @@
     <Compile Include="Fragments\GlobalTimeLogList.cs" />
     <Compile Include="Fragments\TimeLogDetail.cs" />
     <Compile Include="Fragments\Home.cs" />
+    <Compile Include="Helpers\Settings.cs" />
     <Compile Include="Interfaces\ListOfProjectsInterface.cs" />
     <Compile Include="Interfaces\ListOfTaksInterface.cs" />
     <Compile Include="Fragments\ListOfProjects.cs" />
@@ -263,6 +272,9 @@
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\PlannedTimeEditor.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\DateTimePickerDialogFragment.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
@@ -367,9 +379,6 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-hdpi\tab_timelogs2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="MainActivity.cs.txt" />
   </ItemGroup>
   <Import Project="..\ProcessDashboard\ProcessDashboard.projitems" Label="Shared" Condition="Exists('..\ProcessDashboard\ProcessDashboard.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />

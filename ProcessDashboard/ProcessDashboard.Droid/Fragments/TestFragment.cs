@@ -2,6 +2,7 @@
 using System;
 using Android.App;
 using Android.OS;
+using Android.Views;
 using Debug = System.Diagnostics.Debug;
 #endregion
 namespace ProcessDashboard.Droid.Fragments
@@ -13,22 +14,20 @@ namespace ProcessDashboard.Droid.Fragments
             base.OnCreate(savedInstanceState);
             Debug.WriteLine("On Create");
             RetainInstance = true;
-
+            /*
             var dslr = new DataSetLocationResolver();
             string url, id;
             dslr.ResolveFromToken("go.yn-hk1", out url, out id);
+            AccountStorage.SetContext(this.Activity);
 
-            AccountStorage aspStorage = new AccountStorage();
-
-            aspStorage.SetContext(this.Activity);
-
-            aspStorage.Set("test", id, url, "dataset");
+            AccountStorage.Set("test", id, url, "dataset");
             Debug.WriteLine("We are testing storage");
-            Debug.WriteLine(aspStorage.BaseUrl);
-            Debug.WriteLine(aspStorage.DataSet);
-            Debug.WriteLine(aspStorage.Password);
-            Debug.WriteLine(aspStorage.UserId);
-            
+            Debug.WriteLine(AccountStorage.BaseUrl);
+            Debug.WriteLine(AccountStorage.DataSet);
+            Debug.WriteLine(AccountStorage.Password);
+            Debug.WriteLine(AccountStorage.UserId);
+            */
+
             try
             {
                 var ct = new ControllerTest(((MainActivity)Activity).Ctrl);
@@ -48,7 +47,7 @@ namespace ProcessDashboard.Droid.Fragments
                 //ct.TestGetATimeLog("-71");
                 //ct.TestDeleteATimeLog(-71);
 
-                string tid = "-87";
+                //string tid = "-87";
                 //ct.TestUpdateATimeLogUpdateComment(tid);
                 //ct.TestUpdateATimeLogUpdateInterruptTimeNotOpen(tid);
                // ct.TestUpdateATimeLogUpdateLoggedTime(tid);
@@ -82,6 +81,12 @@ namespace ProcessDashboard.Droid.Fragments
             }
 
             // Create your fragment here
+        }
+
+        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        {
+            return inflater.Inflate(Resource.Layout.DateTimePickerDialogFragment,container,false);
+            //return base.OnCreateView(inflater, container, savedInstanceState);
         }
     }
 }

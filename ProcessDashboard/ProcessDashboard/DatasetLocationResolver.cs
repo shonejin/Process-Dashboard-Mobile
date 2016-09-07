@@ -26,73 +26,75 @@ namespace ProcessDashboard
         public void ResolveFromUri(Uri uri, out string serverUrl, out string datasetId)
         {
             // parse the long URL, and extract relevant info from it.
-			//var p = HttpUtility.ParseQueryString(uri.Query);
+            //var p = HttpUtility.ParseQueryString(uri.Query);
 
-			var p = ParseQueryString(uri.Query);
+            var p = ParseQueryString(uri.Query);
             serverUrl = p["serverUrl"];
             datasetId = p["datasetId"];
             if (serverUrl == null || datasetId == null)
                 throw new ArgumentException("Unrecognized token");
         }
 
-		public Dictionary<string, string> ParseQueryString(string query)
-		{
-			if (query.Length == 0)
-				return null;
+        public Dictionary<string, string> ParseQueryString(string query)
+        {
+            if (query.Length == 0)
+                return null;
 
-			string decoded = WebUtility.HtmlDecode(query);
-			int decodedLength = decoded.Length;
-			int namePos = 0;
-			bool first = true;
-			Dictionary<string, string> result = new Dictionary<string, string>();
-			while (namePos <= decodedLength)
-			{
-				int valuePos = -1, valueEnd = -1;
-				for (int q = namePos; q < decodedLength; q++)
-				{
-					if (valuePos == -1 && decoded[q] == '=')
-					{
-						valuePos = q + 1;
-					}
-					else if (decoded[q] == '&')
-					{
-						valueEnd = q;
-						break;
-					}
-				}
+            string decoded = WebUtility.HtmlDecode(query);
+            int decodedLength = decoded.Length;
+            int namePos = 0;
+            bool first = true;
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            while (namePos <= decodedLength)
+            {
+                int valuePos = -1, valueEnd = -1;
+                for (int q = namePos; q < decodedLength; q++)
+                {
+                    if (valuePos == -1 && decoded[q] == '=')
+                    {
+                        valuePos = q + 1;
+                    }
+                    else if (decoded[q] == '&')
+                    {
+                        valueEnd = q;
+                        break;
+                    }
+                }
 
-				if (first)
-				{
-					first = false;
-					if (decoded[namePos] == '?')
-						namePos++;
-				}
+                if (first)
+                {
+                    first = false;
+                    if (decoded[namePos] == '?')
+                        namePos++;
+                }
 
-				string name, value;
-				if (valuePos == -1)
-				{
-					name = null;
-					valuePos = namePos;
-				}
-				else {
-					name = WebUtility.UrlDecode(decoded.Substring(namePos, valuePos - namePos - 1));
-				}
-				if (valueEnd < 0)
-				{
-					namePos = -1;
-					valueEnd = decoded.Length;
-				}
-				else {
-					namePos = valueEnd + 1;
-				}
-				value = WebUtility.UrlDecode(decoded.Substring(valuePos, valueEnd - valuePos));
+                string name, value;
+                if (valuePos == -1)
+                {
+                    name = null;
+                    valuePos = namePos;
+                }
+                else
+                {
+                    name = WebUtility.UrlDecode(decoded.Substring(namePos, valuePos - namePos - 1));
+                }
+                if (valueEnd < 0)
+                {
+                    namePos = -1;
+                    valueEnd = decoded.Length;
+                }
+                else
+                {
+                    namePos = valueEnd + 1;
+                }
+                value = WebUtility.UrlDecode(decoded.Substring(valuePos, valueEnd - valuePos));
 
-				result.Add(name, value);
-				if (namePos == -1)
-					break;
-			}
-			return result;
-		}
+                result.Add(name, value);
+                if (namePos == -1)
+                    break;
+            }
+            return result;
+        }
 
         private string ToUrl(string token)
         {
@@ -140,18 +142,11 @@ namespace ProcessDashboard
 
         private Uri LookupUrl(string shortUrl)
         {
-            try
-            {
-                var req = WebRequest.CreateHttp(shortUrl);
-                req.Method = "HEAD";
-                req.AllowAutoRedirect = false;
-                var resp = (HttpWebResponse) req.GetResponse();
-                return new Uri(resp.Headers["Location"]);
-            }
-            catch (Exception)
-            {
-                throw new ArgumentException("Unrecognized token");
-            }
+            var req = WebRequest.CreateHttp(shortUrl);
+            req.Method = "HEAD";
+            req.AllowAutoRedirect = false;
+            var resp = (HttpWebResponse)req.GetResponse();
+            return new Uri(resp.Headers["Location"]);
         }
     }
 }

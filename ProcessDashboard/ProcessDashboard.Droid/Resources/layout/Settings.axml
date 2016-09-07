@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-  <PreferenceCategory
-      >
+<PreferenceCategory>
+      
     <CheckBoxPreference
         android:key="wifi_preferance"
         android:title="Connect over Wifi only"
@@ -9,16 +9,28 @@
   
     <Preference 
       android:key="login_preference"
-        android:title="Logout"
-        android:summary="Logout current user"
-        
+      android:title="Logout"
+      android:summary="Logout current user"
+      />
+  
+    <EditTextPreference
+      android:key="runawaytimer_preference"
+      android:title="Runaway Timer"
+      android:summary="Runaway timer value"
+      android:inputType="number"
+
+      />
     />
   
-  
-  </PreferenceCategory>
+  <EditTextPreference
+      android:key="interrupt_preference"
+      android:title="Runaway Timer"
+      android:summary="Runaway timer value"
+      android:inputType="number"
 
+    />
   
-
+</PreferenceCategory>
 
 </PreferenceScreen>
 

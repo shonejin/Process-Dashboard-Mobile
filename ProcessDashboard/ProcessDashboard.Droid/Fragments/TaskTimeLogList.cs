@@ -1,5 +1,6 @@
 #region
 using System;
+using System.Net;
 using Android.App;
 using Android.OS;
 using Android.Support.Design.Widget;
@@ -65,7 +66,7 @@ namespace ProcessDashboard.Droid.Fragments
 
             try
             {
-                var timelogs = await ctrl.GetTimeLogs(Settings.GetInstance().Dataset, null, null, null, _id, null);
+                var timelogs = await ctrl.GetTimeLogs(AccountStorage.DataSet, null, null, null, _id, null);
 
                 Debug.WriteLine("Got data for timelogs :" + timelogs.Count);
                 fab.Click += (sender, args) =>
@@ -131,6 +132,49 @@ namespace ProcessDashboard.Droid.Fragments
 
 
 
+            }
+            catch (WebException we)
+            {
+                if (we.Status == WebExceptionStatus.ProtocolError)
+                {
+                    var response = we.Response as HttpWebResponse;
+                    if (response != null)
+                    {
+                        Console.WriteLine("HTTP Status Code: " + (int)response.StatusCode);
+                        if (response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            try
+                            {
+
+                                if (pb.IsShowing)
+                                    pb.Dismiss();
+                                Toast.MakeText(this.Activity, "Username and password error.", ToastLength.Long).Show();
+                                System.Diagnostics.Debug.WriteLine("We are about to logout");
+                                AccountStorage.ClearStorage();
+                                System.Diagnostics.Debug.WriteLine("Main Activity is :" + Activity == null);
+                                System.Diagnostics.Debug.WriteLine("Items in the backstack :" + Activity.FragmentManager.BackStackEntryCount);
+                                System.Diagnostics.Debug.WriteLine("Main Activity is :" + Activity == null);
+                                Activity.FragmentManager.PopBackStack(null, PopBackStackFlags.Inclusive);
+                                System.Diagnostics.Debug.WriteLine("Items in the backstack 2 :" + Activity.FragmentManager.BackStackEntryCount);
+                                ((MainActivity)(Activity)).SetDrawerState(false);
+                                ((MainActivity)(Activity)).SwitchToFragment(MainActivity.FragmentTypes.Login);
+                            }
+                            catch (System.Exception e)
+                            {
+                                System.Diagnostics.Debug.WriteLine("We encountered an error :" + e.Message);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // no http status code available
+                        Toast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                    }
+                }
+                else
+                {
+                    // no http status code availableToast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                }
             }
             catch (StatusNotOkayException se)
             {

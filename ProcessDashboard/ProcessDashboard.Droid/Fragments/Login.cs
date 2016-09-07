@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Android.Accounts;
 using Android.App;
 using Android.OS;
 using Android.Views;
@@ -16,6 +17,8 @@ namespace ProcessDashboard.Droid.Fragments
 {
     public class Login : Fragment
     {
+        private string baseurl;
+        private string dataset;
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -32,6 +35,12 @@ namespace ProcessDashboard.Droid.Fragments
             var token = lf.FindViewById<TextView>(Resource.Id.login_token);
             var username = lf.FindViewById<TextView>(Resource.Id.login_username);
             var password = lf.FindViewById<TextView>(Resource.Id.login_password);
+
+            //TODO: Remove b4 production
+            AccountStorage.ClearStorage();
+            token.Text = "GO.YN-HK1";
+            username.Text = "test";
+            password.Text = "test";
 
             ProgressDialog pd;
 
@@ -78,9 +87,18 @@ namespace ProcessDashboard.Droid.Fragments
                 HttpWebResponse resp;
                 try
                 {
+                    DataSetLocationResolver dslr = new DataSetLocationResolver();
+                    dslr.ResolveFromToken(datatoken, out baseurl,out dataset);
+
+                    System.Diagnostics.Debug.WriteLine("Base url :"+baseurl);
+
+                    AccountStorage.SetContext(Activity);
+                    AccountStorage.Set(userid, password, baseurl, dataset);
+
+
                     var req =
-                        WebRequest.CreateHttp(Settings.GetInstance()._baseurl + "api/v1/datasets/" +
-                                              Settings.GetInstance().Dataset + "/");
+                        WebRequest.CreateHttp(AccountStorage.BaseUrl + "api/v1/datasets/" +
+                                              AccountStorage.DataSet + "/");
                     req.Method = "GET";
                     req.AllowAutoRedirect = false;
                     string credential = userid + ":" + password;
@@ -99,10 +117,11 @@ namespace ProcessDashboard.Droid.Fragments
 
                             string responseStr = reader.ReadToEnd();
                             Debug.WriteLine(responseStr);
-
+                            
                             if (responseStr.Contains("auth-required"))
                             {
                                 Debug.WriteLine("Wrong credentials 2");
+                                AccountStorage.ClearStorage();
                                 Activity.RunOnUiThread(() =>
                                 {
                                     if (pd.IsShowing)
@@ -117,11 +136,12 @@ namespace ProcessDashboard.Droid.Fragments
                                     Debug.WriteLine("We should have shown the dialog now");
 
                                 });
-                               
+
                             }
                             else if (responseStr.Contains("permission-denied"))
                             {
                                 Debug.WriteLine("permission issue");
+                                AccountStorage.ClearStorage();
                                 Activity.RunOnUiThread(() =>
                                 {
                                     if (pd.IsShowing)
@@ -136,42 +156,32 @@ namespace ProcessDashboard.Droid.Fragments
                                     alert.Show();
                                 });
 
-                                
+
                             }
                             else if (responseStr.Contains("dataset"))
                             {
                                 Debug.WriteLine("Username and password was correct");
                                 Activity.RunOnUiThread(() =>
                                 {
-                                    
-                                pd.SetMessage("Getting Account Info");
-                                pd.SetCancelable(false);
-                                if (!pd.IsShowing)
-                                    pd.Show();
+
+                                    pd.SetMessage("Getting Account Info");
+                                    pd.SetCancelable(false);
+                                    if (!pd.IsShowing)
+                                        pd.Show();
 
                                 });
                                 Task.Run(() =>
                                 {
                                     //LOAD METHOD TO GET ACCOUNT INFO
-                                    Settings.GetInstance()._username = userid;
-                                    Settings.GetInstance()._password = password;
-                                    DataSetLocationResolver dslr = new DataSetLocationResolver();
 
-                                    dslr.ResolveFromToken(datatoken, out Settings.GetInstance()._baseurl,
-                                        out Settings.GetInstance().Dataset);
-
+                                 
                                     Debug.WriteLine("We are going to store the values");
-                                    AccountStorage ase = new AccountStorage();
-                                    ase.SetContext(Activity);
-
-                                    ase.Set(userid, password, Settings.GetInstance()._baseurl,
-                                        Settings.GetInstance().Dataset);
 
                                     Debug.WriteLine("We have stored the values");
-                                    Debug.WriteLine(ase.BaseUrl);
-                                    Debug.WriteLine(ase.DataSet);
-                                    Debug.WriteLine(ase.Password);
-                                    Debug.WriteLine(ase.UserId);
+                                    Debug.WriteLine(AccountStorage.BaseUrl);
+                                    Debug.WriteLine(AccountStorage.DataSet);
+                                    Debug.WriteLine(AccountStorage.Password);
+                                    Debug.WriteLine(AccountStorage.UserId);
 
                                     // Switch to next screen
 
@@ -179,14 +189,14 @@ namespace ProcessDashboard.Droid.Fragments
                                     Activity.RunOnUiThread(() =>
                                     {
 
-                                    if (pd.IsShowing)
-                                        pd.Dismiss();
+                                        if (pd.IsShowing)
+                                            pd.Dismiss();
 
-                                    Toast.MakeText(Activity, "Logged in", ToastLength.Short).Show();
-                                    ((MainActivity) Activity).FragmentManager.PopBackStack();
-                                    ((MainActivity) Activity).SetDrawerState(true);
-                                    ((MainActivity) Activity).SwitchToFragment(
-                                        MainActivity.FragmentTypes.Home);
+                                        Toast.MakeText(Activity, "Logged in", ToastLength.Short).Show();
+                                        ((MainActivity) Activity).FragmentManager.PopBackStack();
+                                        ((MainActivity) Activity).SetDrawerState(true);
+                                        ((MainActivity) Activity).SwitchToFragment(
+                                            MainActivity.FragmentTypes.Home);
                                     });
                                 });
                             }
@@ -199,10 +209,10 @@ namespace ProcessDashboard.Droid.Fragments
                     Activity.RunOnUiThread(() =>
                     {
 
-                    if (pd.IsShowing)
-                    {
-                        pd.Dismiss();
-                    }
+                        if (pd.IsShowing)
+                        {
+                            pd.Dismiss();
+                        }
 
                     });
                     using (WebResponse response = e.Response)
@@ -213,39 +223,42 @@ namespace ProcessDashboard.Droid.Fragments
                         if (httpResponse.StatusCode == HttpStatusCode.Unauthorized)
                         {
                             Debug.WriteLine("Wrong credentials");
-                             Activity.RunOnUiThread(() =>
-                               {
-                                   try
-                                   {
+                            AccountStorage.ClearStorage();
+                            Activity.RunOnUiThread(() =>
+                            {
+                                try
+                                {
 
-                                       builder.SetTitle("Unauthorized")
-                                           .SetMessage(
-                                               "Please check your username and password and data token and try again.")
-                                           .SetNeutralButton("Okay", (sender2, args2) => { builder.Dispose(); })
-                                           .SetCancelable(false);
-                                       Debug.WriteLine("Wrong credentials : 1");
+                                    builder.SetTitle("Unauthorized")
+                                        .SetMessage(
+                                            "Please check your username and password and data token and try again.")
+                                        .SetNeutralButton("Okay", (sender2, args2) => { builder.Dispose(); })
+                                        .SetCancelable(false);
+                             
+                                    AlertDialog alert = builder.Create();
+                             
+                                    alert.Show();
+                             
+                                }
+                                catch (Exception e2)
+                                {
+                                    Debug.WriteLine("We have hit an error while showing the dialog :" + e2.Message);
+                                    AccountStorage.ClearStorage();
+                                }
+                            });
 
-                                       AlertDialog alert = builder.Create();
-                                       Debug.WriteLine("Wrong credentials : 2");
 
-                                       alert.Show();
-                                       Debug.WriteLine("Wrong credentials : The dialog should have been shown now");
-                                   }
-                                   catch (Exception e2)
-                                   {
-                                       Debug.WriteLine("We have hit an error while showing the dialog :" + e2.Message);
-                                   }
-                               });
 
-                               
-                           
                         }
                     }
                 }
+
+              
                 catch (Exception e)
                 {
                     // Catching any generic exception
                     Debug.WriteLine("We have hit a generic exception :" + e.Message);
+                    AccountStorage.ClearStorage();
                     Activity.RunOnUiThread(() =>
                     {
                         AlertDialog.Builder builder2 = new AlertDialog.Builder(Activity);

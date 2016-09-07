@@ -1,5 +1,6 @@
 ﻿#region
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Graphics;
@@ -10,6 +11,7 @@ using Android.Views;
 using Android.Widget;
 using ProcessDashboard.Droid.Adapter;
 using ProcessDashboard.SyncLogic;
+
 #endregion
 namespace ProcessDashboard.Droid.Fragments
 {
@@ -58,15 +60,20 @@ namespace ProcessDashboard.Droid.Fragments
             try
             {
 
-                var output = await ctrl.GetTasks(Settings.GetInstance().Dataset, projectId);
+                var output = await ctrl.GetTasks(AccountStorage.DataSet, projectId);
 
                 System.Diagnostics.Debug.WriteLine(output.Count);
 
                 var listAdapter = new TaskAdapter(Activity, Android.Resource.Layout.SimpleListItem1, output.ToArray());
                 ListView.Adapter = listAdapter;
-                
                 SetListShown(true);
+                if (listAdapter.Count == 0)
+                {
+                    empty.Visibility = ViewStates.Visible;
+                    
+                }else
                 ListView.SetSelection(listAdapter.Count - 1);
+                
                 //ListView.SmoothScrollByOffset(listAdapter.Count -1);
                // ListView.SmoothScrollToPosition(listAdapter.Count - 1);
             }
@@ -85,6 +92,46 @@ namespace ProcessDashboard.Droid.Fragments
                 alert.Show();
 
 
+            }
+            catch (WebException we)
+            {
+                if (we.Status == WebExceptionStatus.ProtocolError)
+                {
+                    var response = we.Response as HttpWebResponse;
+                    if (response != null)
+                    {
+                        Console.WriteLine("HTTP Status Code: " + (int)response.StatusCode);
+                        if (response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            try
+                            {
+                                Toast.MakeText(this.Activity, "Username and password error.", ToastLength.Long).Show();
+                                System.Diagnostics.Debug.WriteLine("We are about to logout");
+                                AccountStorage.ClearStorage();
+                                System.Diagnostics.Debug.WriteLine("Main Activity is :" + Activity == null);
+                                System.Diagnostics.Debug.WriteLine("Items in the backstack :" + Activity.FragmentManager.BackStackEntryCount);
+                                System.Diagnostics.Debug.WriteLine("Main Activity is :" + Activity == null);
+                                Activity.FragmentManager.PopBackStack(null, PopBackStackFlags.Inclusive);
+                                System.Diagnostics.Debug.WriteLine("Items in the backstack 2 :" + Activity.FragmentManager.BackStackEntryCount);
+                                ((MainActivity)(Activity)).SetDrawerState(false);
+                                ((MainActivity)(Activity)).SwitchToFragment(MainActivity.FragmentTypes.Login);
+                            }
+                            catch (System.Exception e)
+                            {
+                                System.Diagnostics.Debug.WriteLine("We encountered an error :" + e.Message);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // no http status code available
+                        Toast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                    }
+                }
+                else
+                {
+                    // no http status code availableToast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                }
             }
             catch (StatusNotOkayException se)
             {

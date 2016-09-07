@@ -1,6 +1,7 @@
 #region
 using System;
 using System.Collections.Generic;
+using System.Net;
 using Android.App;
 using Android.OS;
 using Android.Views;
@@ -56,7 +57,7 @@ namespace ProcessDashboard.Droid.Fragments
                 pd.SetMessage("Loading");
                 pd.Show();
 
-                var timelogEntries = await ctrl.GetTimeLogs(Settings.GetInstance().Dataset, 0, null, null, null, null);
+                var timelogEntries = await ctrl.GetTimeLogs(AccountStorage.DataSet, 0, null, null, null, null);
 
                 //  Debug.WriteLine("Got the values : " + timelogEntries.Count);
                 var count = 0;
@@ -101,11 +102,11 @@ namespace ProcessDashboard.Droid.Fragments
                 var ctlExListBox = v.FindViewById<ExpandableListView>(Resource.Id.myExpandableListview);
                 ctlExListBox.SetAdapter(new GlobalTimeLogAdapter(Activity, _headings));
 
-                ctlExListBox.ChildClick += delegate (object sender, ExpandableListView.ChildClickEventArgs e)
+                ctlExListBox.ChildClick += delegate(object sender, ExpandableListView.ChildClickEventArgs e)
                 {
                     var itmGroup = _timelogs[e.GroupPosition];
                     var itmChild = _headings[itmGroup][e.ChildPosition];
-                    ((MainActivity)Activity).TimeLogEditCallBack(itmChild.Task.Project.Name, itmChild.Task.FullName,
+                    ((MainActivity) Activity).TimeLogEditCallBack(itmChild.Task.Project.Name, itmChild.Task.FullName,
                         itmChild.Task.Id, itmChild);
                 };
                 pd.Dismiss();
@@ -113,20 +114,53 @@ namespace ProcessDashboard.Droid.Fragments
             catch (CannotReachServerException)
             {
                 //TODO: Retry option ?
-                Toast.MakeText(Activity, "Please check your internet connection and try again.", ToastLength.Long).Show();
+                Toast.MakeText(Activity, "Please check your internet connection and try again.", ToastLength.Long)
+                    .Show();
             }
             catch (StatusNotOkayException)
             {
-
-
                 Toast.MakeText(Activity, "An error occured. Please try again.", ToastLength.Short).Show();
             }
-            catch (Exception)
+            catch (WebException we)
+            {
+                if (we.Status == WebExceptionStatus.ProtocolError)
+                {
+                    var response = we.Response as HttpWebResponse;
+                    if (response != null)
+                    {
+                        Console.WriteLine("HTTP Status Code: " + (int)response.StatusCode);
+                        if (response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            try
+                            {
+                                Toast.MakeText(this.Activity,"Username and password error.",ToastLength.Long).Show();
+                                AccountStorage.ClearStorage();
+                                Activity.FragmentManager.PopBackStack(null, PopBackStackFlags.Inclusive);
+                                ((MainActivity)(Activity)).SetDrawerState(false);
+                                ((MainActivity)(Activity)).SwitchToFragment(MainActivity.FragmentTypes.Login);
+                            }
+                            catch (System.Exception e)
+                            {
+                                System.Diagnostics.Debug.WriteLine("We encountered an error :" + e.Message);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // no http status code available
+                        Toast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                    }
+                }
+                else
+                {
+                    // no http status code available
+                    Toast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
+                }
+            }
+             catch (Exception)
             {
                 // For any other weird exceptions
-
-
-                Toast.MakeText(Activity, "Unable to make the change. Please try again.", ToastLength.Short).Show();
+                Toast.MakeText(Activity, "Unable to load the data. Please restart the application.", ToastLength.Short).Show();
             }
         }
     }

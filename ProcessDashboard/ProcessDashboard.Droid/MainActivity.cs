@@ -61,9 +61,6 @@ namespace ProcessDashboard.Droid
         private ActionBarDrawerToggle drawerToggle;
         private TestFragment _testFragment;
         private TimeLogDetail _timeLogDetailFragment;
-
-        private AccountStorage _accountStorage;
-
         private Toolbar _toolbar;
 
         private string APP_ID = "168ed05dd48a4d32b8bbcc25fec3d3a9";
@@ -103,9 +100,8 @@ namespace ProcessDashboard.Droid
 
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
-
-            _accountStorage = new AccountStorage();
-            _accountStorage.SetContext(this);
+            
+            AccountStorage.SetContext(this);
             //ase.Set("testing","testing","testing","mock");
             //System.Diagnostics.Debug.WriteLine(ase.UserId);
             
@@ -148,7 +144,7 @@ namespace ProcessDashboard.Droid
             _testFragment = new TestFragment();
        try
             {
-                if (_accountStorage.UserId != null)
+                if (AccountStorage.UserId != null)
                 {
                     SetDrawerState(true);
                     _currentFragment = _homeFragment;
@@ -165,7 +161,7 @@ namespace ProcessDashboard.Droid
                 _currentFragment = _loginFragment;
             }
             //for testing
-            //_currentFragment = _testFragment;
+           //_currentFragment = _testFragment;
             // if logged in
 
             // else 
