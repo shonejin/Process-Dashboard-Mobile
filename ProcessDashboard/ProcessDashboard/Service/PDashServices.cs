@@ -83,7 +83,8 @@ namespace ProcessDashboard.Service_Access_Layer
             CheckConnection();
             try
             {
-                var projectsDtoTask = _apiService.GetApi(priority).GetProjectsList(dataset, AuthHeader);
+
+				var projectsDtoTask = _apiService.GetApi(priority).GetProjectsList(dataset,AccountStorage.AuthHeader);
 
                 var projects = await _globalPolicy
                     .ExecuteAsync(async () => await projectsDtoTask);
@@ -107,7 +108,7 @@ namespace ProcessDashboard.Service_Access_Layer
             try
             {
                 var getTasksDtoTask = _apiService.GetApi(priority)
-                    .GetTasksList(dataset, projectId, AuthHeader);
+				                                 .GetTasksList(dataset, projectId, AccountStorage.AuthHeader);
                 var tasks = await _globalPolicy
                     .ExecuteAsync(async () => await getTasksDtoTask);
 
@@ -141,7 +142,7 @@ namespace ProcessDashboard.Service_Access_Layer
             try
             {
                 var getTaskDetailsDtoTask = _apiService.GetApi(priority)
-                    .GetTaskDetails(dataset, projecttaskId, AuthHeader);
+				                                       .GetTaskDetails(dataset, projecttaskId, AccountStorage.AuthHeader);
 
                 var task = await _globalPolicy
                     .ExecuteAsync(async () => await getTaskDetailsDtoTask);
@@ -164,7 +165,7 @@ namespace ProcessDashboard.Service_Access_Layer
             CheckConnection();
             try
             {
-                var getRecentTasksDtoTask = _apiService.GetApi(priority).GetRecentTasks(dataset, AuthHeader);
+				var getRecentTasksDtoTask = _apiService.GetApi(priority).GetRecentTasks(dataset, AccountStorage.AuthHeader);
 
                 var recenttask = await _globalPolicy
                     .ExecuteAsync(async () => await getRecentTasksDtoTask);
@@ -193,7 +194,7 @@ namespace ProcessDashboard.Service_Access_Layer
             {
                 var getTimeLogsDtoTask = _apiService.GetApi(priority)
                     .GetTimeLogs(dataset, maxResults, _util.GetServerTimeString(startDateFrom),
-                        _util.GetServerTimeString(startDateTo), taskId, projectId, AuthHeader);
+                        _util.GetServerTimeString(startDateTo), taskId, projectId, AccountStorage.AuthHeader);
 
                 var timelogs = await _globalPolicy
                     .ExecuteAsync(async () => await getTimeLogsDtoTask);
@@ -217,7 +218,7 @@ namespace ProcessDashboard.Service_Access_Layer
             try
             {
                 var getTimeLogDtoTask = _apiService.GetApi(priority)
-                    .GetTimeLog(dataset, timelogId, AuthHeader);
+                    .GetTimeLog(dataset, timelogId, AccountStorage.AuthHeader);
 
                 var timelog = await _globalPolicy
                     .ExecuteAsync(async () => await getTimeLogDtoTask);
@@ -252,7 +253,7 @@ namespace ProcessDashboard.Service_Access_Layer
                     value.Add("completionDate", _util.GetServerTimeString(completionDate));
 
                 var updateTaskDtoTask = _apiService.GetApi(priority)
-                    .UpdateTaskDetails(AuthHeader, dataset, projecttaskId, _util.GetEditTimeStamp(),
+                    .UpdateTaskDetails(AccountStorage.AuthHeader, dataset, projecttaskId, _util.GetEditTimeStamp(),
                         value);
 
                 var task = await _globalPolicy
@@ -294,8 +295,9 @@ namespace ProcessDashboard.Service_Access_Layer
                     {"open", open ? "true" : "false"},
                     {"interruptTime", interruptTime}
                 };
-                var addTimeLog = _apiService.GetApi(priority).AddTimeLog(AuthHeader, dataset, value);
-                Debug.WriteLine("2");
+                var addTimeLog = _apiService.GetApi(priority).AddTimeLog(AccountStorage.AuthHeader, dataset, value);
+                System.Diagnostics.Debug.WriteLine("2");
+
                 var timelogged = await addTimeLog;
                 Debug.WriteLine("3");
                 if (timelogged.Stat.Equals("fail") && timelogged.Err.Code.Equals("stopTimeLogging"))
@@ -339,7 +341,8 @@ namespace ProcessDashboard.Service_Access_Layer
                 value.Add("editTimestamp", _util.GetEditTimeStamp());
 
                 var updateTimeLog = _apiService.GetApi(priority)
-                    .UpdateTimeLog(AuthHeader, dataset, timeLogId, value);
+
+                    .UpdateTimeLog(AccountStorage.AuthHeader, dataset, timeLogId, value);
 
                 var updatedTimeLog = await _globalPolicy
                     .ExecuteAsync(async () => await updateTimeLog);
@@ -368,7 +371,7 @@ namespace ProcessDashboard.Service_Access_Layer
                 var editTimeStamp = _util.GetEditTimeStamp();
 
                 var deleteTimeLog = _apiService.GetApi(priority)
-                    .DeleteTimeLog(AuthHeader, dataset, timelogId, editTimeStamp);
+                    .DeleteTimeLog(AccountStorage.AuthHeader, dataset, timelogId, editTimeStamp);
 
                 var deletestatus = await _globalPolicy
                     .ExecuteAsync(async () => await deleteTimeLog);
@@ -405,16 +408,16 @@ namespace ProcessDashboard.Service_Access_Layer
 
         public void CheckConnection()
         {
-            if (SettingsData.WiFiOnly)
+			if (SettingsData.WiFiOnly)
             {
                 if (!IsWifiConnected())
                 {
-                    throw new CannotReachServerException();
+					throw new CannotReachServerException("App running in WiFi only mode, but WiFi is unavailable.");
                 }
             }
             if (!CrossConnectivity.Current.IsConnected)
             {
-                throw new CannotReachServerException();
+                throw new CannotReachServerException("Server connection unavailable.");
             }
         }
     }
